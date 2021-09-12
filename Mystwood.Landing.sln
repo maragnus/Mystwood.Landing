@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystwood.Landing.MwlApi", "Mystwood.Landing.MwlApi\Mystwood.Landing.MwlApi.csproj", "{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MystwoodDb.Tests", "MystwoodDb.Tests\MystwoodDb.Tests.csproj", "{3866C608-C614-49FF-8D55-13759E0C26EE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B157B565-DCCB-43A5-ACE3-519FAF7A3E63}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{40F9A5F9-7D19-4873-A7EF-C5F2FACAB0E9}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystwood.Landing.Data", "Mystwood.Landing.Data\Mystwood.Landing.Data.csproj", "{FA64CF19-3798-442C-8010-975470EC0E0D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3866C608-C614-49FF-8D55-13759E0C26EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3866C608-C614-49FF-8D55-13759E0C26EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3866C608-C614-49FF-8D55-13759E0C26EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3866C608-C614-49FF-8D55-13759E0C26EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FA64CF19-3798-442C-8010-975470EC0E0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FA64CF19-3798-442C-8010-975470EC0E0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FA64CF19-3798-442C-8010-975470EC0E0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FA64CF19-3798-442C-8010-975470EC0E0D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3866C608-C614-49FF-8D55-13759E0C26EE} = {B157B565-DCCB-43A5-ACE3-519FAF7A3E63}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9BC8CE7E-368E-4048-BA07-0F215101EB66}
+	EndGlobalSection
+EndGlobal
