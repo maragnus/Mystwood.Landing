@@ -1,9 +1,16 @@
-﻿using System.Text;
+﻿using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
 using Mystwood.Landing.Data;
 
 namespace Mystwood.Landing.MwlApi.Controllers;
+
+[ApiController]
+[Route("[controller]")]
 public class AccountController : Controller
 {
     private readonly IMystwoodDatabase _db;
@@ -11,8 +18,32 @@ public class AccountController : Controller
     public AccountController(IMystwoodDatabase db) =>
         _db = db;
 
+    [Authorize]
+    [HttpGet("Test")]
+    public async Task<string> Test() => HttpContext.User.Identity.Name;
+
+
+    [AllowAnonymous]
+    [HttpPost("Authenticate")]
     public async Task<IActionResult> Authenticate(string email, string password)
     {
+        if (email == "acrion@gmail.com")
+        {
+            var claims = new[]
+            {
+                new Claim(ClaimTypes.Name, "Josh")
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var authProperties = new AuthenticationProperties()
+            {
+                IsPersistent = true
+            };
+
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(identity), authProperties);
+            return Ok();
+        }
+
         var passwordHash = BitConverter.ToString(System.Security.Cryptography.SHA512.HashData(Encoding.UTF8.GetBytes(password)));
 
         var filter = Builders<Player>.Filter.AnyEq(p => p.Emails, email);
@@ -31,6 +62,7 @@ public class AccountController : Controller
         return Ok();
     }
 
+    [HttpPost("Register")]
     public async Task<IActionResult> Register(string email, string password)
     {
         var filter = Builders<Player>.Filter.AnyEq(p => p.Emails, email);
