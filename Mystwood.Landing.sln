@@ -1,12 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31624.102
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31612.314
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystwood.Landing.MwlApi", "Mystwood.Landing.MwlApi\Mystwood.Landing.MwlApi.csproj", "{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MystwoodDb.Tests", "MystwoodDb.Tests\MystwoodDb.Tests.csproj", "{3866C608-C614-49FF-8D55-13759E0C26EE}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B157B565-DCCB-43A5-ACE3-519FAF7A3E63}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{40F9A5F9-7D19-4873-A7EF-C5F2FACAB0E9}"
@@ -14,7 +10,19 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.editorconfig = .editorconfig
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystwood.Landing.Data", "Mystwood.Landing.Data\Mystwood.Landing.Data.csproj", "{FA64CF19-3798-442C-8010-975470EC0E0D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Data\Data.csproj", "{FA64CF19-3798-442C-8010-975470EC0E0D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MwlApi", "MwlApi\MwlApi.csproj", "{5DEC863F-D036-4EE0-A9BF-B5AD63FCE823}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{BC7808D5-E900-4A25-86A4-697673EA0F9F}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonTests", "Tests\CommonTests\CommonTests.csproj", "{1E6F7104-061C-4AC3-96C3-C888E0066677}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTests", "Tests\DataTests\DataTests.csproj", "{14E957ED-82A3-49A5-B778-2A46A2729CB6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkflowTests", "WorkflowTests\WorkflowTests.csproj", "{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common", "Tests\Common\Tests.Common.csproj", "{4A72D620-D693-4675-A2B8-B595F14EFB80}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,24 +30,43 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E43C25F3-043D-4FEC-A0FF-A650BEE9F510}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3866C608-C614-49FF-8D55-13759E0C26EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3866C608-C614-49FF-8D55-13759E0C26EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3866C608-C614-49FF-8D55-13759E0C26EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3866C608-C614-49FF-8D55-13759E0C26EE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{FA64CF19-3798-442C-8010-975470EC0E0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{FA64CF19-3798-442C-8010-975470EC0E0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA64CF19-3798-442C-8010-975470EC0E0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA64CF19-3798-442C-8010-975470EC0E0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DEC863F-D036-4EE0-A9BF-B5AD63FCE823}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DEC863F-D036-4EE0-A9BF-B5AD63FCE823}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DEC863F-D036-4EE0-A9BF-B5AD63FCE823}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DEC863F-D036-4EE0-A9BF-B5AD63FCE823}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BC7808D5-E900-4A25-86A4-697673EA0F9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BC7808D5-E900-4A25-86A4-697673EA0F9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BC7808D5-E900-4A25-86A4-697673EA0F9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BC7808D5-E900-4A25-86A4-697673EA0F9F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1E6F7104-061C-4AC3-96C3-C888E0066677}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1E6F7104-061C-4AC3-96C3-C888E0066677}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1E6F7104-061C-4AC3-96C3-C888E0066677}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1E6F7104-061C-4AC3-96C3-C888E0066677}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14E957ED-82A3-49A5-B778-2A46A2729CB6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14E957ED-82A3-49A5-B778-2A46A2729CB6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14E957ED-82A3-49A5-B778-2A46A2729CB6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14E957ED-82A3-49A5-B778-2A46A2729CB6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A72D620-D693-4675-A2B8-B595F14EFB80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A72D620-D693-4675-A2B8-B595F14EFB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A72D620-D693-4675-A2B8-B595F14EFB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A72D620-D693-4675-A2B8-B595F14EFB80}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3866C608-C614-49FF-8D55-13759E0C26EE} = {B157B565-DCCB-43A5-ACE3-519FAF7A3E63}
+		{1E6F7104-061C-4AC3-96C3-C888E0066677} = {B157B565-DCCB-43A5-ACE3-519FAF7A3E63}
+		{14E957ED-82A3-49A5-B778-2A46A2729CB6} = {B157B565-DCCB-43A5-ACE3-519FAF7A3E63}
+		{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152} = {B157B565-DCCB-43A5-ACE3-519FAF7A3E63}
+		{4A72D620-D693-4675-A2B8-B595F14EFB80} = {B157B565-DCCB-43A5-ACE3-519FAF7A3E63}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9BC8CE7E-368E-4048-BA07-0F215101EB66}

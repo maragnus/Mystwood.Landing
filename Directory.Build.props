@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup>
+    <AssemblyName>$([System.String]::Concat($(SolutionName), ".", $(MSBuildProjectDirectory.Substring($(SolutionDir.Length)))).Replace('\', '.').Replace('/', '.').TrimEnd('.'))</AssemblyName>
+    <RootNamespace>$([System.String]::Concat($(SolutionName), ".", $(MSBuildProjectDirectory.Substring($(SolutionDir.Length)))).Replace('\', '.').Replace('/', '.').TrimEnd('.'))</RootNamespace>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+</Project>
+ 
