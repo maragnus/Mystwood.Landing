@@ -56,20 +56,20 @@ namespace MystwoodDb.Tests
             var character1 = new Character
             {
                 CharacterId = id(),
-                PlayerId = player.PlayerId,
+                PlayerId = player.PlayerId.Value,
                 Name = "Jerry",
-                Events = new[] { new EventParticipation { EventId = event1.EventId, Participated = true } }
+                Events = new[] { new EventParticipation { EventId = event1.EventId.Value, Participated = true } }
             };
             await db.Characters.InsertOneAsync(character1);
 
             var character2 = new Character
             {
                 CharacterId = id(),
-                PlayerId = player.PlayerId,
+                PlayerId = player.PlayerId.Value,
                 Name = "Marge",
                 Events = new[] {
-                    new EventParticipation { EventId = event1.EventId, Participated = true },
-                    new EventParticipation { EventId = event2.EventId, Participated = true },
+                    new EventParticipation { EventId = event1.EventId.Value, Participated = true },
+                    new EventParticipation { EventId = event2.EventId.Value, Participated = true },
                 }
             };
             await db.Characters.InsertOneAsync(character2);

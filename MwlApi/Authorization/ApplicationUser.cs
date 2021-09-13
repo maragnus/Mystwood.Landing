@@ -1,6 +1,7 @@
 ﻿namespace Mystwood.Landing.MwlApi.Authorization;
 
-public class ApplicationUser
+public record ApplicationUser
 {
-    public string UserName { get; set; } = null!;
+    public string? UserName { get; set; }
+    public string? PlayerId { get; set; }
 }

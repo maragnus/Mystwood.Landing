@@ -4,12 +4,11 @@ using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Mystwood.Landing.Data
 {
-    public record Event
+    public record NamedValue
     {
         [BsonId(IdGenerator = typeof(ObjectIdGenerator)), BsonIgnoreIfDefault]
-        public ObjectId? EventId;
-        public string? Name;
-        public DateOnly? StartDate;
-        public DateOnly? EndDate;
+        public ObjectId? Id;
+        public string Name = "";
+        public string Value = "";
     }
 }

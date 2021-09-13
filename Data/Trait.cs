@@ -6,14 +6,13 @@ namespace Mystwood.Landing.Data
 {
     public record Trait
     {
-        [BsonId(IdGenerator = typeof(ObjectIdGenerator))]
-        public ObjectId TraitId = ObjectId.GenerateNewId();
+        [BsonId(IdGenerator = typeof(ObjectIdGenerator)), BsonIgnoreIfDefault]
+        public ObjectId? TraitId;
 
         public TraitType Type;
         public string? Name;
         public string? Description;
     }
-
 
     public record Occupation : Trait
     {

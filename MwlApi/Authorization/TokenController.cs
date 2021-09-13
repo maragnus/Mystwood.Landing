@@ -39,7 +39,7 @@ public class TokenController : Controller
         return token;
     }
 
-    private ApplicationUser GetUserByToken(string refreshToken)
+    private ApplicationUser? GetUserByToken(string? refreshToken)
     {
         // TODO: Check token against your database.
         if (refreshToken == "test")
@@ -48,7 +48,7 @@ public class TokenController : Controller
         return null;
     }
 
-    private ApplicationUser? GetUserByCredentials(string username, string password)
+    private ApplicationUser? GetUserByCredentials(string? username, string? password)
     {
         // TODO: Check username/password against your database.
         if (username == password)

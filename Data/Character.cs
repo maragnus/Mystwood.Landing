@@ -7,8 +7,8 @@ namespace Mystwood.Landing.Data
 
     public record CharacterSummary
     {
-        [BsonId(IdGenerator = typeof(ObjectIdGenerator))]
-        public ObjectId CharacterId;
+        [BsonId(IdGenerator = typeof(ObjectIdGenerator)), BsonIgnoreIfDefault]
+        public ObjectId? CharacterId;
         public ObjectId PlayerId;
 
         public string? Name;

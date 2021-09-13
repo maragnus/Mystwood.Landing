@@ -6,8 +6,8 @@ namespace Mystwood.Landing.Data
 {
     public record Player
     {
-        [BsonId(IdGenerator = typeof(ObjectIdGenerator))]
-        public ObjectId PlayerId = ObjectId.GenerateNewId();
+        [BsonId(IdGenerator = typeof(ObjectIdGenerator)), BsonIgnoreIfDefault]
+        public ObjectId? PlayerId;
 
         public string? Name;
         public string? PrimaryEmail;
