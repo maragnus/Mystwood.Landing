@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Net.Sockets;
+using Microsoft.Extensions.Options;
 using Mystwood.Landing.Common;
 using Xunit;
 
@@ -11,10 +12,20 @@ public class MessagingServiceTests
         var options = new MessagingServiceOptions()
         {
             SmtpServer = "localhost",
-            SmtpUserSsl = false
+            SmtpPort = 19923,
+            SmtpUserSsl = false,
+            Froms = new Dictionary<string, string> { { "noreply", "landing@mystwood.org" } }
         };
-
         var service = new MessagingService(new OptionsWrapper<MessagingServiceOptions>(options));
-        await service.SendEmail("landing@mystwood.org", "acrion@gmail.com", "Mystwood Landing Account", "Welcome to Mystwood Landing", null);
+
+        await Assert.ThrowsAsync<MessagingServiceException>(async () =>
+        {
+            await service.SendEmail("invalid@mystwood.org", "acrion@gmail.com", "Mystwood Landing Account", "Welcome to Mystwood Landing", null);
+        });
+
+        await Assert.ThrowsAsync<SocketException>(async () =>
+        {
+            await service.SendEmail("noreply", "acrion@gmail.com", "Mystwood Landing Account", "Welcome to Mystwood Landing", null);
+        });
     }
 }

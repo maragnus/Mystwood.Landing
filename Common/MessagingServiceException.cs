@@ -3,7 +3,7 @@
 namespace Mystwood.Landing.Common
 {
     [Serializable]
-    internal class MessagingServiceException : Exception
+    public class MessagingServiceException : Exception
     {
         public MessagingServiceException()
         {

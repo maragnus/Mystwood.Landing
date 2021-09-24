@@ -1,10 +1,12 @@
 ﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 
 namespace Mystwood.Landing.Data
 {
     public record EventParticipation
     {
-        public ObjectId EventId;
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? EventId;
         public bool Participated;
         public int EarnedMoonstone;
         public string? Role;

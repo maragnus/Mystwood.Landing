@@ -1,23 +1,19 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.IdGenerators;
 
 namespace Mystwood.Landing.Data
 {
 
     public record CharacterSummary
     {
-        [BsonId(IdGenerator = typeof(ObjectIdGenerator)), BsonIgnoreIfDefault]
-        public ObjectId? CharacterId;
-        public ObjectId PlayerId;
+        [BsonId, BsonIgnoreIfDefault, BsonRepresentation(BsonType.ObjectId)]
+        public string? CharacterId;
+        [BsonRepresentation(BsonType.ObjectId)]
+        public string? PlayerId;
 
         public string? Name;
 
         public int Level;
-
-        public string? Occupation;
-
-        public string? OccupationalEnhancement;
 
         public string? Religion;
 
@@ -28,15 +24,7 @@ namespace Mystwood.Landing.Data
     {
         public EventParticipation[] Events = Array.Empty<EventParticipation>();
 
-        public Gifts Gifts = new Gifts();
-
-        public string[] Advantages = Array.Empty<string>();
-
-        public string[] Disadvantages = Array.Empty<string>();
-
-        public string[] Skills = Array.Empty<string>();
-
-        public string[] PurchasedSkills = Array.Empty<string>();
+        public TraitAssociation[] Traits = Array.Empty<TraitAssociation>();
 
         public string[] Spells = Array.Empty<string>();
 
@@ -49,16 +37,6 @@ namespace Mystwood.Landing.Data
         public string? PublicHistory;
 
         public string? PrivateHistory;
-    }
-
-    public record Gifts
-    {
-        public int Courage;
-        public int Dexterity;
-        public int Empathy;
-        public int Passion;
-        public int Prowess;
-        public int Wisdom;
     }
 
     /// <summary>

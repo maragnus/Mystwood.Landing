@@ -12,9 +12,15 @@ namespace Mystwood.Landing.Data
 
         IMongoCollection<Character> Characters { get; }
 
+        IMongoCollection<Trait> Traits { get; }
+
         Task<string> GetOrCreateValue(string name, Func<string, string> createValue);
 
         Task<bool> HealthCheckAsync();
+
+        Task<string?> GetPlayerIdByEmail(string email, CancellationToken cancellationToken);
+
+        Task UpdatePlayerProfile(string playerId, string name, string primaryEmail, string[] otherEmails, CancellationToken cancellationToken);
     }
 
     public class MystwoodDatabase : IMystwoodDatabase, IDisposable
@@ -31,6 +37,8 @@ namespace Mystwood.Landing.Data
         public IMongoCollection<Event> Events { get; }
 
         public IMongoCollection<Character> Characters { get; }
+
+        public IMongoCollection<Trait> Traits { get; }
 
         public IMongoCollection<NamedValue> NamedValues { get; }
 
@@ -57,15 +65,19 @@ namespace Mystwood.Landing.Data
 
             Connection = new MongoClient(_options.ConnectionString);
             Database = Connection.GetDatabase(_options.DatabaseName);
-            Players = Database.GetCollection<Player>(nameof(Player));
-            Events = Database.GetCollection<Event>(nameof(Event));
-            Characters = Database.GetCollection<Character>(nameof(Character));
-            NamedValues = Database.GetCollection<NamedValue>(nameof(NamedValue));
+
+            Players = Collection<Player>();
+            Events = Collection<Event>();
+            Characters = Collection<Character>();
+            Traits = Collection<Trait>();
+            NamedValues = Collection<NamedValue>();
+
+            IMongoCollection<TEntity> Collection<TEntity>() => Database.GetCollection<TEntity>(typeof(TEntity).Name);
         }
 
         public void Dispose()
         {
-            // Do nothing
+            // Do nothing - CosmosDB driver requires disposal
         }
 
         public async Task<bool> HealthCheckAsync()
@@ -85,6 +97,28 @@ namespace Mystwood.Landing.Data
                 _logger.LogWarning(ex, $"{nameof(MystwoodDatabase)} health check failed");
                 return false;
             }
+        }
+
+        public async Task<string?> GetPlayerIdByEmail(string email, CancellationToken cancellationToken)
+        {
+            var filter = Builders<Player>.Filter.AnyEq(i => i.NormalizedEmails, email.ToUpperInvariant());
+
+            var player = await Players.Find(filter).FirstOrDefaultAsync(cancellationToken);
+
+            return player?.PlayerId;
+        }
+
+        public async Task UpdatePlayerProfile(string playerId, string name, string primaryEmail, string[] otherEmails, CancellationToken cancellationToken)
+        {
+            var filter = Builders<Player>.Filter.Eq(i => i.PlayerId, playerId);
+            var update = Builders<Player>.Update
+                .Set(i => i.Name, name)
+                .Set(i => i.PrimaryEmail, primaryEmail)
+                .Set(i => i.Emails, otherEmails)
+                .Set(i => i.NormalizedEmails, new[] { primaryEmail }.Concat(otherEmails).Select(i => i.ToUpperInvariant()).ToArray());
+            var options = new FindOneAndUpdateOptions<Player, Player>();
+
+            var player = await Players.FindOneAndUpdateAsync(filter, update, options, cancellationToken);
         }
     }
 }
