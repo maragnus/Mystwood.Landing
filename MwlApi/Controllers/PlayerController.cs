@@ -45,6 +45,9 @@ public class PlayerController : ControllerBase
     [ProducesResponseType(typeof(ErrorDetails), 400)]
     public async Task<IActionResult> AddPlayer([FromBody] PlayerModel player, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(player.Email))
+            return BadRequest("Email is requried");
+
         var existingPlayer = await _db.GetPlayerIdByEmail(player.Email, cancellationToken);
         if (existingPlayer != null)
             return BadRequest(new ErrorDetails("Email is already registered"));
@@ -62,7 +65,7 @@ public class PlayerController : ControllerBase
     [HttpPatch("{playerId}")]
     [ProducesResponseType(typeof(PlayerModel), 200)]
     [ProducesResponseType(typeof(ErrorDetails), 400)]
-    public async Task<IActionResult> UpdatePlayer([FromRoute] string playerId, [FromBody] Player player, CancellationToken cancellationToken)
+    public IActionResult UpdatePlayer([FromRoute] string playerId, [FromBody] Player player, CancellationToken cancellationToken)
     {
         return Ok();
     }

@@ -1,0 +1,463 @@
+﻿Adventurer 
+
+Agility, Scavenging, Serene Contemplation, Wear Armor 2 
+
+Many travelers, especially children, who find their way to 
+the Mystwood Keep have no real training, only seeking a 
+new start where they can make money and set up social 
+ties. New players of any age may have this Occupation 
+until their third Event, after which they must settle into a 
+conventional role. Players under 18 may keep this 
+Occupation until they turn 18.
+
+Apprentice 
+
+Agility, Apprenticeship, Duty 1 (assist master), Production X 
+(any 1 Material or Component), Serene Contemplation 
+
+For as long as any can remember, apprenticeship has 
+been the normal way to learn a craft. The skills of an 
+apprentice are very helpful to a master, and therefore this 
+Occupation is in high demand. 
+The pay is not always great, but the perks are useful. 
+Relationships formed as an apprentice can last the rest of 
+your life. In some cases, it might be worth offering your 
+services for free until a wealthier patron comes along to 
+employ you. 
+
+Baker 
+
+Cooking 4, Income 10, News & Rumors, Weapon Use (Flail) 
+
+Bread is the most important food for the vast majority of 
+people in Europa, being the basis of nearly every meal. 
+Thus, bakers are common and valued. Since many people 
+come to the baker to get their bread, they are an excellent 
+source of rumors. 
+
+Barber Surgeon 
+
+Apothecary 2, Cure Affliction, Medicine 
+
+The practice of Medicine in the Mystwood is not for the 
+faint of heart. Maladies are many and terrible, and the 
+nature of the Mystwood means they progress at terrifying 
+speed. Patients transform into monsters on the operating 
+table, and the Barber Surgeon must take precautions to 
+avoid the most horrid of afflictions. 
+
+Bard/Minstrel/Thespian 
+
+Bardic Voice 4, Entertainer, News & Rumors 
+
+Jugglers, dancers, minstrels, thespians, even puppeteers, 
+these are the superstars of the Known world. Their 
+performances are often the high points of folk’s 
+existence, especially in times of trouble. 
+
+Beggar 
+
+Agility, Begging, Livery (rags and patches), Scavenging 
+and one of Information Gathering or Weapon Use (Staff) 
+
+War, famine, plague, and a host of other ills best Europa, 
+and many who lose their homes and livelihoods become 
+beggars, forced to seek bread and coin from generous 
+folk. Such downtrodden often find themselves in rural 
+villages, searching for new lives. Of course, some beggars 
+are false- little better than brigand- and so beggars often 
+have bad reputations. 
+
+Blacksmith 
+
+Livery (leather apron), Metalworking 4, Weapon 
+Specialization (One Handed Blunt, Two Handed Blunt) 
+
+Blacksmiths form the backbone of the kingdom. They 
+service the many knights who need a great deal of 
+upkeep on their armor. A blacksmith’s use of 
+metalworking is also helpful to the commoners, who 
+need sturdy arrows for their bows. 
+
+Boatman 
+
+Buy/Sell 10, Income 5, Production (1 Water), News & 
+Rumors, Work Rhythm 
+and one of Cosmopolitan Connections or Scavenging 
+
+In a Europa where roads are uncommon and often 
+plagued by brigands, river travel is common, cheap, and 
+reliable. Most settlements are no more than a day or 
+two's travel from the sea, or from a river, major routes of 
+trade and vital lifelines. Boatmen are those sturdy folk 
+who ensure that small, distant settlements continue to 
+receive finished goods from the outside world, and that 
+the raw materials gained from the wilds are easily 
+obtained by the rest of the Known World. 
+
+Butcher 
+
+Butcher, Cooking 2, Livery (bloodstained apron), Toughness 
+
+Even peasants in Europa eat a great deal of meat, but 
+few know the ins and outs of cleaning and preparing it 
+for consumption. Thus, the butcher’s trade is invaluable. 
+Butchers require good strength and health in order to 
+move heavy carcasses, and so they are often surprisingly 
+tough. 
+
+Clerk/Forger 
+
+Copyist, Production (2 Parchment), Scribe 4, Serene 
+Contemplation 
+
+Clerks are employed by many wealthier individuals, 
+though some offer freelance services. They are skilled in 
+the art of writing and record keeping. Clerks are never 
+without a few sheets of quality parchment. 
+
+Courier 
+
+Agility, Income 5, News & Rumors, Pathfinding, Scribe 2 
+
+For most, alas, mobility from their villages and farms is 
+difficult at best, and deadly at worst. The threat of raiders 
+and beastmen keeps many behind shuttered window and 
+palisade. What, then, of missives which must be sent 
+from lord to vassal, or merchant to factor? Such is the 
+role of the courier, whose quick feet and cunning eye 
+allows them to move about quickly, and spread 
+information on the strange places and half-heard news 
+they encounter in their travels. 
+
+Dancer/Juggler/Acrobat 
+
+Agility, Entertainer, Livery (performance costume), News & 
+Rumors, Weapon Specialization (Thrown Weapon) 
+
+Often dressed in colorful and unique attire, dancers, 
+jugglers, and acrobats are popular among commoners. 
+They perform a service desired by all- quality 
+entertainment. They are often agile, and at times their 
+performance skills will benefit them in a fight. 
+
+Folk Healer 
+
+Apothecary 2, Cure Affliction, Detect Health, News & 
+Rumors 
+
+Folk healers include such cunning men, midwives, witchdoctors and field medics that assist with minor home 
+remedies, childbirth, and wound care to villages and 
+households too small to maintain a professionally trained 
+person. While most would go to a barber-surgeon for a 
+bleeding, or to an herbalist for a poultice, the folk healer 
+is sometimes sought after for advice as much as 
+medicinal wisdom. 
+
+Fortune Teller 
+
+Fortune Telling, Income 10, Mage Lore, News & Rumors, 
+Serene Contemplation 
+and one of Bardic Voice 2 or Scribe 2 
+
+The future is a riddle many seek to answer, and they are 
+willing to pay handsomely for any clues to what lies 
+ahead. A successful court astrologer can earn tremendous 
+wealth, and even village fortune tellers are quite well off. 
+Alas, seers are also viewed with great suspicion, which 
+can make this career quite risky. The notion that they are 
+all charlatans is sometimes bandied about, and more dire, 
+some believe they make their predictions come true with 
+dark sorcery. 
+
+Gentlefolk 
+
+Bestow Favor, Income 10 
+and choose any 2 of the following: Bardic Voice 2, Cooking 
+2, Divine Lore, Information Gathering, Research, Scribe 2, 
+Serene Contemplation, or Sewing 2 
+
+Gentlefolk (ladies in waiting, gentlemen of leisure and so 
+on), are those who are well off enough to not have to 
+work for a living, and so choose not to. Usually they are 
+the children of knights, but not knights themselves, 
+having chosen not to pursue the path of battle. 
+Sometimes, they are those who have made a small 
+fortune in the past, and are now taking advantage of that 
+wealth. Some are pure charlatans, who use their bearing, 
+glib conversation and clothing to make themselves 
+welcome in the castles and feast halls of others. 
+
+Gravedigger 
+
+Engineering, Income 5, Occupational Spells (page 126), 
+Production (1 Death Component), Slayer (Undead), Weapon 
+Specialization (Tool), Woodworking 2 
+
+In a time where death can come at any moment, due to 
+plague, famine, or violence, gravediggers have the solemn 
+duty of burying the deceased. Due to their proximity to 
+the dead, each gravedigger has their own unique methods 
+of avoiding sickness or curse. Traditionally, a gravedigger 
+wears dark colors, black in most cases, out of respect for 
+the dead. 
+Grave digging is a very lucrative profession ever since the 
+plagues came to Europa. Few dare to handle the bodies 
+of the dead for fear of affliction, so those brave enough 
+to dispose of them are well compensated. 
+
+Herbalist 
+
+Apothecary 4, Cure Affliction, Mage Lore, Woodwise 
+
+Herbalists are the chemists of these blighted ages and 
+play an important role in healing those who are afflicted 
+by ailments. Their ability to brew and identify many 
+powerful potions and poisons makes them a source of 
+knowledge. 
+
+Herder 
+
+Pathfinding, Production (2 Cloth, 6 Food), Wear Armor 1, 
+Woodwise 
+
+The staple of all communities are the herdsmen and 
+women. They provide fresh meat and cloth for their 
+fellows by nurturing a hearty flock. The creatures herded 
+by these individuals vary considerably- while most herd 
+sheep, goats or pigs, others herd more unique animals. 
+
+Hermit 
+
+Apothecary 2, Cure Affliction, Divine Lore, Scribe 2 
+
+There are many strange people who live in the woods, 
+and little is known of why they seek solitude. Perhaps, 
+within nature, they are able to hone their fine skills in 
+brewing, or perhaps they seek the rarest elements, herbs 
+and plants. In any case, a hermit can be a very valuable 
+companion when coerced out of their solitude. They 
+tend to have communion with the gods, and can cure 
+diseases that barber surgeons seldom are aware of. 
+
+Hunter 
+
+Butcher, Pathfinding, Production (2 Food), Weapon 
+Specialization (Bow, Normal Crossbow), Wear Armor 1, 
+Woodwise 
+
+In the thick woods it is hard to find a suitable place for 
+farmland, and so, hunting is a primary form of food 
+gathering. Hunters are hearty individuals who know how 
+to take care of themselves. One never knows whether the 
+hunt will lead to a more or less harmless deer, or a 
+ferocious wild cat. 
+
+Laborer 
+
+Duty 2 (Manual Labor), Engineering, Income 5, Toughness, 
+Weapon Use (Two Handed Axe or Two Handed Blunt), 
+Weapon Use (Tool), Work Rhythm 
+
+For many people, daily life is one of toil and back 
+breaking tedium. Nevertheless, fields must have drainage, 
+roads must be leveled, walls built and repaired, and so 
+on. These tasks can only be solved by application of 
+manual labor, and it is the Laborer who performs such 
+duties. 
+
+Lackey 
+
+Buy/Sell 10, Commerce, Livery (your master's colors), Quick 
+Learner, News & Rumors 
+and one of Serene Contemplation or Unarmed Combat 
+
+A lackey is a servant, indispensable when skilled and 
+knowledgeable, bumbling and in the way when not. 
+Many lackeys eventually become sergeants-at-arms, 
+stewards, or valets for their superiors. 
+
+Lay Cleric 
+
+Divine Lore, Divine Spells, Income 5, Religious Ceremony, 
+Serene Contemplation, Wear Armor 3 
+and one of Warcaster or Weapon Specialization (your choice 
+of One Handed Blunt, One Handed Sword, Two Handed 
+Blunt, or Two Handed Sword) 
+
+Messengers of the gods, these individuals are often 
+leading members of communities. They are battle ready 
+to serve their god, and are capable of harnessing powers 
+that allow them to cast spells while wearing armor. They 
+give fiery and thoughtful sermons, while reminding 
+everyone of the true enemies: Chaos and Undeath. 
+
+Locksmith 
+
+Engineering, Income 5, Set Trap, Weapon Use (Staff), 
+Woodworking 4 
+
+With civilization comes profit, and with profit comes 
+thieves. Locksmiths are usually tasked to open locks 
+other people have set, but the slowly growing populace 
+of middle class folk in Europa calls on knowledgeable 
+folk able to help safeguard wealth. 
+
+Novice Monk 
+
+Divine Lore, Livery (robe or habit), Research, Scribe 2, Serene 
+Contemplation 
+
+Monks are among the wisest and most learned of people 
+in Europa. Somber and determined, they serve the 
+Church and their neighbors. They tend to dress in dull 
+tones and have an aptitude for book learning, a very rare 
+thing in a society with few who can read well. 
+
+Peddler 
+
+Buy/Sell (50), Commerce, Income 10, News & Rumors, 
+Pathfinding 
+
+Most merchants don’t begin with a store of their own, 
+they need to build up connections and develop a 
+reputation. To do this, they travel near and far, buying 
+and selling what merchandise they can easily transport. 
+
+Penitent 
+
+Battle Rage, Blessed, Divine Lore, Livery (icons of faith), 
+Weapon Specialization (Flail), Weapon Use (Flail) 
+
+Penitents are the fanatics of the Church, usually former 
+sinners, but sometimes merely those who are willing to 
+accept great pain on behalf of those who sin and do not 
+recant. They are often travelers, spreading their faith. 
+Some turn to self-flagellation, whereas others try to 
+embrace higher degrees of reason in order to spread their 
+faith. Others still are rather quiet and keep to themselves, 
+completing their spiritual journey alone. 
+
+Ragpicker 
+
+Duty 2 (Clean up trash), Production (any one Material), 
+Scavenging, Weapon Specialization (Tool) 
+and one of Toughness or Weapon Use (Polearm) 
+
+Somewhat higher than beggars in the hierarchy of 
+civilization’s castoffs, ragpickers exist in every town of 
+any real size. They carry trash from houses to the 
+midden, peddle what things can be repaired, muck 
+stables, and help the ratcatchers and guardsmen fight 
+against such goblins and rats who frequent dumps. 
+
+Ratcatcher 
+
+Engineering, Livery (rats or rat symbols), Occupational Spells 
+(page 126), Poisoner 2, Set Trap, Slayer (Vermin) 
+
+In the realms of Mystwood, rat catching is serious 
+business. Not only do rats and similar vermin spread 
+disease and devour vital food supplies, but when touched 
+by Chaos they can grow to enormous size and devour 
+livestock, pets and children. At times, great hordes of rats 
+sweep across the land, overwhelming villages, leaving 
+only well gnawed bones behind. The common folk hate 
+and fear rats, and the ratcatcher is thus a figure of both 
+admiration and dread. 
+
+Squire 
+
+Income 10, Wear Armor 4 
+and one of Armstraining 4 or Metalworking 2 
+
+In Europa, becoming a knight is often the best way for a 
+free commoner to escape the lower classes and become 
+important and famous. Choosing the path of the squire is 
+one of the best ways to begin the journey to knighthood. 
+
+Street Vendor 
+
+Buy/Sell 10, Cooking 2, News & Rumors, Scavenging 
+and one of Metalworking 2, Sewing 2, or Woodworking 2 
+
+Every village market has vendors selling food and 
+trinkets. Street vendors are often considered a lesser sort 
+of merchant than even a tinker or peddler, but their 
+unique mix of wares can be valuable. 
+
+Tailor/Leatherworker 
+
+Duty 1 (mending and patching), Medicine, Sewing 4 
+
+Fine cloth is often in short supply in the darker parts of 
+the kingdom, but many there are in need of leather 
+working and animal hides are easy to find. Talents in 
+stitching can sometimes aid in tending battle wounds as 
+well. 
+
+Tavern Keeper 
+
+Cooking 2, Drinks on the House, Duty 1 (minding the 
+tavern), Income 10, Information Gathering, News & Rumors, 
+Sell Drinks 
+
+In the year 930, some 40 years ago, a vile Chaos cult 
+nearly brought down the barony of Wickshire in Navarre 
+by distributing tainted wine at a series of festivals. Many 
+died as the vile spirits took effect. Since that time, 
+brewing of any sort has been a closely guarded noble 
+monopoly, carried out by licensed brewers. Taverns, 
+however, need staff to sell such wares, and many a village 
+exists only because it is in a convenient location to stop, 
+spend the night, and have a drink. 
+
+Tinker 
+
+Armor Repair, Buy/Sell (30), Commerce, News & Rumors, 
+Scavenging, Tinkering 
+
+The tinker is a wanderer, repairing pots and sharpening 
+knives, trading old clothes and scrap, and generally 
+keeping poor villages which never see a true merchant 
+alive. Much lore and myth has evolved about the tinker, 
+and in many lands to harm one is extremely bad luck. 
+
+Town Crier 
+
+Bardic Voice 2, Duty 1 (shout proclamations you have been 
+hired to, or seditious blather), Income 10, Information 
+Gathering, News & Rumors, Unarmed Combat 
+
+Sometimes a loud mouth is just another loud mouth, 
+getting into brawls at the tavern, spreading nasty rumors, 
+and inciting riots… Other times a person with a good, 
+booming voice is an upstanding member of the 
+community, shouting news, gathering people for 
+meetings, and helping to sell a merchant's stock. It’s up 
+to you which one you’ll be. 
+
+Town Guard 
+
+Duty 1 (inspection by a Corporal or Captain of the Guard), 
+Income 5, Livery (based on local Chapter), Warcaster, 
+Weapon Specialization (any one Weapon Type), Weapon 
+Use (Large Shield), Wear Armor 3 
+
+Most towns and villages boast a small contingent of paid 
+guards who patrol trails, guard gates, make sure that laws 
+are observed, and generally assist the local magistrate or 
+lord with ready weapons. 
+
+Woodsfolk 
+
+Duty 1 (gathering firewood), Weapon Specialization (One 
+Handed Axe, Two Handed Axe), Wear Armor 1, 
+Woodworking 4, Woodwise 
+
+Trees all around, yet wood is still scarce. All living trees 
+are property of nobility, and cannot be cut without a 
+special writ. This makes the job of a woodswoman 
+challenging at times. Nevertheless, good carpentry skills 
+are essential to the survival of any outpost- the walls of 
+buildings and keeps are always in need of repair. 

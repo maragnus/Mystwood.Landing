@@ -1,0 +1,131 @@
+﻿Adventurer 
+
+Agility, Scavenging, Serene Contemplation, Wear Armor 2 
+
+Many travelers, especially children, have no real training, 
+only seeking a new start where they can make money and 
+set up social ties. 
+
+Apprentice 
+
+Agility, Apprenticeship, Duty 1 (assist master), Production X 
+(any 1 Material or Component), Serene Contemplation 
+
+For as long as any can remember, apprenticeship has 
+been the normal way to learn a craft. The skills of an 
+apprentice are very helpful to a master, and therefore this 
+Occupation is in high demand. 
+The pay is not always great, but the perks are useful. 
+Relationships formed as an apprentice can last the rest of 
+your life. In some cases, it might be worth offering your 
+services for free until a wealthier patron comes along to 
+employ you. 
+
+Bard/Minstrel/Thespian 
+
+Bardic Voice 4, Entertainer, News & Rumors 
+
+Jugglers, dancers, minstrels, thespians, even puppeteers, 
+these are the superstars of the Known world. Their 
+performances are often the high points of folk’s 
+existence, especially in times of trouble. 
+
+Beggar 
+
+Agility, Begging, Livery (rags and patches), Scavenging 
+and one of Information Gathering or Weapon Use (Staff) 
+
+War, famine, plague, and a host of other ills best Europa, 
+and many who lose their homes and livelihoods become 
+beggars, forced to seek bread and coin from generous 
+folk. Such downtrodden often find themselves in rural 
+villages, searching for new lives. Of course, some beggars 
+are false- little better than brigand- and so beggars often 
+have bad reputations. 
+
+Dancer/Juggler/Acrobat 
+
+Agility, Entertainer, Livery (performance costume), News & 
+Rumors, Weapon Specialization (Thrown Weapon) 
+
+Often dressed in colorful and unique attire, dancers, 
+jugglers, and acrobats are popular among commoners. 
+They perform a service desired by all- quality 
+entertainment. They are often agile, and at times their 
+performance skills will benefit them in a fight. 
+
+Guttersnipe 
+
+Agility, Duty 1 (assist master), Evade Trap, Production (1 
+Death), Scavenging 
+
+There are many people whose jobs are somewhat less 
+than pleasant. Gravediggers, Ragpickers, Ratcatchers and 
+more take apprentices just as any others do, but what is 
+expected of them is entirely different. 
+
+Initiate 
+
+Divine Lore, Livery (robes or other religious symbols), Quick 
+Learner, Serene Contemplation 
+
+Those who join the church as youths, intending to 
+become monks or priests, begin as initiates. Many are 
+orphans, or the younger children of peasants who may 
+not be able to afford to educate or even feed these 
+additional mouths. 
+
+Lackey 
+
+Buy/Sell 10, Commerce, Livery (your master's colors), Quick 
+Learner, News & Rumors 
+and one of Serene Contemplation or Unarmed Combat 
+
+A lackey is a servant, indispensable when skilled and 
+knowledgeable, bumbling and in the way when not. 
+Many lackeys eventually become sergeants-at-arms, 
+stewards, or valets for their superiors. 
+
+Page 
+
+Agility, Income 5, Livery (your patron’s colors), Quick 
+Learner, Wear Armor 2 
+
+Amongst gentlefolk and the children of knights, youths 
+are often sent to learn the arts of war. foster with other 
+families. Often these pages, as they are called, are training 
+to one day become squires. 
+
+Student 
+
+Copyist, Production (1 Parchment), Quick Learner, Serene 
+Contemplation 
+
+Many young people seek an education from the learned 
+people of Europa, and become “full time” students. Such 
+youths often become monks, litigants, scribes and 
+philosophers in later life. 
+
+Town Guard Recruit 
+
+Duty 1 (inspection by Corporal or Captain of the Guard), 
+Income 5, Livery (green and black Town Guard tabard), 
+Wear Armor 2 
+
+Most towns and villages boast a small contingent of paid 
+guards who patrol trails, guard gates, make sure that laws 
+are observed, and generally assist the local magistrate or 
+lord with ready weapons. In dangerous places, young 
+people are often recruited by the Guard, and nearly 
+brought up by them. 
+
+Ward 
+
+Bestow Favor, Income 10, Quick Learner, Scavenging 
+
+The children of knights, nobles, and priests are often 
+entrusted to others for protection, especially during times 
+of war when children might be exchanged as hostages. 
+Often these children come to respect their tutors and 
+guardians even more than their true parents after long 
+years away from home.

@@ -1,10 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Mongo2Go;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using Moq;
 using Mystwood.Landing.Data;
+using Mystwood.Landing.Data.Mock;
+using Mystwood.Landing.Data.Validators;
 using Xunit;
 
 namespace MystwoodDb.Tests
@@ -116,6 +119,40 @@ namespace MystwoodDb.Tests
             Assert.Null(await db.GetPlayerIdByEmail("bob.dylan@example.com", CancellationToken.None));
             Assert.Equal(playerId, await db.GetPlayerIdByEmail("BDYLAN@example.com", CancellationToken.None));
             Assert.Equal(playerId, await db.GetPlayerIdByEmail("bobd@example.com", CancellationToken.None));
+        }
+
+        [Fact]
+        public async Task Seeding_Works()
+        {
+            var seeder = new MystwoodDatabaseSeeder(db);
+            await seeder.SeedTraits();
+
+            Assert.Equal(11, await db.Traits.Find(c => c.Type == TraitType.Ability).CountDocumentsAsync());
+            Assert.Equal(32, await db.Traits.Find(c => c.Type == TraitType.Advantage).CountDocumentsAsync());
+            Assert.Equal(1, await db.Traits.Find(c => c.Type == TraitType.CraftSkill).CountDocumentsAsync());
+            Assert.Equal(33, await db.Traits.Find(c => c.Type == TraitType.Disadvantage).CountDocumentsAsync());
+            Assert.Equal(10, await db.Traits.Find(c => c.Type == TraitType.Gift).CountDocumentsAsync());
+            Assert.Equal(0, await db.Traits.Find(c => c.Type == TraitType.Homeland).CountDocumentsAsync());
+            Assert.Equal(104, await db.Traits.Find(c => c.Type == TraitType.Occupation).CountDocumentsAsync());
+            Assert.Equal(0, await db.Traits.Find(c => c.Type == TraitType.Religion).CountDocumentsAsync());
+            Assert.Equal(109, await db.Traits.Find(c => c.Type == TraitType.Skill).CountDocumentsAsync());
+            Assert.Equal(13, await db.Traits.Find(c => c.Type == TraitType.FlavorTrait).CountDocumentsAsync());
+        }
+
+        [Fact]
+        public async Task Validator_Works()
+        {
+            var seeder = new MystwoodDatabaseSeeder(db);
+            await seeder.SeedTraits();
+
+            await seeder.SeedTestPlayer();
+
+            var validator = new CharacterValidator(db, NullLoggerFactory.Instance.CreateLogger<CharacterValidator>());
+            var chacater = await db.Characters.Find(i => i.Name == "Will").FirstAsync();
+            Assert.NotNull(chacater);
+
+            var result = await validator.ValidateAsync(chacater);
+            Assert.True(result.IsSuccessful);
         }
     }
 }

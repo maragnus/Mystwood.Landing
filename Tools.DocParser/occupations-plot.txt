@@ -1,0 +1,214 @@
+﻿Cantor 
+
+Absolution, Bardic Voice 4, Divine Lore, Divine Spells, 
+Entertainer, Grant Karma, News & Rumors, Religious 
+Ceremony, Serene Contemplation 
+
+Requirements: Must have been a bard, friar, lay cleric, or 
+ordained priest in a previous Occupation. 
+
+In larger, better organized churches, there are often 
+songs and chants of prayer. The cantor is the priest who 
+leads such prayers. In times of battle, they double as 
+signallers and messengers. 
+
+Captain of the Guard 
+
+Duty 1 (reviewing the guard), Income 15, Improved 
+Leadership (Town Guard), Livery (based on local Chapter), 
+Patronage 1, Scribe 2, Warcaster, Weapon Specialization 
+(any one Weapon Type), Weapon Use (Large Shield), Wear 
+Armor 5 
+
+Requirements: Must be appointed to the post. 
+
+All guards, corporals, and gaolers in a town ultimately 
+report to a Captain, appointed by a magistrate, mayor, or 
+other worthy. The captain may be a guard himself, with 
+high morals and ability, or may equally likely be a political 
+appointee with little skill but the right connections. 
+
+Friar 
+
+Absolution, Divine Lore, Divine Spells, Grant Karma, News & 
+Rumors, Pathfinding, Religious Ceremony 
+
+Requirements: Must have been a Lay Cleric in a previous 
+Occupation. Must renounce wealth and live frugally. 
+
+A traveling, mendicant priest, often the only priest small 
+villages ever see, friars wander from place to place 
+ensuring that even the meanest serf sees a member of the 
+Church who can hear their sins and grant them Karma. 
+
+Inquisitor 
+
+Battlemage, Divine Lore, Divine Spells, Leadership (anyone 
+under your command in battle), Livery (icons of faith), Mage 
+Lore, Slayer (Undead), Wear Armor 3 
+and Information Gathering or Research 
+
+Requirements: Writ from the Church to practice this 
+Occupation, 300 crown of training and equipment. 
+
+The Church has different priorities than secular lords, 
+but still has need for warriors who are less rigid than 
+Paladins and more able to root out and eradicate the 
+devious foes of life and light who skulk among the 
+populace, hiding amongst the goodly people. 
+
+Knight Paladin 
+
+Absolution, Battlemage, Blessed, Divine Lore, Divine Spells, 
+Grant Karma, Income 10, Livery (your heraldry), Religious 
+Ceremony, Retainers 1, Wear Armor 10 
+
+Requirements: You must be a Knight Errant, Knight 
+Penitent, or Knight Templar, or have previously possessed 
+one of those Occupations. Further, you must have 
+completed a Paladin’s quest for each of the three gods or 
+be an Ordained Priest who is Knighted. 
+
+Long ago, Navarre, Burgundy, the League, and great 
+swathes of other lands were united in the throne of 
+Charles the Great, known also as Carolus Magnus or 
+Charlemagne. In Charlemagne's will, he left great chapter 
+houses, fortresses, rich mills and tracts of lands to the 
+stewardship of his favored knights. With this wealth 
+came the understanding that they would forever work to 
+bring humanity together. The Knights Paladin refused to 
+swear themselves to Charlemagne's heirs, instead 
+swearing themselves to the ideal of the Empire- that all 
+mankind might come together beneath the rule of Law 
+and Justice. The Knights Paladin protect those who sit 
+on the thrones of nations as closely as they protect those 
+who hold the holy offices of the Church. 
+The mystical training of the Knights Paladin, as proven 
+most clearly in their Quests of the Three Gods, gives 
+them the education and connection to the gods necessary 
+for absolution, and so the Church in most lands accounts 
+the Knights Paladin as priests, even if they do not serve 
+the Church officially. 
+
+Knight Penitent 
+
+Battlemage, Blessed, Divine Lore, Divine Spells, Income 10, 
+Livery (your heraldry), Retainers 1, Wear Armor 8 
+
+Requirements: You must be currently or formerly a Knight 
+Errant, who has been accepted into the service of one 
+branch of the Church, and renounced worldly things. 
+
+After several wars with the Tripartites, many knights 
+were disillusioned by waste and lack of honor. These 
+knights formed a new order, the Knights Penitent, giving 
+up the wealth and splendor associated with knighthood 
+in exchange for the nobility of sacrifice and toil. Such 
+knights often wander, some seeking heroic ends against 
+great odds, others simply seeking a place in the world. 
+
+Knight of the Realm 
+
+Armstraining 4, Income (50), Improved Leadership (anyone 
+wearing your colors), Livery (Your heraldry), Patronage 3, 
+Retainers 6, Wear Armor 8 
+
+Requirements: You must be invited to the Knights of the 
+Realm and be a Knight Errant, Knight Paladin, Knight 
+Penitent, or Knight Templar, or have previously possessed 
+one of those Occupations. Further, you must be granted a 
+fief of land by a noble or the Church. 
+
+Most of the nations of Europa have a strong body of 
+Knights of the Realm who hold the manors, organize 
+and lead the armies, dispense justice, and otherwise 
+comprise a lower nobility. The vast majority of the 
+Knights of the Realm come from the ranks of the 
+Knights Errant, having proved themselves twice- once as 
+prospective Knights, and once as Errants. 
+
+Knight Templar 
+
+Battlemage, Leadership (any non-Knight sworn to aid you), 
+Income 10, Livery (your heraldry), Mage Lore, Research, 
+Retainers 1, Scribe 4, Wear Armor 6 
+
+Requirements: You must be invited to the Knights Templar. 
+Further, you must spend 500 crown for training and 
+outfitting. 
+
+The secretive order of the Knights Templaer are 
+scholars, warriors, and magicians dedicated to fighting 
+the supernatural foes of civilization wherever they can be 
+found. Many of the Knights Templar come from 
+nontraditional sources- not all were famous warriors or 
+honorable squires before their knighting. 
+
+Magistrate 
+
+Bardic Voice 2, Commerce, Duty 1 (holding court), Income 
+20, News & Rumors, Research, Retainers 3, Scribe 4 
+
+Requirements: Must be appointed by a noble, or elected to 
+the post by the populace. 
+
+Most manors and villages rely on their local knight or 
+lord for justice. When a lord is distant, or too busy with 
+other matters, they may allow a village to elect a 
+magistrate from amongst themselves. Magistrates are 
+largely free to enact their own edicts and enforce law as 
+they see fit, subject to the Codes Civitas and Justinian. 
+Magistrates who abuse their power, though, seldom last 
+long. 
+
+Ordained Priest 
+
+Absolution, Battlemage, Divine Lore, Divine Spells, Grant 
+Karma, Income 10, Religious Ceremony, Serene 
+Contemplation, Weapon Specialization (your choice of One 
+Handed Blunt, One Handed Sword, Two Handed Blunt, or 
+Two Handed Sword) Wear Armor 4 
+
+Requirements: Must be ordained by the Church. 
+
+The churches, shrines, monasteries and other places of 
+holy sanctity in Europa are overseen by priests who have 
+been appointed to them by the Church. Often former lay 
+clerics who have found a true calling, such priests swear 
+to uphold the tenets of the faith and serve the followers 
+of their god. 
+
+Tavern Master 
+
+Buy/Sell 20, Cooking 2, Drinks on the House, Duty 2 
+(minding the tavern), Income 10, News & Rumors, 
+Patronage, Retainers 1, Sell Drinks, Tavern Share 
+
+Requirements: You must possess the Deed to a building 
+suitable for the housing of a Tavern. In addition, you must 
+have kept a tavern as the Tavern Keeper profession for at 
+least 1 year,and possess a Writ of Hospitality. 
+
+A few lucky few tavern keepers find themselves 
+successful enough, and thereby wealthy enough, to 
+purchase their establishment from the former landlord. 
+Such tavern masters are often among the most wealthy 
+members of society, and are incredibly well connected to 
+the comings and goings of their town. 
+
+Witch Hunter 
+
+Armstraining 2, Battlemage, Leadership (anyone under your 
+command in battle), Mage Lore, Occupational Spells (page 
+126), Set Trap, Slayer (Daemons), Wear Armor 4 
+and Information Gathering or Research 
+
+Requirements: Writ from a Lord to practice this occupation, 
+300 crown of training and equipment. 
+
+In a land of sorcerers, necromancers and vampires, 
+Witch Hunters are well respected individuals indeed, and 
+greatly sought after. A Witch Hunter’s writ is their only 
+shield- the more powerful the lord (or Baron or Duke, 
+etc.) who issued it, the more valuable it is, and of course 
+the wording of the writ itself is important.

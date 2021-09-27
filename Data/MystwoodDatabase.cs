@@ -27,6 +27,7 @@ namespace Mystwood.Landing.Data
     {
         private readonly ILogger<MystwoodDatabase> _logger;
         private readonly MystwoodDatabaseOptions _options;
+        private Dictionary<TraitType, object> _traitCaches = new(12);
 
         public MongoClient Connection { get; }
 
@@ -74,6 +75,34 @@ namespace Mystwood.Landing.Data
 
             IMongoCollection<TEntity> Collection<TEntity>() => Database.GetCollection<TEntity>(typeof(TEntity).Name);
         }
+
+        public async ValueTask<IReadOnlyDictionary<string, TraitSummary>> CacheTraits()
+        {
+            if (!_traitCaches.TryGetValue(TraitType.Unspecified, out var traitCache))
+            {
+                var traits = (await Traits.Find(_ => true).As<TraitSummary>().ToListAsync())
+                    .ToDictionary(i => i.TraitId!);
+                _traitCaches[TraitType.Unspecified] = traits;
+                return traits;
+            }
+            return (IReadOnlyDictionary<string, TraitSummary>)traitCache;
+        }
+
+        public async ValueTask<IReadOnlyDictionary<string, T>> CacheTraits<T>() where T : Trait, new()
+        {
+            var traitType = new T().Type; // Is this bad?
+            if (!_traitCaches.TryGetValue(traitType, out var traitCache))
+            {
+                var traits = (await Traits.Find(i => i.Type == traitType).As<T>().ToListAsync())
+                    .ToDictionary(i => i.TraitId!);
+                _traitCaches[traitType] = traits;
+                return traits;
+            }
+            return (IReadOnlyDictionary<string, T>)traitCache;
+        }
+
+        public async ValueTask<T[]> CacheTraits<T>(IReadOnlySet<string> traitIds) where T : Trait, new() =>
+            (await CacheTraits<T>()).Values.Where(i => traitIds.Contains(i.TraitId!)).ToArray();
 
         public void Dispose()
         {

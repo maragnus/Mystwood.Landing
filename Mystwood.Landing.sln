@@ -20,9 +20,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommonTests", "Tests\Common
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataTests", "Tests\DataTests\DataTests.csproj", "{14E957ED-82A3-49A5-B778-2A46A2729CB6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WorkflowTests", "WorkflowTests\WorkflowTests.csproj", "{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowTests", "WorkflowTests\WorkflowTests.csproj", "{F9C64D4F-BA51-4CAF-B2A1-81A85E4C8152}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tests.Common", "Tests\Common\Tests.Common.csproj", "{4A72D620-D693-4675-A2B8-B595F14EFB80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Common", "Tests\Common\Tests.Common.csproj", "{4A72D620-D693-4675-A2B8-B595F14EFB80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Mock", "Data.Mock\Data.Mock.csproj", "{3F0B24F2-C1F9-4EA8-BD35-D876DFFF97B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.DocParser", "Tools.DocParser\Tools.DocParser.csproj", "{725EF19B-D130-4E3F-BA42-A9EE0F1ECB81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +62,14 @@ Global
 		{4A72D620-D693-4675-A2B8-B595F14EFB80}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A72D620-D693-4675-A2B8-B595F14EFB80}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A72D620-D693-4675-A2B8-B595F14EFB80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F0B24F2-C1F9-4EA8-BD35-D876DFFF97B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F0B24F2-C1F9-4EA8-BD35-D876DFFF97B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F0B24F2-C1F9-4EA8-BD35-D876DFFF97B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F0B24F2-C1F9-4EA8-BD35-D876DFFF97B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{725EF19B-D130-4E3F-BA42-A9EE0F1ECB81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{725EF19B-D130-4E3F-BA42-A9EE0F1ECB81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{725EF19B-D130-4E3F-BA42-A9EE0F1ECB81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{725EF19B-D130-4E3F-BA42-A9EE0F1ECB81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -16,6 +16,8 @@ namespace Mystwood.Landing.Data
         // Contains PrimaryEmail and Emails[*] as uppercase
         public string[] NormalizedEmails = Array.Empty<string>();
 
+        public int Moonstone;
+
         public EventParticipation[] Events = Array.Empty<EventParticipation>();
     }
 

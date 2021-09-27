@@ -1,0 +1,616 @@
+﻿Absolver/Flagellant 
+
+Absolution, Battle Rage, Blessed, Divine Lore, Improved 
+Battle Rage, Iron Will, Livery (icons of faith), Toughness, 
+Weapon Specialization (Flail), Weapon Use (Flail) 
+
+Requirements: Must have previously been a Friar, Knight 
+Penitent, Lay Cleric, or Penitent for at least a year, and be 
+accepted to a cult of flagellants. Must renounce all worldly 
+possessions, save for clothing and a hand weapon. 
+
+The sins of the world are immense. Amongst the 
+penitent, there are a few who seek to atone for all of 
+humanity through their extreme devotion. These folk are 
+the Absolvers. Often, priests and other holy folk come to 
+them for advice on proper penance- though absolvers 
+tend to err on the side of harsh stringency. 
+
+Almoner 
+
+Begging, Blessed, Buy/Sell 20, Cooking 2, Divine Lore, Duty 1 
+(distribute money to the needy), Income 10 
+
+Requirements: Must be either a Beggar or Lay Cleric for one 
+year and accepted into the household/church of an 
+Ordained Priest. 
+
+It is true that many in Europa do not have the means to 
+support themselves. In larger towns and cities, begging is 
+rampant, and the downtrodden poor go hungry and 
+unclothed. The Church, taking pity on these poor souls, 
+hires almoners to both collect and distribute funds, food, 
+and materials to the less fortunate. Often former beggars 
+themselves, almoners take their role very seriously. 
+
+Artist (Author/Gilder/Painter/Sculptor) 
+
+Artistry, Income 10, Serene Contemplation 
+one of Metalworking 4, Scribe 4, Sewing 4 or 
+Woodworking 4 
+and one of Commerce, Divine Lore, Engineering, Mage Lore, 
+or Woodwise 
+
+Requirements: Patronage. Must be approved by the Staff, 
+based on art created in game prior to taking the Artist 
+occupation. 
+
+Artists- true artists- are able to move people to emotions 
+with merely a brush stroke, carved line, or well-placed 
+word. The artists of Mystwood create jewelry, tapestries, 
+paintings, fine carvings, engravings, songs, books and the 
+like in order to enrich the lives and coffers of the folk 
+around them. Where guild crafters and master thespians 
+do these things for their living, and to make a wage, 
+Artists do things for the sheer joy of creation, to bring 
+praise to the gods, or to celebrate the world. 
+
+Astrologer 
+
+Fortune Telling, Divine Lore, Information Gathering, Mage 
+Lore, Production (1 Time), Research, Scribe 2, Serene 
+Contemplation 
+
+Requirements: You must possess Fortune Telling, either 
+purchased or from an Occupation. Further, you must spend 
+200 crown for suitable books and strange tools. 
+
+The practice of stargazing for purposes of fortune telling 
+is ancient, said to have passed to man from drowned 
+Atlantis. While more humble means of fortune tellingcards, runes, and the like- rule divinatory tradition, there 
+are still soothsayers who gaze upon the constellations to 
+seek meaning. 
+
+Beekeeper 
+
+Apothecary 2, Income 10, Livery (beekeeping garb with 
+mask), Occupational Spells (page 125), Production (4 Food, 
+4 Life), Serene Contemplation, Swarm Magic, Wear Armor 1, 
+Woodwise 
+
+Requirements: 200 Crown, or 150 crown and possession of 
+a Queen Bee. 
+
+Honey, wax, comb, and even bee poison all have their 
+uses, and so the occupation of Beekeeper is not an 
+uncommon one where climate allows. Often, beekeepers 
+are monks, whose dwelling cells are a mirror of the hives 
+themselves. Others are hermits, content to dwell in the 
+wilds quietly with their hives, protected from harm by 
+the stinging swarms who are their neighbors and 
+children. 
+
+Corporal of the Guard 
+
+Armstraining 2, Duty 2 (inspecting the Guard), Income 10, 
+Leadership (Town Guard), Livery (based on local Chapter), 
+Warcaster, Weapon Specialization (any one Weapon Type), 
+Weapon Use (Large Shield), Wear Armor 4 
+
+Requirements: Must be appointed to the post by the 
+Captain of the Guard or a similar person after one year or 
+more of service to the Guard as a Town Guard, Town Guard 
+Recruit, or Gaoler. 
+
+Any village of size requires hierarchy in their guardsmen, 
+as a Captain of the Guard can’t be everywhere. Corporals 
+lead groups of the regular guard, instruct recruits, make 
+decisions based on questions of the Code Civitas, and 
+otherwise ensure that the work of the Guard continues 
+smoothly. 
+
+Crofter 
+
+News & Rumors, Production (2 Cloth, 4 Food, 4 Wood), 
+Weapon Specialization (Tool), Work Rhythm, Woodworking 
+2 
+
+Requirements: You must obtain a grant of a forested tract, 
+either by purchase, rent, or reward for deeds, and clear a 
+portion. Alternately, you may be a Laborer and spend 100 
+crown to build a small cottage and clear fields. 
+
+As the borders of the Mystwood become settled, and 
+small villages spring up between the trees, the crofters 
+lead the settling effort. It is hard and unpleasant work, 
+with little reward- cutting tracks, building mean houses, 
+and eking food and profit from the forest soil. 
+Nevertheless, folk do it, and it is far cheaper than 
+establishing a true freehold. 
+
+Demagogue 
+
+Armstraining 4, Bardic Voice 4, Income 10, Information 
+Gathering, Leadership (those who have joined your cause), 
+News & Rumors, Unarmed Combat 
+
+Requirements: Have a cause approved by the Game 
+Masters and gain at least six followers who have sworn 
+themselves to this cause. 
+
+Not all nobles are worthy of the service of commoners. 
+Not all Knights are chivalrous, all churchmen holy, all 
+magistrates fair. Against these rise the demagogues, 
+charismatic folk heroes whose goal is to oppose 
+authority. Usually this is the selfsame corrupt authorities, 
+but not always- many demagogues have opposed 
+legitimate rule, with usually bloody outcomes. 
+
+Dragon Slayer 
+
+Battle Rage, Livery (Fantastical costume, hair and tattoos), 
+Scavenging, Slayer (Beastman, Draconian, Goblin, Minotaur, 
+and Troll), Wear Armor 3 
+
+Requirements: Must slay at least 3 Draconians, Minotaurs, 
+or Trolls. 
+
+While there is but one Dragon, there are countless 
+monsters who run rampant throughout Europa. Those 
+who have made a habit of slaying the most powerful of 
+these beings become Dragon Slayers, and find 
+themselves in high demand by small villages and those 
+who want exotic bodyguards. Market yourself well and 
+you should be able to find employment with wealthier 
+members of society. You may also be well suited for high 
+paying pit fights or dangerous quests. 
+
+Executioner 
+
+Entertainer, Execution, Income 10, Livery (black hood), 
+Occupational Spells (page 125), Poisoner 4, Weapon 
+Specialization (One Handed Axe, One Handed Sword, Two 
+Handed Axe, Two Handed Sword) 
+
+Requirements: Training (100 crown) A writ of appointment 
+from a landed noble. 
+
+The majority of high crimes in Europa end in death- it is 
+costly to house a criminal in a prison for too long, and 
+the spectacle of a public execution is both entertainment 
+and object lesson for the unwashed masses. An 
+executioner, then, is as much a public servant as an 
+entertainer. 
+
+Famulus 
+
+Armstraining 2, Iron Will, Livery (your master's symbol), 
+Mage Lore, Slayer (Daemons), Weapon Specialization (any 
+one Weapon Type), Warcaster 
+
+Requirements: Must be linked in a protracted ceremony to 
+a character of great magical power, such as a character with 
+Passion 7+, Wisdom 7+, or as approved by the Staff. 
+
+In Roman times, every sorcerer or summoner of repute 
+had a famulus, a person bound to them as bodyguard 
+and servant. As time passed, the role of the famulus has 
+progressed, and now they are expected both to protect 
+their magus, and correct their magical mistakes, if need 
+be. 
+
+Fence/Pawnbroker 
+
+Buy/Sell (50), Commerce, Fence, Income 10, News & 
+Rumors, Retainers 1 
+and one of Information Gathering or Research 
+
+Requirements: Must be active in the Shadow Guild for at 
+least a year, and spend 100 crown establishing a network of 
+contacts and traders. 
+
+The tradition of the pawnbroker is alive and well, 
+especially in the larger cities. Many people, though, find 
+that sometimes there is a need for goods to quietly 
+disappear. The fence also discretely finds information for 
+their patrons- the right rumor can make a fence's career 
+very lucrative- or end it abruptly. 
+
+Forester/Ranger/Gamekeeper 
+
+Pathfinding, Production (8 Wood), Weapon Specialization 
+(One Handed Axe, Two Handed Axe), Wear Armor 2, 
+Woodwise, Woodworking 4 
+
+Requirements: Must be given a writ by a noble to protect 
+an area of a forest and oversee tree felling. 
+
+The Forests of Europa are lucrative resources, most 
+owned by nobles for their pleasure. The beasts of the 
+wood, the trees, the water, and the minerals are all owned 
+by the nobility, who are often far away and unable or 
+unwilling to defend their rights. Thus, most localities 
+have a forester, someone who patrols the wood and 
+ensures that the trees and game are free from poaching 
+and theft. 
+
+Freeholder 
+
+Butcher, Patronage 1, Production (4 Cloth, 12 Food, 2 
+Wood), Weapon Use (Flail), Woodwise, Woodworking 2 
+
+Requirements: You must obtain a grant of land either by 
+purchase, rent, or reward for deeds. Alternately, you may 
+be a Herder and spend 200 crown to expand your herd. 
+
+The wealthiest and most successful farmers and 
+herdsfolk are able to set up their own freehold, an 
+independent farm in the form of the latifundia of long 
+ago. Such freeholders have great political power, as they 
+are a major source of food and job opportunities for 
+their friends and neighbors. 
+
+Gaoler 
+
+Duty 1 (inspecting prisoners and upkeeping cells), Income 
+10, Livery (Town Guard), Occupational Spells (page 125), Set 
+Trap, Weapon Specialization (One Handed Blunt, Two 
+Handed Blunt), Warcaster, Wear Armor 3 
+
+Requirements: Must be appointed to the post by Captain of 
+the Guard. 
+
+The jail keeper is not the most respected member of the 
+Town Guard, but their role can be critical. Most crimes 
+do not require extensive jail time, so the gaoler might be 
+called on to administer certain other punishments. 
+
+Herald 
+
+Armstraining 2, Bardic Voice 4, Income 10, Information 
+Gathering, Livery (Herald’s garb), Occupational Spells (page 
+126), Scribe 2 
+
+Requirements: Training (100 crown) and you must pass the 
+examination of the College of Heralds. 
+
+It is the College of Heralds that ratifies all new knights, 
+and helps them work out a unique heraldic device- the 
+symbolic colors and imagery which show all the world 
+the Knight’s honor and virtue. The College of Heralds is 
+also often called upon to mediate disputes between 
+knights and lords, or to advise the gentry and nobility in 
+matters of etiquette and protocol. 
+
+Juror 
+
+Bardic Voice 2, Research, Scribe 2, Serene Contemplation 
+and any two of Commerce, Detect Health, Divine Lore, 
+Engineering, Iron Will, Mage Lore, News & Rumors, or 
+Woodwise 
+
+Requirements: Must have been selected as a juror in a trial, 
+successfully spoken on behalf of the accused and written a 
+treatise on local law, or Patronage. 
+
+Magistrates and nobles are often busy people. In many 
+major cities, the selection of jurors has devolved to an 
+educated elite of folk, somewhat knowledgeable in the 
+laws, or at least valued for their wisdom. These semiprofessional Jurors combine legal experience with 
+detective work, sticking their noses in where they are not 
+always wanted. 
+
+Knight Errant 
+
+Armstraining 4, Income 10, Leadership (any non-Knight 
+sworn to aid you), Livery (Your heraldry), Retainers 1, Wear 
+Armor 6 
+
+Requirement: You must be Knighted. 
+
+Those who have comported themselves with honor and 
+impressed the right people are knighted by an existing 
+knight or a noble. Landless wanderers, knights errant 
+may carry their own heraldry, create their own retinues, 
+and work toward further impressing the right people and 
+being granted a manor or joining an order of 
+knighthood. 
+
+Librarian 
+
+Copyist, Research x2, Scribe 4, Serene Contemplation 
+
+Requirements: Patronage, must be appointed to be 
+caretaker of a collection of at least ten books and/or scrolls. 
+
+Books are rare and valuable, and wherever there is a 
+collection of them, there should be a librarian to protect, 
+repair, and make copies of them. Some libraries are 
+associated with the Church, while others are the private 
+property of the wealthy. 
+
+Litigant 
+
+Bardic Voice 2, Battle Rage, Duelist, Livery (red surcoat) 
+Toughness, Unarmed Combat 
+
+Requirements: You must accuse a person of a crime on 
+behalf of another, and then win an ensuing Judicial Combat. 
+
+Once this has occurred three times, you may invest 50 
+crown on training and equipment and take this profession. 
+There are many occasions where a person has been 
+wronged, but due to fear, inability to fight, or social 
+standing, they are unable to make an accusation on their 
+own. In some nations (notably, Navarre) there exists a 
+profession of litigants, who, for pay, take up the role of 
+accuser. Traditionally, litigants wear a red surcoat called 
+the sendal, and are famed for being rough characters, 
+their accusations and arguments more loud than learned. 
+
+Master Thespian 
+
+Bardic Voice 6, Master Entertainer, Income 10, News & 
+Rumors, Scribe 2 
+and Information Gathering or Research 
+
+Requirements: Patronage, must have had the Entertainer 
+skill in previous Occupation. 
+
+Successful bards, minsters, dancers and other 
+entertainers seek out a patron, a noble or other wealthy 
+or connected individual who can finance their careers 
+and help them find venues for their trade. Such master 
+thespians are welcome guests in any noble retinue or 
+village celebration. 
+
+Merchant 
+
+Buy/Sell (100), Commerce, Income 20, News & Rumors, 
+Patronage 1, Retainers 2 
+and choice of any one Craft 2 skill 
+
+Requirements: You must spend 300 crown to set yourself 
+up in business. If you maintain an in game “shop” or stall 
+this is reduced by 50 crown, and if you are member of the 
+Shadow Guild by another 50 crown. 
+
+Nowhere in Europa is truly self-sufficient. Crafters must 
+obtain raw materials and then sell their completed wares 
+elsewhere. Where materials are commonplace, the market 
+sells, and where they are scarce, the market buys. The 
+merchant is the blood of this system, buying and selling 
+goods with a shrewd eye, while making themselves 
+wealthy and expanding their households. 
+
+Miller 
+
+Income 20, News & Rumors, Production (8 Food), Production 
+(Choose one: 4 Air, 4 Water, or 3 Life), Woodworking 4 
+
+Requirements: A grant of land and the necessary supplies 
+to build a mill, or 300 crown to purchase land on which to 
+build a mill. 
+
+In nearly every village, there is a mill, whether it be a 
+windmill, watermill, or turned by animals. Within this 
+mill is the millstone. This nearly-magical device grinds 
+the grain that makes the bread that feeds lord and 
+peasant alike. The miller gets a share of this grain, which 
+often suffices to keep their lives comfortable, and 
+magical power, from the ever-turning ritual of the 
+grinding gears. 
+
+Miner 
+
+Commerce, Engineering, Metalworking 2, Patronage 1, 
+Production (8 Metal), Weapon Specialization (Tool), Wear 
+Armor 3, Woodworking 2 
+
+Requirements: You must find a mine and spend 100 crown 
+to develop it and obtain writs. 
+
+Most mines in Europa are ancient works, pulling copper, 
+gold, salt and many other materials from the earth. It is a 
+dangerous trade, though lucrative. 
+
+Philosopher 
+
+Loremaster, Production (2 Parchment), Research x2, Scribe 
+6, Serene Contemplation 
+
+Requirements: Patronage and 100 crown for books and 
+education. 
+
+The richest and most successful households are able to 
+sponsor a philosopher, able to read and research the 
+ancient texts and make new, educative observations of 
+the natural world. Many philosophers have attended one 
+of the great universities of Europa, such as Hectoria or 
+Milan, and bring new ideas to their homelands upon their 
+return. 
+
+Physician 
+
+Apothecary 6, Cure Affliction, Livery (doctor’s robes), 
+Medicine, Occupational Spells (page 126), Research, Serene 
+Contemplation 
+
+Requirements: Patronage and 500 crown in training. 
+
+The great universities of Europa have learned much of 
+anatomy and physiology from the ancients, from 
+experiment, and from necessity. At these vaunted houses 
+of learning, the gentlefolk, herbalist, and barber surgeon 
+are elevated to true masters of the craft of healing, 
+capable of great feats of surgery and of furthering the 
+understanding of the humors. 
+
+Pit Fighter/Judicial Champion 
+
+Armstraining 4, Battle Rage, Duelist, Entertainer, Unarmed 
+Combat, Wear Armor 3 
+
+Requirements: You must win at least 5 pit-fights (which are 
+illegal) or 3 Judicial Combats and invest 50 crown in training 
+and equipment. 
+
+Pit fighting is illegal in many lands, but nevertheless it is a 
+popular entertainment. On the flip side, trial by combat 
+is common, but many people cannot fight to literally save 
+their lives. Enter the pit fighter, or judicial champion, 
+two sides of the sport-fighting coin. 
+Market yourself well, and you should be able to earn a 
+decent bit of coin through your duels and pit-fights. 
+
+Poacher 
+
+Butcher, Pathfinding, Production (3 Cloth, 6 Food), Weapon 
+Specialization (Bow, Normal Crossbow), Wear Armor 2, 
+Woodwise 
+
+Requirements: You must be accepted into the Shadow 
+Guild. 
+
+Meat is an important source of food in often hungry 
+Europa. However, the nobility own all the deer, all the 
+bear, all the boar- the best meat. Regardless, there is a 
+lucrative trade in less than legally acquired meat. This is 
+where the poacher comes in. Quietly, they stalk illegal or 
+merely dangerous prey to share with her fellows- or to 
+make a profit. 
+
+Quarrier 
+
+Duty 1 (Manual Labor), Engineering, Production (4 Earth), 
+Toughness, Weapon Use (Two Handed Blunt), Wear Armor 
+1, Work Rhythm 
+
+Requirements: You must find a quarry and spend 100 
+crown to develop it and obtain writs. 
+
+Mines produce the metal so critical to weapons and 
+armor. The humble quarry, on the other hand, produces 
+the stone which paves roads, builds houses, and fortifies 
+castles. Productive quarry sites are rare, so what stone 
+can be found is highly prized. Along the way, they often 
+find magical components which can easily be traded for a 
+fine income. 
+
+Ruffian 
+
+Brawler, Scavenging, Toughness, Unarmed Combat, 
+Weapon Specialization (One Handed Blunt), Wear Armor 2 
+
+Requirements: You must possess a Branding, and be a 
+member of the Shadow Guild. 
+
+Thugs, toughs, bravos, and brigands, ruffians are the 
+strong spine of organized crime. Obviously intimidating 
+and ready to fight at a moment’s notice, ruffians often 
+have little of true value to offer society other than their 
+fists and cudgels. 
+
+Sacristan 
+
+Blessed, Divine Lore, Research, Scribe 2, Set Trap, Weapon 
+Specialization (any one), Wear Armor 2, Woodworking 2 
+
+Requirements: Village must possess at least 5 relics, which 
+are keep within a single area or safe container, and the 
+sacristan must be elected or appointed to protect them. 
+
+Villages that hold many holy relics may find that they 
+require a dedicated guardian and researcher of those 
+items. A sacristan also knows how to protect their 
+charges. 
+
+Sawbones 
+
+Apothecary 4, Cure Affliction, Livery (Apron and gloves), 
+Medicine, Sewing 2, Weapon Specialization (Dagger) 
+
+Requirements: You must be a member of the Shadow Guild 
+and provide 200 crown for training. If you are branded, this 
+is reduced to 100 crown. If you previously possessed the 
+Physician Occupation, you may waive the crown fee 
+entirely. 
+
+There are many professional barbers and doctors in the 
+cities and towns of Europa, who heal and perform 
+surgery on the honest population. Criminals, however, 
+need to be fixed up quietly with few questions asked. 
+Sawbones perform this service, and know bits of 
+knifework that are, strictly speaking, not medicinal. 
+
+Sergeant at Arms/Bodyguard 
+
+Armstraining 6, Income 10, Leadership (retainers and 
+followers of your patron), Livery (patron’s colors), Wear 
+Armor 4 
+
+Requirements: Patronage 
+
+Nobles, magistrates, merchants, and the wealthy often 
+find themselves the targets of violence. These folk must 
+hire themselves guards, who can protect them when 
+danger abounds. Whether such a person is called a 
+bodyguard or a sergeant really depends on the style of 
+the person being protected. 
+
+Sharp 
+
+Bardic Voice 2, Commerce, Cosmopolitan Connections, 
+Fortune Telling, Information Gathering, Iron Will, News & 
+Rumors, Room for More, Unarmed Combat. 
+
+Requirements: Must win 100 crown in a single game of 
+gambling, or 500 over a career. Subtract 100 from career 
+winnings if a member of the Shadow Guild. 
+
+Professional gamblers are a scourge in the major cities. 
+While most gamble for entertainment, or small coin, in 
+the higher social circles magic items, writs, and even 
+landhold can be in the ante. 
+
+Steward 
+
+Buy/Sell (50), Cooking 6, Commerce, Leadership (retainers 
+and followers of your patron), Scribe 2 
+
+Requirements: Patronage 
+
+A household is only as good as it’s steward- part cook, 
+part secretary, the steward manages the household and 
+purchases for their noble and the retinue. 
+
+Theologian 
+
+Bardic Voice 2, Divine Lore, Divine Spells, Research x2, Scribe 
+4, Serene Contemplation 
+
+Requirements: Must be ordained by the Church, and create 
+a scholarly or philosophical tract on the nature of each of 
+the three gods. 
+
+Theologians are those members of the Church who 
+study the lives of the Saints and the natural world in 
+order to find answers regarding the plans of the gods. 
+
+Varlet 
+
+Duty 2 (fulfilling the requests of your master), Income 5, 
+Information Gathering, Leadership (your master), Unarmed 
+Combat 
+and any one Craft skill 2 
+
+Requirements: 50 crown for the purchases of necessary 
+uniform and training. Must be actively employed by 
+another character, PC or NPC, and willing to serve them in 
+various in-game tasks. 
+
+A varlet is a type of manservant whose primary task is to 
+attend to their master's every whim, however foolish. Of 
+course, varlet has come to be slang for a dishonest man, 
+and many varlets have found their master's tongue 
+getting them into the fistfights they are famous for. 

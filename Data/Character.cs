@@ -37,6 +37,10 @@ namespace Mystwood.Landing.Data
         public string? PublicHistory;
 
         public string? PrivateHistory;
+
+        public int MoonstoneSpent;
+
+        public int SkillTokens;
     }
 
     /// <summary>
