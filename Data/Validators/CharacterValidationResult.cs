@@ -1,10 +1,12 @@
-﻿namespace Mystwood.Landing.Data.Validators
+﻿using System.Text;
+
+namespace Mystwood.Landing.Data.Validators
 {
     public class CharacterValidationResult
     {
         private List<string> _messages = new();
 
-        public override string ToString() => _messages.ToString()!;
+        public override string ToString() => new StringBuilder().AppendJoin("\r\n", _messages).ToString();
 
         public bool IsSuccessful { get; private set; } = true;
 

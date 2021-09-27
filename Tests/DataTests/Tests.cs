@@ -9,12 +9,21 @@ using Mystwood.Landing.Data;
 using Mystwood.Landing.Data.Mock;
 using Mystwood.Landing.Data.Validators;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace MystwoodDb.Tests
 {
     public class Tests : IAsyncLifetime
     {
         private MystwoodDatabase db = null!;
+        private readonly ITestOutputHelper output;
+
+        public string ConnectionString { get; private set; }
+
+        public Tests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
 
         public async Task DisposeAsync()
         {
@@ -24,6 +33,7 @@ namespace MystwoodDb.Tests
         public Task InitializeAsync()
         {
             var mongo = MongoDbRunner.Start();
+            this.ConnectionString = mongo.ConnectionString;
             var options = new OptionsWrapper<MystwoodDatabaseOptions>(new MystwoodDatabaseOptions()
             {
                 ApplicationName = "MystwoodLanding.xunit",
@@ -125,7 +135,7 @@ namespace MystwoodDb.Tests
         public async Task Seeding_Works()
         {
             var seeder = new MystwoodDatabaseSeeder(db);
-            await seeder.SeedTraits();
+            await seeder.SeedReferenceData();
 
             Assert.Equal(11, await db.Traits.Find(c => c.Type == TraitType.Ability).CountDocumentsAsync());
             Assert.Equal(32, await db.Traits.Find(c => c.Type == TraitType.Advantage).CountDocumentsAsync());
@@ -143,15 +153,17 @@ namespace MystwoodDb.Tests
         public async Task Validator_Works()
         {
             var seeder = new MystwoodDatabaseSeeder(db);
-            await seeder.SeedTraits();
+            await seeder.SeedReferenceData();
 
-            await seeder.SeedTestPlayer();
+            await seeder.SeedTestData();
 
             var validator = new CharacterValidator(db, NullLoggerFactory.Instance.CreateLogger<CharacterValidator>());
-            var chacater = await db.Characters.Find(i => i.Name == "Will").FirstAsync();
-            Assert.NotNull(chacater);
+            var character = await db.Characters.Find(i => i.Name == "Biff").FirstAsync();
+            Assert.NotNull(character);
 
-            var result = await validator.ValidateAsync(chacater);
+            var result = await validator.ValidateAsync(character);
+            output.WriteLine(result.ToString());
+
             Assert.True(result.IsSuccessful);
         }
     }

@@ -90,7 +90,7 @@ namespace Mystwood.Landing.Data.Validators
             // Gifts cost the character's level, the first 5 or 6 levels are free
             var startingLevel = string.IsNullOrWhiteSpace(_character.PublicHistory) ? 5 : 6;
             var currentLevel = _traitLookup[TraitType.Gift].Count();
-            var giftCost = triangle(currentLevel) - triangle(startingLevel);
+            var giftCost = Math.Max(0, triangle(currentLevel) - triangle(startingLevel));
 
             // Skills cost their Cost, +1 for each purchased skill after the first
             var skills =

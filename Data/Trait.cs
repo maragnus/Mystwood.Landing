@@ -17,6 +17,7 @@ namespace Mystwood.Landing.Data
         [BsonRepresentation(BsonType.ObjectId)]
         public string? TraitId;
 
+        [BsonRepresentation(BsonType.String)]
         public TraitAssociationType Type;
 
         [BsonIgnoreIfNull]
@@ -38,6 +39,7 @@ namespace Mystwood.Landing.Data
         [BsonId, BsonIgnoreIfDefault]
         public string? TraitId;
 
+        [BsonRepresentation(BsonType.String)]
         public TraitType Type;
 
         public string? Name;
@@ -49,6 +51,7 @@ namespace Mystwood.Landing.Data
 
     public record Trait : TraitSummary
     {
+        [BsonIgnoreIfNull]
         public string? Description;
     }
 
@@ -60,6 +63,8 @@ namespace Mystwood.Landing.Data
     public record AdvantageTrait : Trait
     {
         public AdvantageTrait() { Type = TraitType.Advantage; }
+
+        [BsonIgnoreIfDefault]
         public bool IsPhysical = false;
 
     }
@@ -67,6 +72,8 @@ namespace Mystwood.Landing.Data
     public record DisadvantageTrait : Trait
     {
         public DisadvantageTrait() { Type = TraitType.Disadvantage; }
+
+        [BsonIgnoreIfDefault]
         public bool IsPhysical = false;
     }
 
@@ -74,6 +81,7 @@ namespace Mystwood.Landing.Data
     {
         public OccupationTrait() { Type = TraitType.Occupation; }
 
+        [BsonRepresentation(BsonType.String)]
         public OccupationType OccupationType;
 
         public string[] Skills = Array.Empty<string>();
@@ -85,8 +93,13 @@ namespace Mystwood.Landing.Data
     {
         public SkillTrait() { Type = TraitType.Skill; }
 
+        [BsonIgnoreIfNull]
         public int? Cost;
+
+        [BsonIgnoreIfNull, BsonRepresentation(BsonType.String)]
         public SkillRank? Rank;
+
+        [BsonRepresentation(BsonType.String)]
         public SkillClass SkillClass;
     }
 
@@ -94,10 +107,19 @@ namespace Mystwood.Landing.Data
     {
         public CraftSkillTrait() { Type = TraitType.CraftSkill; }
 
+        [BsonRepresentation(BsonType.String)]
         public CraftArea CraftArea;
+
+        [BsonIgnoreIfNull]
         public int? Cost;
+
+        [BsonIgnoreIfNull, BsonRepresentation(BsonType.String)]
         public SkillRank? Rank;
+
+        [BsonRepresentation(BsonType.String)]
         public CraftType CraftType;
+
+        [BsonIgnoreIfNull]
         public string? Components;
     }
 

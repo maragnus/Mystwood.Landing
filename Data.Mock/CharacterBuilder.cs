@@ -59,7 +59,7 @@ namespace Mystwood.Landing.Data.Mock
 
         public CharacterBuilder WithGift(string giftName, params TraitAssociationType[] ranks)
         {
-            _traits.AddRange(ranks.Select((a, index) => new CharacterTrait($"{giftName} {index}", TraitType.Gift, a)));
+            _traits.AddRange(ranks.Select((a, index) => new CharacterTrait($"{giftName} {index + 1}", TraitType.Gift, a)));
 
             return this;
         }
