@@ -38,7 +38,7 @@ namespace Mystwood.Landing.Data.Mock
             PrimaryEmail = _emails.FirstOrDefault(),
             Emails = _emails.Skip(1).ToArray(),
             NormalizedEmails = _emails.Select(i => i.ToUpperInvariant()).ToArray(),
-            Events = _events.ToArray()
+            Events = _events.ToArray(),
         };
 
         public async Task Write(MystwoodDatabase db)

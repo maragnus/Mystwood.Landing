@@ -1,0 +1,12 @@
+
+install node.js w/ chocolatey
+
+> yarn install vue
+# install vue 3
+> choco install sass
+> choco install python2
+> yarn
+> yarn serve
+
+webpack
+node-sass

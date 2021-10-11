@@ -25,7 +25,7 @@ namespace Mystwood.Landing.Data.Mock
         public TraitsBuilder WithTrait(Trait trait)
         {
             var traitName = trait.Name ?? throw new InvalidOperationException($"{nameof(Trait)}.{nameof(Trait.Name)} is required");
-            var parts = Regex.Match(traitName, @"^(?<name>.*) (?<rank>\d+)$", RegexOptions.Compiled);
+            var parts = Regex.Match(traitName, @"^(?<name>.*) (?<rank>[\dIVX]+)$", RegexOptions.Compiled);
             var groupName = parts.Success ? parts.Groups["name"].Value.Trim() : trait.Name;
             var groupRank = parts.Success ? int.Parse(parts.Groups["rank"].Value) : 0;
             if (traitName.EndsWith(" X"))

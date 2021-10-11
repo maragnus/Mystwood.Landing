@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Divergic.Logging.Xunit;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Mongo2Go;
@@ -17,12 +18,14 @@ namespace MystwoodDb.Tests
     {
         private MystwoodDatabase db = null!;
         private readonly ITestOutputHelper output;
+        private readonly ICacheLogger _logger;
 
-        public string ConnectionString { get; private set; }
+        public string? ConnectionString { get; private set; }
 
         public Tests(ITestOutputHelper output)
         {
             this.output = output;
+            _logger = output.BuildLogger();
         }
 
         public async Task DisposeAsync()
@@ -32,7 +35,7 @@ namespace MystwoodDb.Tests
 
         public Task InitializeAsync()
         {
-            var mongo = MongoDbRunner.Start();
+            var mongo = MongoDbRunner.Start(logger: _logger, additionalMongodArguments: "--quiet");
             this.ConnectionString = mongo.ConnectionString;
             var options = new OptionsWrapper<MystwoodDatabaseOptions>(new MystwoodDatabaseOptions()
             {
@@ -150,12 +153,31 @@ namespace MystwoodDb.Tests
         }
 
         [Fact]
+        public void Calculate_Level_Cost()
+        {
+            Assert.Equal(0, Constants.LevelCost(6, 2)); // Negatives not possible
+
+            Assert.Equal(0, Constants.LevelCost(6, 6)); // All free levels
+            Assert.Equal(7, Constants.LevelCost(6, 7)); // One purchased level
+            Assert.Equal(15, Constants.LevelCost(6, 8)); // Two purchased levels
+            Assert.Equal(34, Constants.LevelCost(6, 10)); // Four purchased levels
+        }
+
+
+        [Fact]
         public async Task Validator_Works()
         {
             var seeder = new MystwoodDatabaseSeeder(db);
             await seeder.SeedReferenceData();
 
-            await seeder.SeedTestData();
+            var playerBuilder = PlayerBuilder.Create("Will");
+            playerBuilder.WithEmails("will@larptheseries.com")
+                .WithCharacter("Biff", ch => ch
+                    .WithGift("Courage", TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Purchased)
+                    .WithPublicHistory("Once upon a time, there was man, he died, the end.")
+                );
+
+            await playerBuilder.Write(db);
 
             var validator = new CharacterValidator(db, NullLoggerFactory.Instance.CreateLogger<CharacterValidator>());
             var character = await db.Characters.Find(i => i.Name == "Biff").FirstAsync();

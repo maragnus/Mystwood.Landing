@@ -24,9 +24,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WorkflowTests", "WorkflowTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Common", "Tests\Common\Tests.Common.csproj", "{4A72D620-D693-4675-A2B8-B595F14EFB80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Data.Mock", "Data.Mock\Data.Mock.csproj", "{3F0B24F2-C1F9-4EA8-BD35-D876DFFF97B5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data.SeedData", "Data.Mock\Data.SeedData.csproj", "{3F0B24F2-C1F9-4EA8-BD35-D876DFFF97B5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tools.DocParser", "Tools.DocParser\Tools.DocParser.csproj", "{725EF19B-D130-4E3F-BA42-A9EE0F1ECB81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools.DocParser", "Tools.DocParser\Tools.DocParser.csproj", "{725EF19B-D130-4E3F-BA42-A9EE0F1ECB81}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

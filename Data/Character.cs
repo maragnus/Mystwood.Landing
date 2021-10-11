@@ -41,6 +41,8 @@ namespace Mystwood.Landing.Data
         public int MoonstoneSpent;
 
         public int SkillTokens;
+
+        public int StartingLevel;
     }
 
     /// <summary>

@@ -64,7 +64,16 @@ namespace Mystwood.Landing.Data
             _logger = logger;
             _options = options.Value;
 
-            Connection = new MongoClient(_options.ConnectionString);
+            var connectionString = MongoUrl.Create(_options.ConnectionString);
+            var settings = new MongoClientSettings()
+            {
+                Server = connectionString.Server,
+                ConnectTimeout = TimeSpan.FromSeconds(1),
+                SocketTimeout = TimeSpan.FromSeconds(1),
+                ServerSelectionTimeout = TimeSpan.FromSeconds(1),
+            };
+
+            Connection = new MongoClient(settings);
             Database = Connection.GetDatabase(_options.DatabaseName);
 
             Players = Collection<Player>();

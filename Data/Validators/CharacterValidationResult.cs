@@ -1,28 +1,34 @@
 ﻿using System.Text;
+using Mystwood.Landing.Data.Validators.Rules;
 
-namespace Mystwood.Landing.Data.Validators
+namespace Mystwood.Landing.Data.Validators;
+
+public class CharacterValidationResult
 {
-    public class CharacterValidationResult
+    private List<string> _messages = new();
+
+    public override string ToString() => new StringBuilder().AppendJoin("\r\n", _messages).ToString();
+
+    public bool IsSuccessful { get; private set; } = true;
+
+    public BaseCharacterValidatorRule? Rule { get; set; }
+
+    public void AssertEqual(int expected, int actual, Func<string> generateMessage)
     {
-        private List<string> _messages = new();
-
-        public override string ToString() => new StringBuilder().AppendJoin("\r\n", _messages).ToString();
-
-        public bool IsSuccessful { get; private set; } = true;
-
-        public void AssertEqual(int expected, int actual, Func<string> generateMessage)
+        if (expected != actual)
         {
-            if (expected != actual)
-            {
-                _messages.Add(generateMessage());
-                IsSuccessful = false;
-            }
-        }
-
-        internal void Assert(Func<string> generateMessage)
-        {
-            _messages.Add(generateMessage());
+            WriteMessage(generateMessage);
             IsSuccessful = false;
         }
     }
+
+    public void Assert(Func<string> generateMessage)
+    {
+        WriteMessage(generateMessage);
+        IsSuccessful = false;
+    }
+
+    private void WriteMessage(Func<string> generateMessage) =>
+        _messages.Add($"{Rule?.GetType().Name} {generateMessage()}");
+
 }
