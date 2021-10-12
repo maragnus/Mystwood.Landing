@@ -1,4 +1,6 @@
-﻿namespace Mystwood.Landing.Data
+﻿using System;
+
+namespace Mystwood.Landing.Data
 {
     public static class Constants
     {

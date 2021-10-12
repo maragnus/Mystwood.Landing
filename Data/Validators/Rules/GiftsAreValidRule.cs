@@ -1,4 +1,7 @@
-﻿namespace Mystwood.Landing.Data.Validators.Rules;
+﻿using System.Linq;
+using Mystwood.Landing.Data;
+
+namespace Mystwood.Landing.Data.Validators.Rules;
 
 public class GiftsAreValidRule : BaseCharacterValidatorRule
 {

@@ -1,4 +1,7 @@
-﻿namespace Mystwood.Landing.Data.Validators.Internal;
+﻿using System.Linq;
+using Mystwood.Landing.Data;
+
+namespace Mystwood.Landing.Data.Validators.Internal;
 
 
 public record TraitInfo

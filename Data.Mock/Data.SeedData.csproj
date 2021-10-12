@@ -9,4 +9,8 @@
     <ProjectReference Include="..\Data\Data.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="RomanNumeral" Version="2.0.0" />
+  </ItemGroup>
+
 </Project>

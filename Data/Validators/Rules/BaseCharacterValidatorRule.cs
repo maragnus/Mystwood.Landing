@@ -1,4 +1,5 @@
-﻿using Mystwood.Landing.Data.Validators.Internal;
+﻿using Mystwood.Landing.Data;
+using Mystwood.Landing.Data.Validators.Internal;
 
 namespace Mystwood.Landing.Data.Validators.Rules;
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Internal;
+﻿using System;
+using Microsoft.Extensions.Internal;
 
 namespace Mystwood.Landing.Tests.Common
 {

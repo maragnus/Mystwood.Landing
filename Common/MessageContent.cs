@@ -1,4 +1,7 @@
-﻿namespace Mystwood.Landing.Common;
+﻿using System;
+using System.Collections.Generic;
+
+namespace Mystwood.Landing.Common;
 
 public class MessageContent
 {

@@ -1,4 +1,6 @@
-﻿namespace Mystwood.Landing.Common;
+﻿using System.Collections.Generic;
+
+namespace Mystwood.Landing.Common;
 
 public class MessagingServiceOptions
 {

@@ -1,4 +1,7 @@
-﻿using Divergic.Logging.Xunit;
+﻿using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Divergic.Logging.Xunit;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
@@ -9,6 +12,8 @@ using Moq;
 using Mystwood.Landing.Data;
 using Mystwood.Landing.Data.Mock;
 using Mystwood.Landing.Data.Validators;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -19,6 +24,7 @@ namespace MystwoodDb.Tests
         private MystwoodDatabase db = null!;
         private readonly ITestOutputHelper output;
         private readonly ICacheLogger _logger;
+        private MongoDbRunner? _mongo;
 
         public string? ConnectionString { get; private set; }
 
@@ -31,17 +37,20 @@ namespace MystwoodDb.Tests
         public async Task DisposeAsync()
         {
             await db.Connection.DropDatabaseAsync("mwlxunit");
+            db.Dispose();
+            db = null!;
+            _mongo?.Dispose();
         }
 
         public Task InitializeAsync()
         {
-            var mongo = MongoDbRunner.Start(logger: _logger, additionalMongodArguments: "--quiet");
-            this.ConnectionString = mongo.ConnectionString;
+            _mongo = MongoDbRunner.Start(logger: _logger, additionalMongodArguments: "--quiet");
+            this.ConnectionString = _mongo.ConnectionString;
             var options = new OptionsWrapper<MystwoodDatabaseOptions>(new MystwoodDatabaseOptions()
             {
                 ApplicationName = "MystwoodLanding.xunit",
                 DatabaseName = "mwlxunit",
-                ConnectionString = mongo.ConnectionString
+                ConnectionString = _mongo.ConnectionString
             });
             db = new MystwoodDatabase(options, Mock.Of<ILogger<MystwoodDatabase>>());
 
@@ -52,13 +61,13 @@ namespace MystwoodDb.Tests
         {
             static string id() => ObjectId.GenerateNewId().ToString();
 
-            var event1 = new Event { EventId = id(), Name = "Event 1" };
+            var event1 = new Event {EventId = id(), Name = "Event 1"};
             await db.Events.InsertOneAsync(event1);
 
-            var event2 = new Event { EventId = id(), Name = "Event 2" };
+            var event2 = new Event {EventId = id(), Name = "Event 2"};
             await db.Events.InsertOneAsync(event2);
 
-            var event3 = new Event { EventId = id(), Name = "Event 3" };
+            var event3 = new Event {EventId = id(), Name = "Event 3"};
             await db.Events.InsertOneAsync(event3);
 
             var player = new Player
@@ -66,7 +75,7 @@ namespace MystwoodDb.Tests
                 PlayerId = id(),
                 Name = "Bob Dylan",
                 PrimaryEmail = "bob.dylan@example.com",
-                NormalizedEmails = new[] { "bob.dylan@example.com".ToUpperInvariant() }
+                NormalizedEmails = new[] {"bob.dylan@example.com".ToUpperInvariant()}
             };
             await db.Players.InsertOneAsync(player);
 
@@ -75,7 +84,7 @@ namespace MystwoodDb.Tests
                 CharacterId = id(),
                 PlayerId = player.PlayerId,
                 Name = "Jerry",
-                Events = new[] { new EventParticipation { EventId = event1.EventId, Participated = true } }
+                Events = new[] {new EventParticipation {EventId = event1.EventId, Participated = true}}
             };
             await db.Characters.InsertOneAsync(character1);
 
@@ -84,9 +93,10 @@ namespace MystwoodDb.Tests
                 CharacterId = id(),
                 PlayerId = player.PlayerId,
                 Name = "Marge",
-                Events = new[] {
-                    new EventParticipation { EventId = event1.EventId, Participated = true },
-                    new EventParticipation { EventId = event2.EventId, Participated = true },
+                Events = new[]
+                {
+                    new EventParticipation {EventId = event1.EventId, Participated = true},
+                    new EventParticipation {EventId = event2.EventId, Participated = true},
                 }
             };
             await db.Characters.InsertOneAsync(character2);
@@ -127,7 +137,8 @@ namespace MystwoodDb.Tests
             var playerId = await db.GetPlayerIdByEmail("Bob.Dylan@example.com", CancellationToken.None);
             Assert.NotNull(playerId);
 
-            await db.UpdatePlayerProfile(playerId!, "Dylan Bob", "bdylan@example.com", new[] { "bobd@example.com" }, CancellationToken.None);
+            await db.UpdatePlayerProfile(playerId!, "Dylan Bob", "bdylan@example.com", new[] {"bobd@example.com"},
+                CancellationToken.None);
 
             Assert.Null(await db.GetPlayerIdByEmail("bob.dylan@example.com", CancellationToken.None));
             Assert.Equal(playerId, await db.GetPlayerIdByEmail("BDYLAN@example.com", CancellationToken.None));
@@ -140,7 +151,15 @@ namespace MystwoodDb.Tests
             var seeder = new MystwoodDatabaseSeeder(db);
             await seeder.SeedReferenceData();
 
-            Assert.Equal(11, await db.Traits.Find(c => c.Type == TraitType.Ability).CountDocumentsAsync());
+            var items = await db.Traits.Find(c => c.Type == TraitType.Occupation).As<OccupationTrait>().ToListAsync();
+            var o = JToken.FromObject(items
+                .Select(i => new {i.Name, Id = i.TraitId, Type = i.OccupationType.ToString()})
+                .OrderBy(a=>a.Type)
+                .ThenBy(a => a.Name)
+                .ToArray());
+            var str = o.ToString(Formatting.Indented);
+
+            Assert.Equal(10, await db.Traits.Find(c => c.Type == TraitType.Ability).CountDocumentsAsync());
             Assert.Equal(32, await db.Traits.Find(c => c.Type == TraitType.Advantage).CountDocumentsAsync());
             Assert.Equal(1, await db.Traits.Find(c => c.Type == TraitType.CraftSkill).CountDocumentsAsync());
             Assert.Equal(33, await db.Traits.Find(c => c.Type == TraitType.Disadvantage).CountDocumentsAsync());
@@ -149,7 +168,7 @@ namespace MystwoodDb.Tests
             Assert.Equal(104, await db.Traits.Find(c => c.Type == TraitType.Occupation).CountDocumentsAsync());
             Assert.Equal(0, await db.Traits.Find(c => c.Type == TraitType.Religion).CountDocumentsAsync());
             Assert.Equal(109, await db.Traits.Find(c => c.Type == TraitType.Skill).CountDocumentsAsync());
-            Assert.Equal(13, await db.Traits.Find(c => c.Type == TraitType.FlavorTrait).CountDocumentsAsync());
+            Assert.Equal(12, await db.Traits.Find(c => c.Type == TraitType.FlavorTrait).CountDocumentsAsync());
         }
 
         [Fact]
@@ -173,7 +192,9 @@ namespace MystwoodDb.Tests
             var playerBuilder = PlayerBuilder.Create("Will");
             playerBuilder.WithEmails("will@larptheseries.com")
                 .WithCharacter("Biff", ch => ch
-                    .WithGift("Courage", TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Purchased)
+                    .WithGift("Courage", TraitAssociationType.Free, TraitAssociationType.Free,
+                        TraitAssociationType.Free, TraitAssociationType.Free, TraitAssociationType.Free,
+                        TraitAssociationType.Free, TraitAssociationType.Purchased)
                     .WithPublicHistory("Once upon a time, there was man, he died, the end.")
                 );
 
