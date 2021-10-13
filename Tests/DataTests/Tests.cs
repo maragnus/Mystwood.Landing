@@ -151,14 +151,6 @@ namespace MystwoodDb.Tests
             var seeder = new MystwoodDatabaseSeeder(db);
             await seeder.SeedReferenceData();
 
-            var items = await db.Traits.Find(c => c.Type == TraitType.Occupation).As<OccupationTrait>().ToListAsync();
-            var o = JToken.FromObject(items
-                .Select(i => new {i.Name, Id = i.TraitId, Type = i.OccupationType.ToString()})
-                .OrderBy(a=>a.Type)
-                .ThenBy(a => a.Name)
-                .ToArray());
-            var str = o.ToString(Formatting.Indented);
-
             Assert.Equal(10, await db.Traits.Find(c => c.Type == TraitType.Ability).CountDocumentsAsync());
             Assert.Equal(32, await db.Traits.Find(c => c.Type == TraitType.Advantage).CountDocumentsAsync());
             Assert.Equal(1, await db.Traits.Find(c => c.Type == TraitType.CraftSkill).CountDocumentsAsync());

@@ -46,10 +46,10 @@ namespace Mystwood.Landing.Data.Mock
             var groupRank = 0;
             if (parts.Success)
             {
-                if (!int.TryParse(parts.Groups["rank"].Value, out var _rank))
-                    groupRank = _rank;
-                else if (RomanNumerals.RomanNumeral.TryParse(parts.Groups["rank"].Value, out _rank))
-                    groupRank = _rank;
+                if (int.TryParse(parts.Groups["rank"].Value, out var rank))
+                    groupRank = rank;
+                else if (RomanNumerals.RomanNumeral.TryParse(parts.Groups["rank"].Value, out rank))
+                    groupRank = rank;
             }
 
             if (traitName.EndsWith(" X"))
@@ -121,15 +121,14 @@ namespace Mystwood.Landing.Data.Mock
     public class GiftBuilder : BaseBuilder
     {
         private readonly TraitsBuilder _traitsBuilder;
-        private readonly string _name;
-        private List<Trait> _traits = new();
+        private readonly List<Trait> _traits = new();
 
-        public string Name => _name;
+        public string Name { get; }
 
         public GiftBuilder(TraitsBuilder traitsBuilder, string name)
         {
             _traitsBuilder = traitsBuilder;
-            _name = name;
+            Name = name;
         }
 
         public GiftBuilder WithRank(int level, Action<GiftRankBuilder> builder)
@@ -147,8 +146,8 @@ namespace Mystwood.Landing.Data.Mock
     {
         private readonly GiftBuilder _giftBuilder;
         private readonly int _level;
-        private List<AbilityTrait> _abilities = new();
-        private List<GiftProperty> _properties = new();
+        private readonly List<AbilityTrait> _abilities = new();
+        private readonly List<GiftProperty> _properties = new();
 
         public GiftRankBuilder(GiftBuilder giftBuilder, int level)
         {
@@ -181,14 +180,14 @@ namespace Mystwood.Landing.Data.Mock
                 Properties = _properties.ToArray()
             };
 
-            foreach (var abililty in _abilities)
-                yield return abililty;
+            foreach (var ability in _abilities)
+                yield return ability;
         }
     }
 
     public class MystwoodDatabaseSeeder
     {
-        private MystwoodDatabase _db;
+        private readonly MystwoodDatabase _db;
 
         public MystwoodDatabaseSeeder(MystwoodDatabase db) => _db = db;
 
@@ -213,7 +212,7 @@ namespace Mystwood.Landing.Data.Mock
             LoadCraftSkills(traits);
             LoadOccupations(traits);
             LoadGifts(traits);
-            LoadFlavoTraits(traits);
+            LoadFlavorTraits(traits);
             LoadAdvantages(traits);
             LoadDisadvantages(traits);
 
@@ -406,7 +405,7 @@ namespace Mystwood.Landing.Data.Mock
                 "You are not comfortable with civilized things. Any “by Fire” Effect you suffer also causes the “Frenzy”.")
             .Done();
 
-        private static void LoadFlavoTraits(TraitsBuilder traits) => traits
+        private static void LoadFlavorTraits(TraitsBuilder traits) => traits
             .WithFlavorTrait("Townsfolk")
             .WithFlavorTrait("Living")
             .WithFlavorTrait("Follower of Justice")
@@ -475,6 +474,217 @@ namespace Mystwood.Landing.Data.Mock
                     .WithProperty("Resist Will per Day", "4")
                     .WithAbility("Battle Endurance (Lethal to Harm)")
                     .WithAbility("Toughness IV"))
+            )
+            .WithGift("Dexterity", gift => gift
+                .WithRank(1, rank => rank
+                    .WithProperty("Special Attacks per Renew", "-")
+                    .WithProperty("Assassinate per Day", "-")
+                    .WithAbility("Disarm Traps/Pick Locks")
+                    .WithAbility("Thrown Weapon")
+                    .WithAbility("Use Hand Crossbow"))
+                .WithRank(2, rank => rank
+                    .WithProperty("Special Attacks per Renew", "1")
+                    .WithProperty("Assassinate per Day", "-")
+                    .WithAbility("Special Attacks")
+                    .WithAbility("Use Bows"))
+                .WithRank(3, rank => rank
+                    .WithProperty("Special Attacks per Renew", "1")
+                    .WithProperty("Assassinate per Day", "-")
+                    .WithAbility("Florentine")
+                    .WithAbility("Pick Pockets I")
+                    .WithAbility("Tarot Mortis"))
+                .WithRank(4, rank => rank
+                    .WithProperty("Special Attacks per Renew", "2")
+                    .WithProperty("Assassinate per Day", "1")
+                    .WithAbility("Assassinate"))
+                .WithRank(5, rank => rank
+                    .WithProperty("Special Attacks per Renew", "2")
+                    .WithProperty("Assassinate per Day", "1")
+                    .WithAbility("Two Weapons"))
+                .WithRank(6, rank => rank
+                    .WithProperty("Special Attacks per Renew", "3")
+                    .WithProperty("Assassinate per Day", "2"))
+                .WithRank(7, rank => rank
+                    .WithProperty("Special Attacks per Renew", "4")
+                    .WithProperty("Assassinate per Day", "2")
+                    .WithAbility("Swashbuckling"))
+                .WithRank(8, rank => rank
+                    .WithProperty("Special Attacks per Renew", "4")
+                    .WithProperty("Assassinate per Day", "2")
+                    .WithAbility("Evade Trap"))
+                .WithRank(9, rank => rank
+                    .WithProperty("Special Attacks per Renew", "5")
+                    .WithProperty("Assassinate per Day", "2")
+                    .WithAbility("Pick Pockets II"))
+                .WithRank(10, rank => rank
+                    .WithProperty("Special Attacks per Renew", "5")
+                    .WithProperty("Assassinate per Day", "3"))
+            )
+            .WithGift("Empathy", gift => gift
+                .WithRank(1, rank => rank
+                    .WithProperty("Special Attacks per Renew", "-")
+                    .WithAbility("First Aid")
+                    .WithAbility("Diagnose"))
+                .WithRank(2, rank => rank
+                    .WithProperty("Special Attacks per Renew", "-")
+                    .WithAbility("Cure Maim"))
+                .WithRank(3, rank => rank
+                    .WithProperty("Special Attacks per Renew", "3")
+                    .WithAbility("Healing Hand (Heal 2)"))
+                .WithRank(4, rank => rank
+                    .WithProperty("Special Attacks per Renew", "3")
+                    .WithAbility("Improved First Aid"))
+                .WithRank(5, rank => rank
+                    .WithProperty("Special Attacks per Renew", "4")
+                    .WithAbility("With Malice Toward None (Heal 3)"))
+                .WithRank(6, rank => rank
+                    .WithProperty("Special Attacks per Renew", "4")
+                    .WithAbility("Detect Unconscious"))
+                .WithRank(7, rank => rank
+                    .WithProperty("Special Attacks per Renew", "5")
+                    .WithAbility("Master First Aid"))
+                .WithRank(8, rank => rank
+                    .WithProperty("Special Attacks per Renew", "5")
+                    .WithAbility("With Malice Toward None (Heal 5)"))
+                .WithRank(9, rank => rank
+                    .WithProperty("Special Attacks per Renew", "6")
+                    .WithAbility("Empath’s Cry"))
+                .WithRank(10, rank => rank
+                    .WithProperty("Special Attacks per Renew", "6")
+                    .WithAbility("Heroic Surgery"))
+            )
+            .WithGift("Passion", gift => gift
+                .WithRank(1, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "2")
+                    .WithProperty("Bursts per Renew", "1")
+                    .WithProperty("Storms per Renew", "-")
+                    .WithAbility("Summon Element")
+                    .WithAbility("Elemental Burst"))
+                .WithRank(2, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "2")
+                    .WithProperty("Bursts per Renew", "1")
+                    .WithProperty("Storms per Renew", "-")
+                    .WithAbility("Hedge Magic"))
+                .WithRank(3, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "3")
+                    .WithProperty("Bursts per Renew", "2")
+                    .WithProperty("Storms per Renew", "-"))
+                .WithRank(4, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "3")
+                    .WithProperty("Bursts per Renew", "2")
+                    .WithProperty("Storms per Renew", "1")
+                    .WithAbility("Elemental Storm")
+                    .WithAbility("Purge Element"))
+                .WithRank(5, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "3")
+                    .WithProperty("Bursts per Renew", "3")
+                    .WithProperty("Storms per Renew", "1")
+                    .WithAbility("Mage Lore"))
+                .WithRank(6, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "4")
+                    .WithProperty("Bursts per Renew", "3")
+                    .WithProperty("Storms per Renew", "1")
+                    .WithAbility(""))
+                .WithRank(7, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "4")
+                    .WithProperty("Bursts per Renew", "3")
+                    .WithProperty("Storms per Renew", "2")
+                    .WithAbility("Elemental Kinship"))
+                .WithRank(8, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "4")
+                    .WithProperty("Bursts per Renew", "4")
+                    .WithProperty("Storms per Renew", "2"))
+                .WithRank(9, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "5")
+                    .WithProperty("Bursts per Renew", "5")
+                    .WithProperty("Storms per Renew", "2"))
+                .WithRank(10, rank => rank
+                    .WithProperty("Max Damage per Bolt/Burst", "5")
+                    .WithProperty("Bursts per Renew", "5")
+                    .WithProperty("Storms per Renew", "2")
+                    .WithAbility("Summoner’s Stride"))
+            )
+            .WithGift("Prowess", gift => gift
+                .WithRank(1, rank => rank
+                    .WithProperty("Special Attacks per Renew", "1")
+                    .WithProperty("Deathstrikes per Day", "-")
+                    .WithAbility("Use of Arms"))
+                .WithRank(2, rank => rank
+                    .WithProperty("Special Attacks per Renew", "1")
+                    .WithProperty("Deathstrikes per Day", "-")
+                    .WithAbility("Detect Health")
+                    .WithAbility("Extra Hit Point"))
+                .WithRank(3, rank => rank
+                    .WithProperty("Special Attacks per Renew", "2")
+                    .WithProperty("Deathstrikes per Day", "-"))
+                .WithRank(4, rank => rank
+                    .WithProperty("Special Attacks per Renew", "2")
+                    .WithProperty("Deathstrikes per Day", "1")
+                    .WithAbility("Deathstrike"))
+                .WithRank(5, rank => rank
+                    .WithProperty("Special Attacks per Renew", "3")
+                    .WithProperty("Deathstrikes per Day", "1"))
+                .WithRank(6, rank => rank
+                    .WithProperty("Special Attacks per Renew", "4")
+                    .WithProperty("Deathstrikes per Day", "1")
+                    .WithAbility("Thrown Weapon"))
+                .WithRank(7, rank => rank
+                    .WithProperty("Special Attacks per Renew", "4")
+                    .WithProperty("Deathstrikes per Day", "2"))
+                .WithRank(8, rank => rank
+                    .WithProperty("Special Attacks per Renew", "5")
+                    .WithProperty("Deathstrikes per Day", "2")
+                    .WithAbility("Wrist Twist (Resist Crushing)"))
+                .WithRank(9, rank => rank
+                    .WithProperty("Special Attacks per Renew", "6")
+                    .WithProperty("Deathstrikes per Day", "2"))
+                .WithRank(10, rank => rank
+                    .WithProperty("Special Attacks per Renew", "6")
+                    .WithProperty("Deathstrikes per Day", "3"))
+            )
+            .WithGift("Wisdom", gift => gift
+                .WithRank(1, rank => rank
+                    .WithProperty("Mana", "1")
+                    .WithProperty("Resist Magic per Renew", "-")
+                    .WithAbility("Lore")
+                    .WithAbility("Sorcery"))
+                .WithRank(2, rank => rank
+                    .WithProperty("Mana", "2")
+                    .WithProperty("Resist Magic per Renew", "-")
+                    .WithAbility("Hedge Magic")
+                    .WithAbility("Mage Lore"))
+                .WithRank(3, rank => rank
+                    .WithProperty("Mana", "3")
+                    .WithProperty("Resist Magic per Renew", "1")
+                    .WithAbility(""))
+                .WithRank(4, rank => rank
+                    .WithProperty("Mana", "4")
+                    .WithProperty("Resist Magic per Renew", "1")
+                    .WithAbility("Purge Magic I"))
+                .WithRank(5, rank => rank
+                    .WithProperty("Mana", "5")
+                    .WithProperty("Resist Magic per Renew", "1")
+                    .WithAbility(""))
+                .WithRank(6, rank => rank
+                    .WithProperty("Mana", "6")
+                    .WithProperty("Resist Magic per Renew", "2")
+                    .WithAbility(""))
+                .WithRank(7, rank => rank
+                    .WithProperty("Mana", "7")
+                    .WithProperty("Resist Magic per Renew", "2")
+                    .WithAbility("Purge Magic II"))
+                .WithRank(8, rank => rank
+                    .WithProperty("Mana", "8")
+                    .WithProperty("Resist Magic per Renew", "2")
+                    .WithAbility(""))
+                .WithRank(9, rank => rank
+                    .WithProperty("Mana", "9")
+                    .WithProperty("Resist Magic per Renew", "3")
+                    .WithAbility(""))
+                .WithRank(10, rank => rank
+                    .WithProperty("Mana", "10")
+                    .WithProperty("Resist Magic per Renew", "3")
+                    .WithAbility(""))
             )
             .Done();
 
@@ -1198,7 +1408,7 @@ namespace Mystwood.Landing.Data.Mock
                 "Some Occupations have spells which aid them in their work, a mix of hedge magic and true Sorcery. You may only use these spells if you have the Gift of Wisdom. See page 125 for more information on Occupational Spells.")
             .WithOrdinarySkill("Pathfinding", SkillClass.Standard, 10, SkillRank.Once,
                 description:
-                "This Ordinary Skill may only be used at your Home Chapter. You can find your way to distant locations in the bearby area, navigating the many treacherous paths of the hinterlands. This is a “plot skill”- it does nothing during Events, but if you submit a Post Event Letter within two weeks of the Event, you may indicate 3 locations, in order of preference, that you would like to find your way to. Examples could be “The ruins we visited where we found the six eyed hag”, “The goblin encampment I’ve heard rumors about”, “Any stone monolith”")
+                "This Ordinary Skill may only be used at your Home Chapter. You can find your way to distant locations in the nearby area, navigating the many treacherous paths of the hinterlands. This is a “plot skill”- it does nothing during Events, but if you submit a Post Event Letter within two weeks of the Event, you may indicate 3 locations, in order of preference, that you would like to find your way to. Examples could be “The ruins we visited where we found the six eyed hag”, “The goblin encampment I’ve heard rumors about”, “Any stone monolith”")
             .WithOrdinarySkill("Patronage X", SkillClass.Unavailable,
                 description:
                 "This Ordinary Skill may only be used at your Home Chapter. Once per year, you may sponsor X people into Advanced Occupations which require Patronage, such as Philosopher or Physician. This represents you using your influence and wealth to enable them to pursue their studies, rather than having to work for their survival.")
@@ -1283,7 +1493,7 @@ namespace Mystwood.Landing.Data.Mock
                 description:
                 "You may use a weapon of up to 42” in length in each hand. Note that the Gift of Dexterity also provides this skill.")
             .WithOrdinarySkill("Wages of Sin", SkillClass.Minor, 5, SkillRank.Multiple,
-                description: "You must possess at least one Chaos Mark. At check in, you will recieve 1 Warpstone.")
+                description: "You must possess at least one Chaos Mark. At check in, you will receive 1 Warpstone.")
             .WithOrdinarySkill("Warcaster", SkillClass.Standard, 10, SkillRank.Once,
                 description:
                 "You may wear 1 Armor Point while casting spells. You must possess Wear Armor 1 or better to benefit from this skill.")

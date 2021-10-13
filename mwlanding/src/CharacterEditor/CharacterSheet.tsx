@@ -13,8 +13,10 @@ export type Trait = {
     name: string;
     title?: string;
     description?: string;
-    type?: string
+    type?: string;
     value?: number;
+    groupName?: string;
+    groupRank?: number;
 }
 
 export type Gift = {
