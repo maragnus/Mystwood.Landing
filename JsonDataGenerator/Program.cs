@@ -14,9 +14,22 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Mongo2Go;
 using MongoDB.Driver;
+using Mystwood.Landing.Models;
 using Mystwood.Landing.Data;
 using Mystwood.Landing.Data.Mock;
 using Newtonsoft.Json.Linq;
+
+await using(var file = new StreamWriter($"gifts.ts"))
+{
+    await file.WriteLineAsync("var gifts = ");
+    await file.FlushAsync();
+    await JsonSerializer.SerializeAsync(file.BaseStream, ReferenceData.Gifts);
+    // var traits = await db!.Traits.Find(i=>i.Type == TraitType.Gift).As<GiftTrait>().ToListAsync();
+    // foreach (var trait in traits)
+    // {
+    // }
+}
+
 
 var switches = new Dictionary<string, string>() {{"-output", "OutputPath"}};
 var builder = new ConfigurationBuilder();
@@ -82,3 +95,4 @@ await ExportTrait<DisadvantageTrait>((trait) => new
     groupRank = trait.GroupRank,
     physical = trait.IsPhysical,
 });
+
