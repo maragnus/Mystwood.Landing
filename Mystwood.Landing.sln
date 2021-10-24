@@ -30,8 +30,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tools.DocParser", "Tools.Do
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JsonDataGenerator", "JsonDataGenerator\JsonDataGenerator.csproj", "{2FF9FF89-1821-468E-A6D6-8A7E3C4E364B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ReferenceDataWriter", "ReferenceDataWriter\ReferenceDataWriter.csproj", "{42192240-C60F-4DAD-9A4F-E1D0CCAD9503}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Models", "Models\Models.csproj", "{125667CF-95AE-4FD7-91AC-9EB7D99D1736}"
 EndProject
 Global
@@ -80,10 +78,6 @@ Global
 		{2FF9FF89-1821-468E-A6D6-8A7E3C4E364B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2FF9FF89-1821-468E-A6D6-8A7E3C4E364B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2FF9FF89-1821-468E-A6D6-8A7E3C4E364B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{42192240-C60F-4DAD-9A4F-E1D0CCAD9503}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{42192240-C60F-4DAD-9A4F-E1D0CCAD9503}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{42192240-C60F-4DAD-9A4F-E1D0CCAD9503}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{42192240-C60F-4DAD-9A4F-E1D0CCAD9503}.Release|Any CPU.Build.0 = Release|Any CPU
 		{125667CF-95AE-4FD7-91AC-9EB7D99D1736}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{125667CF-95AE-4FD7-91AC-9EB7D99D1736}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{125667CF-95AE-4FD7-91AC-9EB7D99D1736}.Release|Any CPU.ActiveCfg = Release|Any CPU

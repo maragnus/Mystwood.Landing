@@ -63,19 +63,32 @@ async Task ExportTrait<TTrait>(Func<TTrait, object> project) where TTrait : Trai
     await JsonSerializer.SerializeAsync(file, traits.Select(project), options);
 }
 
-await ExportTrait<GiftTrait>((trait) => new
+var skills = (await db!.Traits.Find(i => i.Type == TraitType.Skill).As<SkillTrait>().ToListAsync())
+    .ToDictionary(i => i.TraitId);
+
+await ExportTrait<OccupationTrait>((trait) => new
 {
     title = trait.Name,
-    abilities = trait.Abilities,
-    properties = trait.Properties.ToDictionary(i => i.Name, i=>i.Value),
+    requirement = trait.Requirement,
+    skills = trait.Skills.Select(i=> 
+    {
+        var (name, rank) = TraitsBuilder.ExtractName(i);
+        return new {name, rank, title = i};
+    }),
+    type = $"OccupationType.{trait.OccupationType.ToString()}",
 });
 
-await ExportTrait<SkillTrait>((trait) => new
+await ExportTrait<SkillTrait>((trait) => 
 {
-    title = trait.Name,
-    @class = trait.SkillClass, 
-    rank = trait.Rank, 
-    cost = trait.Cost,
+    var (name, rank) = TraitsBuilder.ExtractName(trait.Name);
+
+    return new {
+        name = name,
+        title = trait.Name,
+        @class = trait.SkillClass.ToString(), 
+        ranks = trait.Rank.ToString(), 
+        cost = trait.Cost,
+    };
 });
 
 await ExportTrait<AdvantageTrait>((trait) => new
