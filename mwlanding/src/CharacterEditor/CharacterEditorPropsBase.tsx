@@ -1,4 +1,4 @@
-import {CharacterSheet} from "./CharacterSheet";
+import {CharacterSheet} from "../Reference/CharacterSheet";
 
 export type CharacterEditorPropsBase = {
     sheet: CharacterSheet;

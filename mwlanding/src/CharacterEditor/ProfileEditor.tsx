@@ -1,9 +1,10 @@
 import React, {ChangeEvent} from 'react';
-import {Box, Grid, TextField, Autocomplete} from "@mui/material";
+import {Autocomplete, Box, Grid, TextField} from "@mui/material";
 import {CharacterEditorPropsBase} from "./CharacterEditorPropsBase";
-import {Religions, HomeChapters, Occupations, Enhancements, Trait} from './CharacterSheet';
+import {HomeChapters, Religions} from '../Reference/CharacterSheet';
+import {Enhancements, Occupations, OccupationType} from '../Reference/Occupations';
 
-const occupationTypes = ["Youth", "Basic", "Advanced", "Plot"];
+const occupationTypes: OccupationType[] = [OccupationType.Youth, OccupationType.Basic, OccupationType.Advanced, OccupationType.Plot];
 
 export default function ProfileEditor(props: CharacterEditorPropsBase) {
     function handleInputChange(event: ChangeEvent) {
@@ -39,9 +40,9 @@ export default function ProfileEditor(props: CharacterEditorPropsBase) {
                         id="home"
                         options={HomeChapters} aria-required={true}
                         getOptionLabel={(option) => option.title ?? ""}
-                        defaultValue={HomeChapters.find(item => item.name === props.sheet.home)}
+                        defaultValue={HomeChapters.find(item => item.name === props.sheet.homeChapter?.name)}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => handleChange("home", value?.name)}
+                        onChange={(e, value?: any) => handleChange("homeChapter", value)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -54,12 +55,12 @@ export default function ProfileEditor(props: CharacterEditorPropsBase) {
                 <Grid item xs={12} md={6}>
                     <Autocomplete
                         id="occupation" aria-required={true}
-                        options={Occupations.sort((a, b) => occupationTypes.indexOf(a.type ?? "") - occupationTypes.indexOf(b.type ?? ""))}
-                        groupBy={(option) => option.type ?? ""}
-                        getOptionLabel={(option) => option.title ?? ""}
-                        defaultValue={Occupations.find(item => item.name === props.sheet.occupation)}
+                        options={Occupations.sort((a, b) => occupationTypes.indexOf(a.type) - occupationTypes.indexOf(b.type))}
+                        groupBy={(option) => option.type as string}
+                        getOptionLabel={(option) => option.name ?? ""}
+                        defaultValue={Occupations.find(item => item.name === props.sheet.occupation?.name)}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => handleChange("occupation", value?.name)}
+                        onChange={(e, value?: any) => handleChange("occupation", value)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -73,10 +74,10 @@ export default function ProfileEditor(props: CharacterEditorPropsBase) {
                     <Autocomplete
                         id="enhancement"
                         options={Enhancements}
-                        getOptionLabel={(option) => option.title ?? ""}
-                        defaultValue={Enhancements.find(item => item.name === props.sheet.enhancement)}
+                        getOptionLabel={(option) => option.name ?? ""}
+                        defaultValue={Enhancements.find(item => item.name === props.sheet.enhancement?.name)}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => handleChange("enhancement", value?.name)}
+                        onChange={(e, value?: any) => handleChange("enhancement", value)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -92,9 +93,9 @@ export default function ProfileEditor(props: CharacterEditorPropsBase) {
                         id="religions" aria-required={true}
                         options={Religions}
                         getOptionLabel={(option) => option.title ?? ""}
-                        defaultValue={Religions.filter(item => props.sheet.religions?.some(value => value === item.name))}
+                        defaultValue={Religions.filter(item => props.sheet.religions?.some(value => value.name === item.name))}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => handleChange("religions", value?.map((item: any) => item.name))}
+                        onChange={(e, value?: any) => handleChange("religions", value)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}

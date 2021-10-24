@@ -1,9 +1,9 @@
 export enum OccupationType {
-    Basic,
-    Youth,
-    Advanced,
-    Plot,
-    Enhancement,
+    Basic = "Basic",
+    Youth = "Youth",
+    Advanced = "Advanced",
+    Plot = "Plot",
+    Enhancement = "Enhancement",
 }
 
 export type Occupation = {
@@ -561,7 +561,10 @@ export const Occupations: Occupation[] = [
             count: 1,
             choices: ["Information Gathering", "Research"]
         }]
-    },
+    }
+];
+
+export const Enhancements: Occupation[] = [
     {
         type: OccupationType.Enhancement,
         name: "Alchemist",

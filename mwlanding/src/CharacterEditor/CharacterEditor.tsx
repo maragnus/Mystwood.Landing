@@ -6,10 +6,11 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ProfileEditor from "./ProfileEditor";
-import {CharacterSheet} from "./CharacterSheet";
+import {Burgundar, CharacterSheet, Wild} from "../Reference/CharacterSheet";
 
 import './CharacterEditor.css';
 import GiftsEditor from "./GiftsEditor";
+import {Occupations} from "../Reference/Occupations";
 
 type CharacterEditorProps = {};
 
@@ -62,16 +63,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         super(props);
         this.state = {
             activeStep: 0,
-            sheet: {
-                characterName: 'Niko Atkinson',
-                religions: ['wild'],
-                occupation: '6164ced9be316488997a8274',
-                enhancement: undefined,
-                home: 'burgundar',
-                privateStory: '',
-                publicStory: '',
-                notes: ''
-            }
+            sheet: CharacterSheet.mock('Nico Atkinson', Occupations[0], [ Wild ], Burgundar )
         };
     }
 
@@ -90,7 +82,15 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         };
 
         const sheetChange = (changes: object) => {
-            this.setState((state, props) => ({sheet: {...state.sheet, ...changes}}));
+            this.setState((state: CharacterEditorState, props: CharacterEditorProps) => {
+                const newSheet = {
+                    ...state.sheet,
+                    ...changes
+                };
+                CharacterSheet.populate(newSheet);
+                console.log(newSheet);
+                state.sheet = newSheet;
+            });
         };
 
         const activeStep = this.state.activeStep;
