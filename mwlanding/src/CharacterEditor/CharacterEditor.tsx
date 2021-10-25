@@ -10,7 +10,10 @@ import {Burgundar, CharacterSheet, Wild} from "../Reference/CharacterSheet";
 
 import './CharacterEditor.css';
 import GiftsEditor from "./GiftsEditor";
-import {Occupations} from "../Reference/Occupations";
+import SkillsEditor from "./SkillsEditor";
+import AdvEditor from "./AdvEditor";
+import SpellsEditor from "./SpellsEditor";
+import OtherEditor from "./OtherEditor";
 
 type CharacterEditorProps = {};
 
@@ -39,22 +42,22 @@ const steps: EditorStep[] = [
     {
         step: 'Skills',
         title: 'Free and Purchased Skills',
-        editor: ProfileEditor,
+        editor: SkillsEditor,
     },
     {
         step: 'Adv/Disadv',
         title: 'Advantages and Disadvantages',
-        editor: GiftsEditor,
+        editor: AdvEditor,
     },
     {
         step: 'Spells',
         title: 'Spells',
-        editor: GiftsEditor,
+        editor: SpellsEditor,
     },
     {
         step: 'Other',
         title: 'Unusual Features, Cures, Documents, Notes',
-        editor: GiftsEditor,
+        editor: OtherEditor,
     },
 ];
 
@@ -63,7 +66,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         super(props);
         this.state = {
             activeStep: 0,
-            sheet: CharacterSheet.mock('Nico Atkinson', Occupations[0], [ Wild ], Burgundar )
+            sheet: CharacterSheet.mock('Nico Atkinson', "Artist (Author/Gilder/Painter/Sculptor)", [Wild], Burgundar)
         };
     }
 

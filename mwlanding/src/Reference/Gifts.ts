@@ -305,9 +305,6 @@ export const Gifts: Gift[] = [
             {
                 rank: 6,
                 properties: ["4", "3", "1"],
-                abilities: [
-                    {name: "", rank: 0, title: ""},
-                ],
             },
             {
                 rank: 7,
@@ -423,10 +420,7 @@ export const Gifts: Gift[] = [
             },
             {
                 rank: 3,
-                properties: ["3", "1"],
-                abilities: [
-                    {name: "", rank: 0, title: ""},
-                ],
+                properties: ["3", "1"]
             },
             {
                 rank: 4,
@@ -438,16 +432,10 @@ export const Gifts: Gift[] = [
             {
                 rank: 5,
                 properties: ["5", "1"],
-                abilities: [
-                    {name: "", rank: 0, title: ""},
-                ],
             },
             {
                 rank: 6,
                 properties: ["6", "2"],
-                abilities: [
-                    {name: "", rank: 0, title: ""},
-                ],
             },
             {
                 rank: 7,
@@ -459,23 +447,14 @@ export const Gifts: Gift[] = [
             {
                 rank: 8,
                 properties: ["8", "2"],
-                abilities: [
-                    {name: "", rank: 0, title: ""},
-                ],
             },
             {
                 rank: 9,
                 properties: ["9", "3"],
-                abilities: [
-                    {name: "", rank: 0, title: ""},
-                ],
             },
             {
                 rank: 10,
                 properties: ["10", "3"],
-                abilities: [
-                    {name: "", rank: 0, title: ""},
-                ],
             },
         ]
     },

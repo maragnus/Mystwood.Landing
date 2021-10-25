@@ -2,6 +2,8 @@ import {Gifts, Ability} from "./Gifts";
 import {Occupation, Occupations, SkillChoice} from "./Occupations";
 
 export class CharacterSheet {
+    startingMoonstone: number = 0;
+
     // Editor - Profile
     characterName?: string;
     religions?: Religion[];
@@ -46,10 +48,11 @@ export class CharacterSheet {
     skills: CharacterSkill[] = [];
     occupationSkills: CharacterSkill[] = [];
 
-    static mock(characterName: string, occupation: Occupation, religions: Religion[], home: HomeChapter): CharacterSheet {
+    static mock(characterName: string, occupation: string, religions: Religion[], home: HomeChapter): CharacterSheet {
         const character = new CharacterSheet();
+        const occupationItem = Occupations.find(i => i.name === occupation);
         character.characterName = "Nico Atkinson";
-        character.occupation = occupation ?? Occupations[0];
+        character.occupation = occupationItem ?? Occupations[0];
         character.religions = religions;
         character.homeChapter = home;
         return character;
@@ -122,20 +125,28 @@ export class CharacterSheet {
         if (!occupation || !occupation.skills)
             return;
 
-        sheet.occupationSkills = occupation.skills.filter(s => typeof s === "string").map(s => ({
-            name: s as string,
-            rank: 0,
-            source: occupation.name,
-        } as CharacterSkill));
+        console.log(occupation.skills);
 
-        sheet.occupationSkillsChoices = occupation.skills.filter(s => typeof s !== "string").map(s => ({
-            count: (s as SkillChoice).count,
-            choices: (s as SkillChoice).choices.map(sc => ({
-                name: sc,
+        const skills: CharacterSkill[] =
+            occupation.skills.filter(s => typeof s === "string").map(s => ({
+                name: s as string,
                 rank: 0,
-                source: occupation.name
-            } as CharacterSkill))
-        } as CharacterSkillChoice));
+                source: occupation.name,
+            } as CharacterSkill));
+
+        sheet.occupationSkills = [...sheet.occupationSkills, ...skills];
+
+        const choices: CharacterSkillChoice[] =
+            occupation.skills.filter(s => typeof s !== "string").map(s => ({
+                count: (s as SkillChoice).count,
+                choices: (s as SkillChoice).choices.map(sc => ({
+                    name: sc,
+                    rank: 0,
+                    source: occupation.name
+                } as CharacterSkill))
+            } as CharacterSkillChoice));
+
+        sheet.occupationSkillsChoices = [...sheet.occupationSkillsChoices, ...choices];
     }
 
     static populateGift(sheet: CharacterSheet, giftName: string, giftRank: number) {
