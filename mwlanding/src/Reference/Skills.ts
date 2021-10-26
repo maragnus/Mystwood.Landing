@@ -3,24 +3,25 @@ export type Skill = {
     title: string;
     class: SkillClass,
     ranks: SkillRanks,
+    rank?: number, // Rank granted per purchase
     cost?: number | null
 };
 
 export enum SkillClass {
-    Unavailable,
-    Free,
-    Minor,
-    Standard,
-    Major,
+    Unavailable = 'Unavailable',
+    Free = 'Free',
+    Minor = 'Minor',
+    Standard = 'Standard',
+    Major = 'Major',
 }
 
 export enum SkillRanks {
-    Unavailable,
-    Once,
-    Multiple,
+    Unavailable = 'Unavailable',
+    Once = 'Once',
+    Multiple = 'Multiple',
 }
 
-export const Skills : Skill[] = [
+export const Skills: Skill[] = [
     {
         "name": "Absolution",
         "title": "Absolution",
@@ -40,6 +41,7 @@ export const Skills : Skill[] = [
         "title": "Apothecary X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -68,6 +70,7 @@ export const Skills : Skill[] = [
         "title": "Armstraining X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -89,6 +92,7 @@ export const Skills : Skill[] = [
         "title": "Bardic Voice X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -159,6 +163,7 @@ export const Skills : Skill[] = [
         "title": "Buy/Sell X",
         "class": SkillClass.Minor,
         "ranks": SkillRanks.Multiple,
+        "rank": 10,
         "cost": 5
     },
     {
@@ -180,6 +185,7 @@ export const Skills : Skill[] = [
         "title": "Cooking X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -404,6 +410,7 @@ export const Skills : Skill[] = [
         "title": "Income X",
         "class": SkillClass.Minor,
         "ranks": SkillRanks.Multiple,
+        "rank": 5,
         "cost": 5
     },
     {
@@ -509,6 +516,7 @@ export const Skills : Skill[] = [
         "title": "Metalworking X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -544,6 +552,7 @@ export const Skills : Skill[] = [
         "title": "Poisoner X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -586,6 +595,7 @@ export const Skills : Skill[] = [
         "title": "Retainers X",
         "class": SkillClass.Minor,
         "ranks": SkillRanks.Multiple,
+        "rank": 1,
         "cost": 5
     },
     {
@@ -607,6 +617,7 @@ export const Skills : Skill[] = [
         "title": "Scribe X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -635,6 +646,7 @@ export const Skills : Skill[] = [
         "title": "Sewing X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {
@@ -761,6 +773,7 @@ export const Skills : Skill[] = [
         "title": "Wear Armor X",
         "class": SkillClass.Minor,
         "ranks": SkillRanks.Multiple,
+        "rank": 1,
         "cost": 5
     },
     {
@@ -775,6 +788,7 @@ export const Skills : Skill[] = [
         "title": "Woodworking X",
         "class": SkillClass.Major,
         "ranks": SkillRanks.Once,
+        "rank": 2,
         "cost": 15
     },
     {

@@ -6,7 +6,7 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ProfileEditor from "./ProfileEditor";
-import {Burgundar, CharacterSheet, Wild} from "../Reference/CharacterSheet";
+import {Burgundar, CharacterSheet, Justice} from "../Reference/CharacterSheet";
 
 import './CharacterEditor.css';
 import GiftsEditor from "./GiftsEditor";
@@ -14,19 +14,22 @@ import SkillsEditor from "./SkillsEditor";
 import AdvEditor from "./AdvEditor";
 import SpellsEditor from "./SpellsEditor";
 import OtherEditor from "./OtherEditor";
+import {Alert} from "@mui/material";
 
-type CharacterEditorProps = {};
+interface CharacterEditorProps {
+}
 
-type CharacterEditorState = {
+interface CharacterEditorState {
     activeStep: number;
     sheet: CharacterSheet;
-};
+    originalSheet: CharacterSheet;
+}
 
-type EditorStep = {
+interface EditorStep {
     step: string;
     title: string;
     editor?: any;
-};
+}
 
 const steps: EditorStep[] = [
     {
@@ -64,9 +67,12 @@ const steps: EditorStep[] = [
 class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEditorState> {
     constructor(props: CharacterEditorProps) {
         super(props);
+
+        let sheet = CharacterSheet.mock('Nico Atkinson', "Artist (Author/Gilder/Painter/Sculptor)", [Justice], Burgundar);
         this.state = {
             activeStep: 0,
-            sheet: CharacterSheet.mock('Nico Atkinson', "Artist (Author/Gilder/Painter/Sculptor)", [Wild], Burgundar)
+            sheet: sheet,
+            originalSheet: {...sheet},
         };
     }
 
@@ -137,18 +143,26 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                 ) : (
                     // Editor Step
                     <React.Fragment>
-                        <Typography sx={{mt: 2, mb: 1}} variant="h4">{steps[activeStep].title}</Typography>
-                        <ActiveStepComponent sheet={this.state.sheet} handleSheetChange={sheetChange}/>
                         <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
-                            <Button
-                                color="inherit"
-                                disabled={activeStep === 0}
-                                onClick={handleBack}
-                                sx={{mr: 1}}
-                            >
+                            <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{mr: 1}}>
                                 Back
                             </Button>
-                            <Box sx={{flex: '1 1 auto'}}/>
+                            <Box sx={{flex: '1 1 auto'}}>
+                                <Typography sx={{mt: 2, mb: 1}} variant="h4">{steps[activeStep].title}</Typography>
+                            </Box>
+                            <Button onClick={handleNext}>
+                                {activeStep === steps.length - 1 ? 'Review' : 'Next'}
+                            </Button>
+                        </Box>
+                        <ActiveStepComponent sheet={this.state.sheet} originalSheet={this.state.originalSheet}
+                                             handleSheetChange={sheetChange}/>
+                        <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
+                            <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{mr: 1}}>
+                                Back
+                            </Button>
+                            <Box sx={{flex: '1 1 auto'}}>
+                                <Alert severity="info"> Demonstration mode is active. No changes will be saved.</Alert>
+                            </Box>
                             <Button onClick={handleNext}>
                                 {activeStep === steps.length - 1 ? 'Review' : 'Next'}
                             </Button>

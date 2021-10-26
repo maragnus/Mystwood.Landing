@@ -2,23 +2,28 @@ import {CharacterSheet} from "../Reference/CharacterSheet";
 import * as React from "react";
 import {ChangeEvent} from "react";
 
-export type CharacterEditorPageProps = {
+export interface CharacterEditorPageProps {
     sheet: CharacterSheet;
+    originalSheet: CharacterSheet;
     handleSheetChange: ((state: any) => void);
-};
+}
 
-export type CharacterEditorPageState = {
+export interface CharacterEditorPageState {
     sheet: CharacterSheet;
-};
+    activeChildStep: number;
+}
 
 export abstract class CharacterEditorPage extends React.Component<CharacterEditorPageProps, CharacterEditorPageState> {
+    protected changes: any = {};
+
     protected constructor(props: CharacterEditorPageProps) {
         super(props);
 
         const newState: CharacterEditorPageState = {
             sheet: {
                 ...props.sheet
-            }
+            },
+            activeChildStep: 0,
         };
         this.afterChange(newState, undefined, undefined);
 
@@ -46,11 +51,18 @@ export abstract class CharacterEditorPage extends React.Component<CharacterEdito
 
         this.setState(newState);
 
-        this.props.handleSheetChange({
-            [name]: value
-        });
+        this.changes[name] = value;
     };
 
     afterChange(state: CharacterEditorPageState, name?: string, value?: string): void {
     };
+
+    savePage(): void {
+        this.props.handleSheetChange(this.changes);
+        this.changes = {}
+    }
+
+    componentWillUnmount() {
+        this.savePage();
+    }
 }

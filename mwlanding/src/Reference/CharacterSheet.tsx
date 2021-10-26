@@ -1,5 +1,6 @@
 import {Gifts, Ability} from "./Gifts";
 import {Occupation, Occupations, SkillChoice} from "./Occupations";
+import {Skill, Skills} from "./Skills";
 
 export class CharacterSheet {
     startingMoonstone: number = 0;
@@ -24,7 +25,7 @@ export class CharacterSheet {
 
     // Editor - Skills
     purchasedSkills: PurchasedSkill[] = [];
-    occupationSkillsChoices: CharacterSkillChoice[] = [];
+    chosenSkills: CharacterChosenSkill[] = [];
 
     // Editor - Craft Skills
     craftSkills?: undefined;
@@ -47,15 +48,33 @@ export class CharacterSheet {
     abilities: CharacterAbility[] = [];
     skills: CharacterSkill[] = [];
     occupationSkills: CharacterSkill[] = [];
+    occupationSkillsChoices: CharacterSkillChoice[] = [];
 
     static mock(characterName: string, occupation: string, religions: Religion[], home: HomeChapter): CharacterSheet {
-        const character = new CharacterSheet();
+        const sheet = new CharacterSheet();
         const occupationItem = Occupations.find(i => i.name === occupation);
-        character.characterName = "Nico Atkinson";
-        character.occupation = occupationItem ?? Occupations[0];
-        character.religions = religions;
-        character.homeChapter = home;
-        return character;
+        sheet.characterName = "Nico Atkinson";
+        sheet.occupation = occupationItem ?? Occupations[0];
+        sheet.religions = religions;
+        sheet.homeChapter = home;
+        sheet.courage = 5;
+        sheet.prowess = 3;
+        sheet.dexterity = 1;
+        sheet.chosenSkills = [
+            {name: "Metalworking 4"},
+            {name: "Engineering"}
+        ];
+        sheet.publicStory = "Nico struggled with watching the injustices of the big city. Any attempt to intervene landed him in a " +
+            "cell, every, single, time. Now, on the front lines, he can make a difference and be appreciated for it."
+
+        const boughtSkills = ["Income", "Agility", "Fully Armored"];
+        sheet.purchasedSkills = boughtSkills.map(skillName => {
+            const info = Skills.find(i => i.name === skillName) ?? Skills[0];
+            return {name: info.name, rank: info.rank ?? 0, cost: info.cost ?? 0, info: info};
+        });
+        CharacterSheet.populate(sheet);
+        sheet.startingMoonstone = sheet.moonstoneSpent;
+        return sheet;
     }
 
     // Populate reference data fields and calculated fields
@@ -188,6 +207,10 @@ export class CharacterSheet {
     }
 }
 
+export interface CharacterChosenSkill {
+    name: string;
+}
+
 export type CharacterProperty = {
     name: string;
     value?: string;
@@ -216,6 +239,7 @@ export type PurchasedSkill = {
     name: string;
     rank: number;
     cost: number;
+    info: Skill;
 }
 
 export type HomeChapter = {

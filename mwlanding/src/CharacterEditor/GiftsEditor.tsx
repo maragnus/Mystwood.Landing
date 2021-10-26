@@ -1,4 +1,4 @@
-import {Avatar, Box, Chip, Grid, IconButton, Rating, Stack, styled, Tooltip, Typography} from "@mui/material";
+import {Avatar, Box, Chip, Grid, IconButton, Paper, Rating, Stack, styled, Tooltip, Typography} from "@mui/material";
 import * as React from "react";
 import {CharacterAbility, CharacterProperty, CharacterSheet} from "../Reference/CharacterSheet";
 import {CharacterEditorPage, CharacterEditorPageState} from "./CharacterEditorPage";
@@ -13,12 +13,12 @@ const GiftMap: { [name: string]: { label: string, color: string, name: string, t
     "wisdom": {label: "W", color: "#AA39C6", name: "wisdom", title: "Wisdom"},
 };
 
-type GiftEditorProps = {
+interface GiftEditorProps {
     title: string;
     name: string;
     value: number;
     onChange: ((name: string, value: number) => void);
-};
+}
 
 // Rating Picker for a Gift
 function GiftEditor(props: GiftEditorProps) {
@@ -32,7 +32,7 @@ function GiftEditor(props: GiftEditorProps) {
 
     const gift = GiftMap[name.toLowerCase()];
 
-    return <Box>
+    return <Paper sx={{p: 2, m: 2}}>
         <Stack direction="column" spacing={1} alignItems="center" justifyContent="center">
             <Stack direction="row" spacing={1} alignItems="center" justifyContent="center">
                 <Avatar sx={{bgcolor: gift.color, color: "#fff", width: 28, height: 28}}>{gift.label}</Avatar>
@@ -50,14 +50,14 @@ function GiftEditor(props: GiftEditorProps) {
                 <IconButton onClick={(e) => handleChange(0)}><CloseIcon/></IconButton>
             </Box>
         </Stack>
-    </Box>
+    </Paper>
 }
 
-type GiftInfoProps = {
+interface GiftInfoProps {
     name: string;
     abilities: CharacterAbility[];
     properties: CharacterProperty[];
-};
+}
 
 const ListItem = styled('li')(({theme}) => ({
     margin: theme.spacing(0.5),
@@ -121,7 +121,7 @@ export default class GiftsEditor extends CharacterEditorPage {
             const info = !displayInline ? undefined :
                 <GiftInfo name={gift.title} abilities={this.state.sheet.abilities}
                           properties={this.state.sheet.properties}/>;
-            return <Grid item xs={6} md={4}>
+            return <Grid item xs={12} sm={6} md={4}>
                 <GiftEditor title={gift.title} name={gift.name} value={sheet[gift.name]}
                             onChange={(name, value) => this.handleChange(name, value)}/>
                 {info}
