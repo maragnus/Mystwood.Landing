@@ -1,7 +1,6 @@
 import React from 'react';
 import {Box, Tab} from "@mui/material";
-import {CharacterEditorPage} from "./CharacterEditorPage";
-import {CharacterSheet} from "../Reference/CharacterSheet";
+import {CharacterEditorPage, CharacterEditorPageState} from "./CharacterEditorPage";
 import TabContext from '@mui/lab/TabContext';
 import TabList from '@mui/lab/TabList';
 import TabPanel from '@mui/lab/TabPanel';
@@ -13,7 +12,6 @@ import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import ListAltIcon from '@mui/icons-material/ListAlt';
 
 export default class SkillsEditor extends CharacterEditorPage {
-    tabRef: any;
     tabRefs: any[] = [undefined, undefined, undefined];
 
     handleTabChange(event: React.SyntheticEvent, newValue: string) {
@@ -25,15 +23,23 @@ export default class SkillsEditor extends CharacterEditorPage {
     }
 
     savePage() {
-        //this.tabRefs.forEach(tab => tab?.savePage());
-        this.tabRef?.savePage();
+        this.tabRefs.forEach(tab => tab?.savePage());
         super.savePage();
     }
 
     render() {
-        CharacterSheet.populateSkills(this.state.sheet);
-
         const activeChildStep = (this.state.activeChildStep === undefined) ? "0" : this.state.activeChildStep;
+
+        const sheetChange = (changes: object) => {
+            this.props.handleSheetChange(() => this.props.handleSheetChange(changes));
+            this.setState((state: CharacterEditorPageState) => {
+                const newSheet = {
+                    ...state.sheet,
+                    ...changes
+                };
+                state.sheet = newSheet;
+            });
+        };
 
         return <Box component="form">
             <TabContext value={activeChildStep}>
@@ -45,26 +51,26 @@ export default class SkillsEditor extends CharacterEditorPage {
 
                 <TabPanel value="0">
                     <OccupationSkillsEditor
-                        ref={(tab: any) => this.tabRef = tab}
+                        ref={(tab: any) => this.tabRefs[1] = tab}
                         sheet={this.state.sheet}
                         originalSheet={this.props.originalSheet}
-                        handleSheetChange={this.props.handleSheetChange}/>
+                        handleSheetChange={sheetChange.bind(this)}/>
                 </TabPanel>
 
                 <TabPanel value="1">
                     <PurchasedSkillsEditor
-                        ref={(tab: any) => this.tabRef = tab}
+                        ref={(tab: any) => this.tabRefs[1] = tab}
                         sheet={this.state.sheet}
                         originalSheet={this.props.originalSheet}
-                        handleSheetChange={this.props.handleSheetChange}/>
+                        handleSheetChange={sheetChange.bind(this)}/>
                 </TabPanel>
 
                 <TabPanel value="2">
                     <SkillsSummary
-                        ref={(tab: any) => this.tabRef = tab}
+                        ref={(tab: any) => this.tabRefs[2] = tab}
                         sheet={this.state.sheet}
                         originalSheet={this.props.originalSheet}
-                        handleSheetChange={this.props.handleSheetChange}/>
+                        handleSheetChange={sheetChange.bind(this)}/>
                 </TabPanel>
             </TabContext>
         </Box>;

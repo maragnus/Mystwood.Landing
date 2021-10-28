@@ -66,18 +66,21 @@ export class OccupationSkillsEditor extends CharacterEditorPage {
         // Skill Choices
         const isSkillChecked = (skill: CharacterSkill): boolean => chosenSkills.some(i => i.name === skill.name);
         const toggleSkill = (skill: CharacterSkill) => {
-            const newState = {...this.state};
-            if (chosenSkills.some(i => i.name === skill.name))
-                newState.sheet.chosenSkills = chosenSkills.filter(i => i.name !== skill.name)
-            else
-                newState.sheet.chosenSkills = [...chosenSkills, {name: skill.name} as CharacterChosenSkill];
-            this.setState(newState);
-            this.handleChange("chosenSkills", newState.sheet.chosenSkills)
+            // Determine if we are adding or removing the skill
+            const hasSkill = chosenSkills.some(i => i.name === skill.name);
+            if (hasSkill) { // Remove
+                this.handleChange("chosenSkills",
+                    chosenSkills.filter(i => i.name !== skill.name));
+            } else { // Add
+                this.handleChange("chosenSkills",
+                    [...chosenSkills, {name: skill.name} as CharacterChosenSkill]);
+            }
+            this.savePage();
         };
 
         const skills = occupationSkills.map(skill => <SkillChip skill={skill}/>);
-        const choices = occupationChoices.map(choice => <SkillChoices skills={choice} isSkillChecked={isSkillChecked}
-                                                                      toggleSkill={toggleSkill}/>);
+        const choices = occupationChoices.map(choice =>
+            <SkillChoices skills={choice} isSkillChecked={isSkillChecked} toggleSkill={toggleSkill}/>);
 
         return <Box component="form">
             <Typography variant="h6" sx={{pt: 2}}>{this.state.sheet.occupation?.name}</Typography>

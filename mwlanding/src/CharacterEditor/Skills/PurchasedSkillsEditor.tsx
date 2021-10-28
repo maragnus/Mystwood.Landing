@@ -1,5 +1,5 @@
 import {CharacterEditorPage} from "../CharacterEditorPage";
-import {CharacterSheet, PurchasedSkill} from "../../Reference/CharacterSheet";
+import {PurchasedSkill} from "../../Reference/CharacterSheet";
 import {Skill, SkillByName, SkillRanks, Skills} from "../../Reference/Skills";
 import {Autocomplete, Box, Chip, IconButton, TextField, Tooltip, Typography} from "@mui/material";
 import React from "react";
@@ -56,30 +56,24 @@ export class PurchasedSkillsEditor extends CharacterEditorPage {
             if (!newSkill) return;
 
             if (action === SkillAction.Delete) {
-                newState.sheet.purchasedSkills = purchasedSkills.filter(i => i.name !== skill.name)
+                this.handleChange("purchasedSkills", purchasedSkills.filter(i => i.name !== skill.name));
             } else if (action === SkillAction.Increase) {
                 newSkill.purchasedRank += 1;
+                this.handleChange("purchasedSkills", purchasedSkills);
             } else if (action === SkillAction.Decrease) {
                 newSkill.purchasedRank = Math.max(0, newSkill.purchasedRank - 1);
+                this.handleChange("purchasedSkills", purchasedSkills);
             }
-
-            CharacterSheet.populateSkills(newState.sheet);
-
-            this.setState(newState);
-            this.handleChange("purchasedSkills", newState.sheet.purchasedSkills)
+            this.savePage();
         };
+
         const addSkill = (skill: Skill): void => {
-            const newState = {...this.state};
-
-            newState.sheet.purchasedSkills.push({
-                name: skill.name,
-                purchasedRank: 1,
-            });
-
-            CharacterSheet.populateSkills(newState.sheet);
-
-            this.setState(newState);
-            this.handleChange("purchasedSkills", newState.sheet.purchasedSkills)
+            this.handleChange("purchasedSkills",
+                purchasedSkills.push({
+                    name: skill.name,
+                    purchasedRank: 1,
+                }));
+            this.savePage();
         };
         const purchased = purchasedSkills.map(skill => <PurchasedSkillChip skill={skill} changeSkill={changeSkill}/>);
         const purchasableSkills = Skills.filter(s => !purchasedSkills.some(p => p.name === s.name) && (s?.cost ?? 0) > 0);
