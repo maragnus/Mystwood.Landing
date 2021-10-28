@@ -21,6 +21,49 @@ export enum SkillRanks {
     Multiple = 'Multiple',
 }
 
+const WeaponTypes: string[] = [
+    "Bow",
+    "Claws",
+    "Dagger",
+    "Fists",
+    "Flail",
+    "Hand Crossbow",
+    "Javelin",
+    "Normal Crossbow",
+    "One Handed Axe",
+    "One Handed Blunt",
+    "One Handed Sword",
+    "One Handed Tool",
+    "Polearm",
+    "Spear",
+    "Staff",
+    "Thrown Weapon",
+    "Two Handed Axe",
+    "Two Handed Blunt",
+    "Two Handed Sword",
+    "Two Handed Tool",
+];
+
+// const SpecialWeapons: string[] = [
+//     "Court Blade",
+//     "Dirk",
+//     "Double Sword",
+//     "Falchion",
+//     "Frankard",
+//     "Gouge",
+//     "Guttentag",
+//     "Hamaxe",
+//     "Hewing Spear",
+//     "Khopesh",
+//     "Knuckledusters",
+//     "Mace",
+//     "Pilum",
+//     "Plumbatum",
+//     "Rapier",
+//     "Reaper Maul",
+//     "Shotput",
+// ];
+
 export const Skills: Skill[] = [
     {
         name: "Absolution",
@@ -754,20 +797,22 @@ export const Skills: Skill[] = [
         ranks: SkillRanks.Once,
         cost: 10
     },
-    {
-        name: "Weapon Specialization (Type)",
-        title: "Weapon Specialization (Type)",
-        class: SkillClass.Standard,
-        ranks: SkillRanks.Multiple,
-        cost: 10
-    },
-    {
-        name: "Weapon Use (Type)",
-        title: "Weapon Use (Type)",
-        class: SkillClass.Standard,
-        ranks: SkillRanks.Multiple,
-        cost: 10
-    },
+    ...WeaponTypes.map(type =>
+        ({
+            name: `Weapon Specialization (${type})`,
+            title: `Weapon Specialization (${type})`,
+            class: SkillClass.Standard,
+            ranks: SkillRanks.Once,
+            cost: 10
+        })),
+    ...WeaponTypes.map(type =>
+        ({
+            name: `Weapon Use (${type})`,
+            title: `Weapon Use (${type})`,
+            class: SkillClass.Standard,
+            ranks: SkillRanks.Once,
+            cost: 10
+        })),
     {
         name: "Wear Armor",
         title: "Wear Armor X",
@@ -797,7 +842,7 @@ export const Skills: Skill[] = [
         class: SkillClass.Unavailable,
         ranks: SkillRanks.Unavailable,
         cost: null
-    }
+    },
 ];
 
 const skillsLookup: Map<string, Skill> =
