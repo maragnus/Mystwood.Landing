@@ -6,15 +6,34 @@ export enum OccupationType {
     Enhancement = "Enhancement",
 }
 
-export type Occupation = {
+export interface Occupation {
     name: string;
     type: OccupationType;
     skills: (string | SkillChoice)[]
+    duty?: string,
+    livery?: string,
 }
 
 export type SkillChoice = {
     count: number;
     choices: string[];
+}
+
+const Materials: string[] = ["Cloth", "Food", "Metal", "Parchment", "Wood"];
+const Components: string[] = ["Air", "Earth", "Fire", "Water", "Chaos", "Death", "Life", "Time"];
+
+function ProductionMaterialOrComponent(count: number, quantity: number): SkillChoice {
+    return {
+        count: count,
+        choices: [...Materials, ...Components].map(name => `Production (${quantity} ${name})`)
+    };
+}
+
+function ProductionMaterial(count: number, quantity: number): SkillChoice {
+    return {
+        count: count,
+        choices: [...Materials].map(name => `Production (${quantity} ${name})`)
+    };
 }
 
 export const Occupations: Occupation[] = [
@@ -26,14 +45,19 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Apprentice",
-        skills: ["Agility", "Apprenticeship", "Duty 1 (assist master)", "Production X (any 1 Material or Component)", "Serene Contemplation"]
+        duty: "assist master",
+        skills: ["Agility", "Apprenticeship", "Duty 1", ProductionMaterialOrComponent(1, 1), "Serene Contemplation"],
     },
     {
         type: OccupationType.Basic,
         name: "Baker",
         skills: ["Cooking 4", "Income 10", "News & Rumors", "Weapon Use (Flail)"]
     },
-    {type: OccupationType.Basic, name: "Barber Surgeon", skills: ["Apothecary 2", "Cure Affliction", "Medicine"]},
+    {
+        type: OccupationType.Basic,
+        name: "Barber Surgeon",
+        skills: ["Apothecary 2", "Cure Affliction", "Medicine"]
+    },
     {
         type: OccupationType.Basic,
         name: "Bard/Minstrel/Thespian",
@@ -42,15 +66,17 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Beggar",
-        skills: ["Agility", "Begging", "Livery (rags and patches)", "Scavenging", {
+        skills: ["Agility", "Begging", "Livery", "Scavenging", {
             count: 1,
             choices: ["Information Gathering", "Weapon Use (Staff)"]
-        }]
+        }],
+        livery: "rags and patches"
     },
     {
         type: OccupationType.Basic,
         name: "Blacksmith",
-        skills: ["Livery (leather apron)", "Metalworking 4", "Weapon Specialization (One Handed Blunt", "Two Handed Blunt)"]
+        livery: "leather apron",
+        skills: ["Livery", "Metalworking 4", "Weapon Specialization (One Handed Blunt)", "Weapon Specialization (Two Handed Blunt)"]
     },
     {
         type: OccupationType.Basic,
@@ -63,7 +89,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Butcher",
-        skills: ["Butcher", "Cooking 2", "Livery (bloodstained apron)", "Toughness"]
+        livery: "bloodstained apron",
+        skills: ["Butcher", "Cooking 2", "Livery", "Toughness"]
     },
     {
         type: OccupationType.Basic,
@@ -78,7 +105,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Dancer/Juggler/Acrobat",
-        skills: ["Agility", "Entertainer", "Livery (performance costume)", "News & Rumors", "Weapon Specialization (Thrown Weapon)"]
+        livery: "performance costume",
+        skills: ["Agility", "Entertainer", "Livery", "News & Rumors", "Weapon Specialization (Thrown Weapon)"]
     },
     {
         type: OccupationType.Basic,
@@ -114,7 +142,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Herder",
-        skills: ["Pathfinding", "Production (2 Cloth", "6 Food)", "Wear Armor 1", "Woodwise"]
+        skills: ["Pathfinding", "Production (2 Cloth)", "Production (6 Food)", "Wear Armor 1", "Woodwise"]
     },
     {
         type: OccupationType.Basic,
@@ -124,12 +152,13 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Hunter",
-        skills: ["Butcher", "Pathfinding", "Production (2 Food)", "Weapon Specialization (Bow", "Normal Crossbow)", "Wear Armor 1", "Woodwise"]
+        skills: ["Butcher", "Pathfinding", "Production (2 Food)", "Weapon Specialization (Bow)", "Weapon Specialization (Normal Crossbow)", "Wear Armor 1", "Woodwise"]
     },
     {
         type: OccupationType.Basic,
         name: "Laborer",
-        skills: ["Duty 2 (Manual Labor)", "Engineering", "Income 5", "Toughness", {
+        duty: "Manual Labor",
+        skills: ["Duty 2", "Engineering", "Income 5", "Toughness", {
             count: 1,
             choices: ["Weapon Use (Two Handed Axe)", "Weapon Use (Two Handed Blunt)"]
         }, "Weapon Use (Tool)", "Work Rhythm"]
@@ -137,7 +166,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Lackey",
-        skills: ["Buy/Sell 10", "Commerce", "Livery (your master's colors)", "Quick Learner", "News & Rumors", {
+        livery: "your master's colors",
+        skills: ["Buy/Sell 10", "Commerce", "Livery", "Quick Learner", "News & Rumors", {
             count: 1,
             choices: ["Serene Contemplation", "Unarmed Combat"]
         }]
@@ -158,7 +188,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Novice Monk",
-        skills: ["Divine Lore", "Livery (robe or habit)", "Research", "Scribe 2", "Serene Contemplation"]
+        livery: "robe or habit",
+        skills: ["Divine Lore", "Livery", "Research", "Scribe 2", "Serene Contemplation"]
     },
     {
         type: OccupationType.Basic,
@@ -168,12 +199,14 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Penitent",
-        skills: ["Battle Rage", "Blessed", "Divine Lore", "Livery (icons of faith)", "Weapon Specialization (Flail)", "Weapon Use (Flail)"]
+        livery: "icons of faith",
+        skills: ["Battle Rage", "Blessed", "Divine Lore", "Livery", "Weapon Specialization (Flail)", "Weapon Use (Flail)"]
     },
     {
         type: OccupationType.Basic,
         name: "Ragpicker",
-        skills: ["Duty 2 (Clean up trash)", "Production (any one Material)", "Scavenging", "Weapon Specialization (Tool)", {
+        duty: "Clean up trash",
+        skills: ["Duty 2", ProductionMaterial(1, 1), "Scavenging", "Weapon Specialization (Tool)", {
             count: 1,
             choices: ["Toughness", "Weapon Use (Polearm)"]
         }]
@@ -181,12 +214,13 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Ratcatcher",
-        skills: ["Engineering", "Livery (rats or rat symbols)", "Occupational Spells (page 126)", "Poisoner 2", "Set Trap", "Slayer (Vermin)"]
+        livery: "rats or rat symbols",
+        skills: ["Engineering", "Livery", "Occupational Spells (page 126)", "Poisoner 2", "Set Trap", "Slayer (Vermin)"]
     },
     {
         type: OccupationType.Basic,
         name: "Squire",
-        skills: ["Income 10", "Wear Armor 4", {count: 1, choices: ["Armstraining 4, Metalworking 2"]}]
+        skills: ["Income 10", "Wear Armor 4", {count: 1, choices: ["Armstraining 4", "Metalworking 2"]}]
     },
     {
         type: OccupationType.Basic,
@@ -199,12 +233,14 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Tailor/Leatherworker",
-        skills: ["Duty 1 (mending and patching)", "Medicine", "Sewing 4"]
+        duty: "mending and patching",
+        skills: ["Duty 1", "Medicine", "Sewing 4"]
     },
     {
         type: OccupationType.Basic,
         name: "Tavern Keeper",
-        skills: ["Cooking 2", "Drinks on the House", "Duty 1 (minding the tavern)", "Income 10", "Information Gathering", "News & Rumors", "Sell Drinks"]
+        duty: "minding the tavern",
+        skills: ["Cooking 2", "Drinks on the House", "Duty 1", "Income 10", "Information Gathering", "News & Rumors", "Sell Drinks"]
     },
     {
         type: OccupationType.Basic,
@@ -214,17 +250,21 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Town Crier",
-        skills: ["Bardic Voice 2", "Duty 1 (shout proclamations you have been hired to", "or seditious blather)", "Income 10", "Information Gathering", "News & Rumors", "Unarmed Combat"]
+        skills: ["Bardic Voice 2", "Duty 1", "Income 10", "Information Gathering", "News & Rumors", "Unarmed Combat"],
+        duty: "shout proclamations you have been hired to or seditious blather"
     },
     {
         type: OccupationType.Basic,
         name: "Town Guard",
-        skills: ["Duty 1 (inspection by a Corporal or Captain of the Guard)", "Income 5", "Livery (based on local Chapter)", "Warcaster", "Weapon Specialization (any one Weapon Type)", "Weapon Use (Large Shield)", "Wear Armor 3"]
+        duty: "inspection by a Corporal or Captain of the Guard",
+        livery: "based on local Chapter",
+        skills: ["Duty 1", "Income 5", "Livery", "Warcaster", "Weapon Specialization (any one Weapon Type)", "Weapon Use (Large Shield)", "Wear Armor 3"]
     },
     {
         type: OccupationType.Basic,
         name: "Woodsfolk",
-        skills: ["Duty 1 (gathering firewood)", "Weapon Specialization (One Handed Axe", "Two Handed Axe)", "Wear Armor 1", "Woodworking 4", "Woodwise"]
+        duty: "gathering firewood",
+        skills: ["Duty 1", "Weapon Specialization (One Handed Axe)", "Weapon Specialization (Two Handed Axe)", "Wear Armor 1", "Woodworking 4", "Woodwise"]
     },
     {
         type: OccupationType.Youth,
@@ -234,7 +274,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Youth,
         name: "Apprentice (Youth)",
-        skills: ["Agility", "Apprenticeship", "Duty 1 (assist master)", "Production X (any 1 Material or Component)", "Serene Contemplation"]
+        duty: "assist master",
+        skills: ["Agility", "Apprenticeship", "Duty 1", ProductionMaterialOrComponent(1, 1), "Serene Contemplation"]
     },
     {
         type: OccupationType.Youth,
@@ -244,7 +285,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Youth,
         name: "Beggar (Youth)",
-        skills: ["Agility", "Begging", "Livery (rags and patches)", "Scavenging", {
+        livery: "rags and patches",
+        skills: ["Agility", "Begging", "Livery", "Scavenging", {
             count: 1,
             choices: ["Information Gathering", "Weapon Use (Staff)"]
         }]
@@ -252,22 +294,26 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Youth,
         name: "Dancer/Juggler/Acrobat (Youth)",
-        skills: ["Agility", "Entertainer", "Livery (performance costume)", "News & Rumors", "Weapon Specialization (Thrown Weapon)"]
+        livery: "performance costume",
+        skills: ["Agility", "Entertainer", "Livery", "News & Rumors", "Weapon Specialization (Thrown Weapon)"]
     },
     {
         type: OccupationType.Youth,
         name: "Guttersnipe (Youth)",
-        skills: ["Agility", "Duty 1 (assist master)", "Evade Trap", "Production (1 Death)", "Scavenging"]
+        duty: "assist master",
+        skills: ["Agility", "Duty 1", "Evade Trap", "Production (1 Death)", "Scavenging"]
     },
     {
         type: OccupationType.Youth,
         name: "Initiate (Youth)",
-        skills: ["Divine Lore", "Livery (robes or other religious symbols)", "Quick Learner", "Serene Contemplation"]
+        livery: "robes or other religious symbols",
+        skills: ["Divine Lore", "Livery", "Quick Learner", "Serene Contemplation"]
     },
     {
         type: OccupationType.Youth,
         name: "Lackey (Youth)",
-        skills: ["Buy/Sell 10", "Commerce", "Livery (your master's colors)", "Quick Learner", "News & Rumors", {
+        livery: "your master's colors",
+        skills: ["Buy/Sell 10", "Commerce", "Livery", "Quick Learner", "News & Rumors", {
             count: 1,
             choices: ["Serene Contemplation", "Unarmed Combat"]
         }]
@@ -275,7 +321,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Youth,
         name: "Page (Youth)",
-        skills: ["Agility", "Income 5", "Livery (your patron’s colors)", "Quick Learner", "Wear Armor 2"]
+        livery: "your patron’s colors",
+        skills: ["Agility", "Income 5", "Livery", "Quick Learner", "Wear Armor 2"]
     },
     {
         type: OccupationType.Youth,
@@ -285,7 +332,9 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Youth,
         name: "Town Guard Recruit (Youth)",
-        skills: ["Duty 1 (inspection by Corporal or Captain of the Guard)", "Income 5", "Livery (green and black Town Guard tabard)", "Wear Armor 2"]
+        duty: "inspection by Corporal or Captain of the Guard",
+        livery: "green and black Town Guard tabard",
+        skills: ["Duty 1", "Income 5", "Livery", "Wear Armor 2"]
     },
     {
         type: OccupationType.Youth,
@@ -295,12 +344,14 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Absolver/Flagellant",
-        skills: ["Absolution", "Battle Rage", "Blessed", "Divine Lore", "Improved Battle Rage", "Iron Will", "Livery (icons of faith)", "Toughness", "Weapon Specialization (Flail)", "Weapon Use (Flail)"]
+        livery: "icons of faith",
+        skills: ["Absolution", "Battle Rage", "Blessed", "Divine Lore", "Improved Battle Rage", "Iron Will", "Livery", "Toughness", "Weapon Specialization (Flail)", "Weapon Use (Flail)"]
     },
     {
         type: OccupationType.Advanced,
         name: "Almoner",
-        skills: ["Begging", "Blessed", "Buy/Sell 20", "Cooking 2", "Divine Lore", "Duty 1 (distribute money to the needy)", "Income 10"]
+        duty: "distribute money to the needy",
+        skills: ["Begging", "Blessed", "Buy/Sell 20", "Cooking 2", "Divine Lore", "Duty 1", "Income 10"]
     },
     {
         type: OccupationType.Advanced,
@@ -322,17 +373,20 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Beekeeper",
-        skills: ["Apothecary 2", "Income 10", "Livery (beekeeping garb with mask)", "Occupational Spells (page 125)", "Production (4 Food", "4 Life)", "Serene Contemplation", "Swarm Magic", "Wear Armor 1", "Woodwise"]
+        livery: "beekeeping garb with mask",
+        skills: ["Apothecary 2", "Income 10", "Livery", "Occupational Spells (page 125)", "Production (4 Food)", "Production (4 Life)", "Serene Contemplation", "Swarm Magic", "Wear Armor 1", "Woodwise"]
     },
     {
         type: OccupationType.Advanced,
         name: "Corporal of the Guard",
-        skills: ["Armstraining 2", "Duty 2 (inspecting the Guard)", "Income 10", "Leadership (Town Guard)", "Livery (based on local Chapter)", "Warcaster", "Weapon Specialization (any one Weapon Type)", "Weapon Use (Large Shield)", "Wear Armor 4"]
+        duty: "inspecting the Guard",
+        livery: "based on local Chapter",
+        skills: ["Armstraining 2", "Duty 2", "Income 10", "Leadership (Town Guard)", "Livery", "Warcaster", "Weapon Specialization (any one Weapon Type)", "Weapon Use (Large Shield)", "Wear Armor 4"]
     },
     {
         type: OccupationType.Advanced,
         name: "Crofter",
-        skills: ["News & Rumors", "Production (2 Cloth", "4 Food", "4 Wood)", "Weapon Specialization (Tool)", "Work Rhythm", "Woodworking 2"]
+        skills: ["News & Rumors", "Production (2 Cloth)", "Production (4 Food)", "Production (4 Wood)", "Weapon Specialization (Tool)", "Work Rhythm", "Woodworking 2"]
     },
     {
         type: OccupationType.Advanced,
@@ -342,17 +396,20 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Dragon Slayer",
-        skills: ["Battle Rage", "Livery (Fantastical costume", "hair and tattoos)", "Scavenging", "Slayer (Beastman", "Draconian", "Goblin", "Minotaur", "and Troll)", "Wear Armor 3"]
+        skills: ["Battle Rage", "Livery", "Scavenging", "Slayer (Beastman)", "Slayer (Draconian)", "Slayer (Goblin)", "Slayer (Minotaur)", "Slayer (Troll)", "Wear Armor 3"],
+        livery: "Fantastical costume, hair, and tattoos",
     },
     {
         type: OccupationType.Advanced,
         name: "Executioner",
-        skills: ["Entertainer", "Execution", "Income 10", "Livery (black hood)", "Occupational Spells (page 125)", "Poisoner 4", "Weapon Specialization (One Handed Axe", "One Handed Sword", "Two Handed Axe", "Two Handed Sword)"]
+        livery: "black hood",
+        skills: ["Entertainer", "Execution", "Income 10", "Livery", "Occupational Spells (page 125)", "Poisoner 4", "Weapon Specialization (One Handed Axe)", "Weapon Specialization (One Handed Sword)", "Weapon Specialization (Two Handed Axe)", "Weapon Specialization (Two Handed Sword)"]
     },
     {
         type: OccupationType.Advanced,
         name: "Famulus",
-        skills: ["Armstraining 2", "Iron Will", "Livery (your master's symbol)", "Mage Lore", "Slayer (Daemons)", "Weapon Specialization (any one Weapon Type)", "Warcaster"]
+        livery: "your master's symbol",
+        skills: ["Armstraining 2", "Iron Will", "Livery", "Mage Lore", "Slayer (Daemons)", "Weapon Specialization (any one Weapon Type)", "Warcaster"]
     },
     {
         type: OccupationType.Advanced,
@@ -365,22 +422,25 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Forester/Ranger/Gamekeeper",
-        skills: ["Pathfinding", "Production (8 Wood)", "Weapon Specialization (One Handed Axe", "Two Handed Axe)", "Wear Armor 2", "Woodwise", "Woodworking 4"]
+        skills: ["Pathfinding", "Production (8 Wood)", "Weapon Specialization (One Handed Axe)", "Weapon Specialization (Two Handed Axe)", "Wear Armor 2", "Woodwise", "Woodworking 4"]
     },
     {
         type: OccupationType.Advanced,
         name: "Freeholder",
-        skills: ["Butcher", "Patronage 1", "Production (4 Cloth", "12 Food", "2 Wood)", "Weapon Use (Flail)", "Woodwise", "Woodworking 2"]
+        skills: ["Butcher", "Patronage 1", "Production (4 Cloth)", "Production (12 Food)", "Production (2 Wood)", "Weapon Use (Flail)", "Woodwise", "Woodworking 2"]
     },
     {
         type: OccupationType.Advanced,
         name: "Gaoler",
-        skills: ["Duty 1 (inspecting prisoners and upkeeping cells)", "Income 10", "Livery (Town Guard)", "Occupational Spells (page 125)", "Set Trap", "Weapon Specialization (One Handed Blunt", "Two Handed Blunt)", "Warcaster", "Wear Armor 3"]
+        duty: "inspecting prisoners and upkeeping cells",
+        livery: "Town Guard",
+        skills: ["Duty 1", "Income 10", "Livery", "Occupational Spells (page 125)", "Set Trap", "Weapon Specialization (One Handed Blunt)", "Weapon Specialization (Two Handed Blunt)", "Warcaster", "Wear Armor 3"]
     },
     {
         type: OccupationType.Advanced,
         name: "Herald",
-        skills: ["Armstraining 2", "Bardic Voice 4", "Income 10", "Information Gathering", "Livery (Herald’s garb)", "Occupational Spells (page 126)", "Scribe 2"]
+        livery: "Herald’s garb",
+        skills: ["Armstraining 2", "Bardic Voice 4", "Income 10", "Information Gathering", "Livery", "Occupational Spells (page 126)", "Scribe 2"]
     },
     {
         type: OccupationType.Advanced,
@@ -393,7 +453,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Knight Errant",
-        skills: ["Armstraining 4", "Income 10", "Leadership (any non-Knight sworn to aid you)", "Livery (Your heraldry)", "Retainers 1", "Wear Armor 6"]
+        livery: "Your heraldry",
+        skills: ["Armstraining 4", "Income 10", "Leadership (any non-Knight sworn to aid you)", "Livery", "Retainers 1", "Wear Armor 6"]
     },
     {
         type: OccupationType.Advanced,
@@ -421,7 +482,11 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Miller",
-        skills: ["Income 20", "News & Rumors", "Production (8 Food)", "1[Production (4 Air)", "Production (4 Water)", "Production (3 Life)]", "Woodworking 4"]
+        skills: ["Income 20", "News & Rumors", "Production (8 Food)", {
+            count: 1,
+            choices: ["Production (4 Air)", "Production (4 Water)", "Production (3 Life)"]
+        },
+            "Woodworking 4"]
     },
     {
         type: OccupationType.Advanced,
@@ -436,7 +501,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Physician",
-        skills: ["Apothecary 6", "Cure Affliction", "Livery (doctor’s robes)", "Medicine", "Occupational Spells (page 126)", "Research", "Serene Contemplation"]
+        livery: "doctor’s robes",
+        skills: ["Apothecary 6", "Cure Affliction", "Livery", "Medicine", "Occupational Spells (page 126)", "Research", "Serene Contemplation"]
     },
     {
         type: OccupationType.Advanced,
@@ -446,12 +512,13 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Poacher",
-        skills: ["Butcher", "Pathfinding", "Production (3 Cloth", "6 Food)", "Weapon Specialization (Bow", "Normal Crossbow)", "Wear Armor 2", "Woodwise"]
+        skills: ["Butcher", "Pathfinding", "Production (3 Cloth)", "Production (6 Food)", "Weapon Specialization (Bow)", "Weapon Specialization (Normal Crossbow)", "Wear Armor 2", "Woodwise"]
     },
     {
         type: OccupationType.Advanced,
         name: "Quarrier",
-        skills: ["Duty 1 (Manual Labor)", "Engineering", "Production (4 Earth)", "Toughness", "Weapon Use (Two Handed Blunt)", "Wear Armor 1", "Work Rhythm"]
+        duty: "Manual Labor",
+        skills: ["Duty 1", "Engineering", "Production (4 Earth)", "Toughness", "Weapon Use (Two Handed Blunt)", "Wear Armor 1", "Work Rhythm"]
     },
     {
         type: OccupationType.Advanced,
@@ -466,12 +533,14 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Sawbones",
-        skills: ["Apothecary 4", "Cure Affliction", "Livery (Apron and gloves)", "Medicine", "Sewing 2", "Weapon Specialization (Dagger)"]
+        livery: "Apron and gloves",
+        skills: ["Apothecary 4", "Cure Affliction", "Livery", "Medicine", "Sewing 2", "Weapon Specialization (Dagger)"]
     },
     {
         type: OccupationType.Advanced,
         name: "Sergeant at Arms/Bodyguard",
-        skills: ["Armstraining 6", "Income 10", "Leadership (retainers and followers of your patron)", "Livery (patron’s colors)", "Wear Armor 4"]
+        livery: "patron’s colors",
+        skills: ["Armstraining 6", "Income 10", "Leadership (retainers and followers of your patron)", "Livery", "Wear Armor 4"]
     },
     {
         type: OccupationType.Advanced,
@@ -491,7 +560,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Varlet",
-        skills: ["Duty 2 (fulfilling the requests of your master)", "Income 5", "Information Gathering", "Leadership (your master)", "Unarmed Combat", "Craft skill 2"]
+        duty: "fulfilling the requests of your master",
+        skills: ["Duty 2", "Income 5", "Information Gathering", "Leadership (your master)", "Unarmed Combat", "Craft skill 2"]
     },
     {
         type: OccupationType.Plot,
@@ -501,7 +571,9 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Plot,
         name: "Captain of the Guard",
-        skills: ["Duty 1 (reviewing the guard)", "Income 15", "Improved Leadership (Town Guard)", "Livery (based on local Chapter)", "Patronage 1", "Scribe 2", "Warcaster", "Weapon Specialization (any one Weapon Type)", "Weapon Use (Large Shield)", "Wear Armor 5"]
+        duty: "reviewing the guard",
+        livery: "based on local Chapter",
+        skills: ["Duty 1", "Income 15", "Improved Leadership (Town Guard)", "Livery", "Patronage 1", "Scribe 2", "Warcaster", "Weapon Specialization (any one Weapon Type)", "Weapon Use (Large Shield)", "Wear Armor 5"]
     },
     {
         type: OccupationType.Plot,
@@ -511,7 +583,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Plot,
         name: "Inquisitor",
-        skills: ["Battlemage", "Divine Lore", "Divine Spells", "Leadership (anyone under your command in battle)", "Livery (icons of faith)", "Mage Lore", "Slayer (Undead)", "Wear Armor 3", {
+        livery: "icons of faith",
+        skills: ["Battlemage", "Divine Lore", "Divine Spells", "Leadership (anyone under your command in battle)", "Livery", "Mage Lore", "Slayer (Undead)", "Wear Armor 3", {
             count: 1,
             choices: ["Information Gathering", "Research"]
         }]
@@ -519,27 +592,32 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Plot,
         name: "Knight Paladin",
-        skills: ["Absolution", "Battlemage", "Blessed", "Divine Lore", "Divine Spells", "Grant Karma", "Income 10", "Livery (your heraldry)", "Religious Ceremony", "Retainers 1, Wear Armor 10"]
+        livery: "your heraldry",
+        skills: ["Absolution", "Battlemage", "Blessed", "Divine Lore", "Divine Spells", "Grant Karma", "Income 10", "Livery", "Religious Ceremony", "Retainers 1, Wear Armor 10"]
     },
     {
         type: OccupationType.Plot,
         name: "Knight Penitent",
-        skills: ["Battlemage", "Blessed", "Divine Lore", "Divine Spells", "Income 10", "Livery (your heraldry)", "Retainers 1", "Wear Armor 8"]
+        livery: "your heraldry",
+        skills: ["Battlemage", "Blessed", "Divine Lore", "Divine Spells", "Income 10", "Livery", "Retainers 1", "Wear Armor 8"]
     },
     {
         type: OccupationType.Plot,
         name: "Knight of the Realm",
-        skills: ["Armstraining 4", "Income (50)", "Improved Leadership (anyone wearing your colors)", "Livery (Your heraldry)", "Patronage 3", "Retainers 6", "Wear Armor 8"]
+        livery: "Your heraldry",
+        skills: ["Armstraining 4", "Income (50)", "Improved Leadership (anyone wearing your colors)", "Livery", "Patronage 3", "Retainers 6", "Wear Armor 8"]
     },
     {
         type: OccupationType.Plot,
         name: "Knight Templar",
-        skills: ["Battlemage", "Leadership (any non-Knight sworn to aid you)", "Income 10", "Livery (your heraldry)", "Mage Lore", "Research", "Retainers 1", "Scribe 4", "Wear Armor 6"]
+        livery: "your heraldry",
+        skills: ["Battlemage", "Leadership (any non-Knight sworn to aid you)", "Income 10", "Livery", "Mage Lore", "Research", "Retainers 1", "Scribe 4", "Wear Armor 6"]
     },
     {
         type: OccupationType.Plot,
         name: "Magistrate",
-        skills: ["Bardic Voice 2", "Commerce", "Duty 1 (holding court)", "Income 20", "News & Rumors", "Research", "Retainers 3", "Scribe 4"]
+        duty: "holding court",
+        skills: ["Bardic Voice 2", "Commerce", "Duty 1", "Income 20", "News & Rumors", "Research", "Retainers 3", "Scribe 4"]
     },
     {
         type: OccupationType.Plot,
@@ -552,7 +630,8 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Plot,
         name: "Tavern Master",
-        skills: ["Buy/Sell 20", "Cooking 2", "Drinks on the House", "Duty 2 (minding the tavern)", "Income 10", "News & Rumors", "Patronage", "Retainers 1", "Sell Drinks", "Tavern Share"]
+        duty: "minding the tavern",
+        skills: ["Buy/Sell 20", "Cooking 2", "Drinks on the House", "Duty 2", "Income 10", "News & Rumors", "Patronage", "Retainers 1", "Sell Drinks", "Tavern Share"]
     },
     {
         type: OccupationType.Plot,
@@ -579,12 +658,14 @@ export const Enhancements: Occupation[] = [
     {
         type: OccupationType.Enhancement,
         name: "Master Crafter",
-        skills: ["Guild Wages", "Instruction", "Livery (guild patch and visible tools of the trade)", "Masterwork", "Retain 1 Retain Basic Occupations skills", "+4 Craft Points to any one Craft Skill you possess"]
+        livery: "guild patch and visible tools of the trade",
+        skills: ["Guild Wages", "Instruction", "Livery", "Masterwork", "Retain 1 Retain Basic Occupations skills", "+4 Craft Points to any one Craft Skill you possess"]
     },
     {type: OccupationType.Enhancement, name: "Master Healer", skills: ["Medicine"]},
     {
         type: OccupationType.Enhancement,
         name: "Town Guard Auxiliary",
-        skills: ["Income (+5)", "Livery (based on local Chapter)"]
+        livery: "based on local Chapter",
+        skills: ["Income (+5)", "Livery"]
     },
 ];
