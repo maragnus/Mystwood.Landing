@@ -10,7 +10,7 @@ export interface CharacterEditorPageProps {
 
 export interface CharacterEditorPageState {
     sheet: CharacterSheet;
-    activeChildStep: number;
+    activeChildStep?: any;
 }
 
 export abstract class CharacterEditorPage extends React.Component<CharacterEditorPageProps, CharacterEditorPageState> {
@@ -22,8 +22,7 @@ export abstract class CharacterEditorPage extends React.Component<CharacterEdito
         const newState: CharacterEditorPageState = {
             sheet: {
                 ...props.sheet
-            },
-            activeChildStep: 0,
+            }
         };
         this.afterChange(newState, undefined, undefined);
 
@@ -58,6 +57,7 @@ export abstract class CharacterEditorPage extends React.Component<CharacterEdito
     };
 
     savePage(): void {
+        console.log("savePage");
         this.props.handleSheetChange(this.changes);
         this.changes = {}
     }

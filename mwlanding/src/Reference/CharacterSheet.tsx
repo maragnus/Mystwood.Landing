@@ -1,6 +1,6 @@
 import {Gifts, Ability} from "./Gifts";
 import {Occupation, Occupations, SkillChoice} from "./Occupations";
-import {Skill, Skills} from "./Skills";
+import {SkillByName} from "./Skills";
 
 export class CharacterSheet {
     startingMoonstone: number = 0;
@@ -26,6 +26,7 @@ export class CharacterSheet {
     // Editor - Skills
     purchasedSkills: PurchasedSkill[] = [];
     chosenSkills: CharacterChosenSkill[] = [];
+    skillTokens: number = 0;
 
     // Editor - Craft Skills
     craftSkills?: undefined;
@@ -42,6 +43,7 @@ export class CharacterSheet {
     skillCost: number = 0;
     moonstoneSpent: number = 0;
     skillTokensSpend: number = 0;
+    skillsPurchased: number = 0;
 
     // Calculated - Tables
     properties: CharacterProperty[] = [];
@@ -68,10 +70,10 @@ export class CharacterSheet {
             "cell, every, single, time. Now, on the front lines, he can make a difference and be appreciated for it."
 
         const boughtSkills = ["Income", "Agility", "Fully Armored"];
-        sheet.purchasedSkills = boughtSkills.map(skillName => {
-            const info = Skills.find(i => i.name === skillName) ?? Skills[0];
-            return {name: info.name, rank: info.rank ?? 0, cost: info.cost ?? 0, info: info};
-        });
+        sheet.purchasedSkills = boughtSkills.map(skillName => ({
+            name: SkillByName(skillName).name,
+            purchasedRank: 1,
+        }));
         CharacterSheet.populate(sheet);
         sheet.startingMoonstone = sheet.moonstoneSpent;
         return sheet;
@@ -81,7 +83,6 @@ export class CharacterSheet {
     static populate(sheet: CharacterSheet) {
         CharacterSheet.populateGifts(sheet);
         CharacterSheet.populateSkills(sheet);
-        sheet.moonstoneSpent = sheet.skillCost + sheet.giftCost;
     }
 
     static populateGifts(sheet: CharacterSheet): void {
@@ -97,6 +98,8 @@ export class CharacterSheet {
         sheet.currentLevel = sheet.courage + sheet.dexterity + sheet.empathy + sheet.passion + sheet.prowess + sheet.wisdom;
         sheet.giftCost = Math.max(0, CharacterSheet.triangle(sheet.currentLevel) - CharacterSheet.triangle(sheet.startingLevel));
         sheet.abilities = sheet.abilities.sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0))
+
+        sheet.moonstoneSpent = CharacterSheet.CalculateCost(sheet);
     }
 
     static populateSkills(sheet: CharacterSheet): void {
@@ -104,28 +107,43 @@ export class CharacterSheet {
         sheet.occupationSkills = [];
         sheet.occupationSkillsChoices = [];
 
-        // Each purchased skill has a cost per rank in that skill
-        // Also, the tax of purchasing a skill goes by +1 for each skill purchased after the first
-        sheet.skillCost =
-            sheet.purchasedSkills.reduce((result, skill) => result + skill.cost * skill.rank, 0)
-            + CharacterSheet.triangle(Math.max(0, sheet.purchasedSkills.length - 1));
-
         CharacterSheet.populateOccupation(sheet, sheet.occupation);
         CharacterSheet.populateOccupation(sheet, sheet.enhancement);
         CharacterSheet.populateChosenSkills(sheet);
         CharacterSheet.populatePurchasedSkills(sheet);
 
+        // Sort skills
         sheet.skills = sheet.skills // Sort by name, then by rank
             .sort((a, b) =>
                 (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : (
                     (a.rank > b.rank) ? 1 : ((b.rank > a.rank) ? -1 : 0
                     ))));
+
+        sheet.moonstoneSpent = CharacterSheet.CalculateCost(sheet);
     }
 
     static populatePurchasedSkills(sheet: CharacterSheet): void {
+        // Clean up any skills without ranks
+        sheet.purchasedSkills = sheet.purchasedSkills.filter(s => s.purchasedRank > 0);
+
+        const purchases: { ranks: number, cost: number }[] =
+            sheet.purchasedSkills.map(skill => ({
+                ranks: skill.purchasedRank,
+                cost: (SkillByName(skill.name).cost ?? 0) * skill.purchasedRank
+            }));
+
+        // Number of skill purchases
+        sheet.skillsPurchased = purchases.reduce((result, skill) => result + skill.ranks, 0);
+
+        // Each purchased skill has a cost per rank in that skill
+        // Also, the tax of purchasing a skill goes by +1 for each skill purchased after the first
+        sheet.skillCost =
+            purchases.reduce((result, skill) => result + skill.cost, 0)
+            + CharacterSheet.triangle(Math.max(0, sheet.skillsPurchased - 1));
+
         const purchasedSkills: CharacterSkill[] = sheet.purchasedSkills.map(skill => ({
             name: skill.name,
-            rank: skill.rank,
+            rank: skill.purchasedRank * (SkillByName(skill.name).rank ?? 1),
             source: "Purchased"
         } as CharacterSkill));
 
@@ -136,15 +154,19 @@ export class CharacterSheet {
     }
 
     static populateChosenSkills(sheet: CharacterSheet): void {
-        console.warn("populateChosenSkills is not implemented");
-        // TODO
+        sheet.skills = [
+            ...sheet.skills,
+            ...sheet.purchasedSkills.map(s => ({
+                name: s.name,
+                rank: s.purchasedRank,
+                source: "purchased"
+            } as CharacterSkill))
+        ];
     }
 
     static populateOccupation(sheet: CharacterSheet, occupation: Occupation | undefined): void {
         if (!occupation || !occupation.skills)
             return;
-
-        console.log(occupation.skills);
 
         const skills: CharacterSkill[] =
             occupation.skills.filter(s => typeof s === "string").map(s => ({
@@ -205,6 +227,11 @@ export class CharacterSheet {
     static triangle(level: number): number {
         return Math.max(0, level * (level + 1) / 2);
     }
+
+    static CalculateCost(sheet: CharacterSheet) {
+        const skillCost = Math.max(0, sheet.skillCost - sheet.skillTokens);
+        return sheet.giftCost + skillCost;
+    }
 }
 
 export interface CharacterChosenSkill {
@@ -237,9 +264,7 @@ export type CharacterSkillChoice = {
 
 export type PurchasedSkill = {
     name: string;
-    rank: number;
-    cost: number;
-    info: Skill;
+    purchasedRank: number;
 }
 
 export type HomeChapter = {

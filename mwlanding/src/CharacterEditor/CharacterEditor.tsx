@@ -76,18 +76,26 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         };
     }
 
+    stepRef?: any;
+
+    savePage(): void {
+        this.stepRef?.savePage();
+    }
+
     render() {
         const handleNext = () => {
+            this.savePage();
             this.setState((state, props) => ({activeStep: state.activeStep + 1}));
         };
 
         const handleBack = () => {
+            this.savePage();
             this.setState((state, props) => ({activeStep: state.activeStep - 1}));
         };
 
         const handleReset = () => {
+            this.savePage();
             this.setState(({activeStep: 0}));
-
         };
 
         const sheetChange = (changes: object) => {
@@ -97,7 +105,6 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                     ...changes
                 };
                 CharacterSheet.populate(newSheet);
-                console.log(newSheet);
                 state.sheet = newSheet;
             });
         };
@@ -155,7 +162,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                             </Button>
                         </Box>
                         <ActiveStepComponent sheet={this.state.sheet} originalSheet={this.state.originalSheet}
-                                             handleSheetChange={sheetChange}/>
+                                             handleSheetChange={sheetChange} ref={(page: any) => this.stepRef = page}/>
                         <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
                             <Button color="inherit" disabled={activeStep === 0} onClick={handleBack} sx={{mr: 1}}>
                                 Back

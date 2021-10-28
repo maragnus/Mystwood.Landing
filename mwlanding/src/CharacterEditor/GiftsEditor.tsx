@@ -3,6 +3,7 @@ import * as React from "react";
 import {CharacterAbility, CharacterProperty, CharacterSheet} from "../Reference/CharacterSheet";
 import {CharacterEditorPage, CharacterEditorPageState} from "./CharacterEditorPage";
 import CloseIcon from '@mui/icons-material/Close';
+import {Score} from "./Common/Score";
 
 const GiftMap: { [name: string]: { label: string, color: string, name: string, title: string } } = {
     "courage": {label: "C", color: "#399BC6", name: "courage", title: "Courage"},
@@ -88,23 +89,6 @@ function GiftInfo(props: GiftInfoProps) {
     </Stack>;
 }
 
-// Displays a circled number with title
-const Score = React.forwardRef(function Score(props: { label: string, value: number, delta?: boolean }, ref: any) {
-    return <Box {...props}
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    py: 0.5,
-                    px: 2
-                }}
-                component="div" ref={ref}>
-        <Avatar>{props.delta && props.value >= 0 ? "+" + props.value : props.value}</Avatar>
-        <Typography variant="h6">{props.label}</Typography>
-    </Box>;
-});
-
 // The page for editing Gifts
 export default class GiftsEditor extends CharacterEditorPage {
     afterChange(state: CharacterEditorPageState, name?: string, value?: string): void {
@@ -138,10 +122,12 @@ export default class GiftsEditor extends CharacterEditorPage {
                         .map(ability => {
                             const gift = GiftMap[ability.source.toLowerCase()];
                             const label = <Typography variant="subtitle1">{ability.title}</Typography>;
-                            return <ListItem key={ability.name}><Chip label={label} variant="outlined"
-                                                                      avatar={<Avatar
-                                                                          sx={{bgcolor: gift.color, color: "#fff"}}><Box
-                                                                          sx={{color: "#fff"}}>{gift.label}</Box></Avatar>}/>
+                            const avatar = <Avatar sx={{bgcolor: gift.color, color: "#fff"}}>
+                                <Box sx={{color: "#fff"}}>{gift.label}</Box>
+                            </Avatar>;
+                            return <ListItem key={ability.name}>
+                                <Chip label={label} variant="outlined"
+                                      avatar={avatar}/>
                             </ListItem>
                         })}
                 </Box>
@@ -155,13 +141,14 @@ export default class GiftsEditor extends CharacterEditorPage {
                     <Box sx={{display: 'flex', flexWrap: 'wrap', listStyle: 'none', p: 0.5, m: 0}} component="ul">
                         {this.state.sheet.properties.map(property => {
                             const gift = GiftMap[property.source.toLowerCase()];
-                            const label = <Stack direction="row" alignItems="center"><Typography variant="subtitle1"
-                                                                                                 sx={{pr: 1}}>{property.name}</Typography>
+                            const label = <Stack direction="row" alignItems="center">
+                                <Typography variant="subtitle1" sx={{pr: 1}}>{property.name}</Typography>
                                 <Typography variant="h6">{property.value}</Typography></Stack>;
+                            var avatar = <Avatar sx={{bgcolor: gift.color, color: "#fff"}}>
+                                <Box sx={{color: "#fff"}}>{gift.label}</Box></Avatar>;
                             return <ListItem key={property.name}>
                                 <Chip label={label} variant="outlined"
-                                      avatar={<Avatar sx={{bgcolor: gift.color, color: "#fff"}}><Box
-                                          sx={{color: "#fff"}}>{gift.label}</Box></Avatar>}/>
+                                      avatar={avatar}/>
                             </ListItem>
                         })}
                     </Box>
@@ -174,15 +161,17 @@ export default class GiftsEditor extends CharacterEditorPage {
                     display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'
                 }} component="div">
 
-                    <Score value={this.state.sheet.currentLevel} label="Level"/>
+                    <Tooltip title="This is your character's level, the sum of all Gifts" arrow>
+                        <Score value={this.state.sheet.currentLevel} label="Level"/>
+                    </Tooltip>
 
                     <Tooltip title="This is the total Moonstone cost of all of your Gifts" arrow>
-                        <Score value={this.state.sheet.giftCost} label="MS Cost"/>
+                        <Score value={this.state.sheet.giftCost} label="Gift Cost"/>
                     </Tooltip>
 
                     <Tooltip title="This is the change to your Moonstone balance with all of your changes" arrow>
-                        <Score value={this.state.sheet.startingMoonstone - this.state.sheet.moonstoneSpent}
-                               label="MS Delta" delta={true}/>
+                        <Score value={this.state.sheet.moonstoneSpent - this.state.sheet.startingMoonstone}
+                               label="Change" delta={true}/>
                     </Tooltip>
                 </Box>
 
