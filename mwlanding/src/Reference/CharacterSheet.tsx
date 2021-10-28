@@ -44,6 +44,8 @@ export class CharacterSheet {
     moonstoneSpent: number = 0;
     skillTokensSpend: number = 0;
     skillsPurchased: number = 0;
+    advantageScore: number = 0;
+    disadvantageScore: number = 0;
 
     // Calculated - Tables
     properties: CharacterProperty[] = [];
@@ -83,6 +85,27 @@ export class CharacterSheet {
     static populate(sheet: CharacterSheet) {
         CharacterSheet.populateGifts(sheet);
         CharacterSheet.populateSkills(sheet);
+        CharacterSheet.populateVantages(sheet);
+    }
+
+    static populateVantages(sheet: CharacterSheet): void {
+        sheet.advantageScore = sheet.advantages.reduce((score, vantage) => score + vantage.rank, 0);
+        sheet.disadvantageScore = sheet.disadvantages.reduce((score, vantage) => score + vantage.rank, 0);
+    }
+
+    static populateProfile(sheet: CharacterSheet): void {
+        sheet.specialties = sheet.occupation?.specialties ?? [sheet.occupation?.name ?? "No Occupation"];
+        if (sheet.specialties.length === 1)
+            sheet.specialty = sheet.specialties[0];
+        else if (!sheet.specialties.some(x => x === sheet.specialty)) {
+            sheet.specialty = sheet.specialties[0];
+        }
+
+        sheet.duty = sheet.occupation?.duty ?? '';
+        sheet.livery = sheet.occupation?.livery ?? '';
+
+        if (!sheet.enhancement || !Enhancements.some(e => e.name === sheet.enhancement.name))
+            sheet.enhancement = Enhancements[0];
     }
 
     static populateGifts(sheet: CharacterSheet): void {
@@ -232,6 +255,11 @@ export class CharacterSheet {
         const skillCost = Math.max(0, sheet.skillCost - sheet.skillTokens);
         return sheet.giftCost + skillCost;
     }
+}
+
+export interface CharacterVantage {
+    name: string;
+    rank: number;
 }
 
 export interface CharacterChosenSkill {
