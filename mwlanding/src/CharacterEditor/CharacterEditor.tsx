@@ -44,7 +44,7 @@ const steps: EditorStep[] = [
     },
     {
         step: 'Skills',
-        title: 'Free and Purchased Skills',
+        title: 'Skills',
         editor: SkillsEditor,
     },
     {
@@ -59,7 +59,7 @@ const steps: EditorStep[] = [
     },
     {
         step: 'Other',
-        title: 'Unusual Features, Cures, Documents, Notes',
+        title: 'Other Notes',
         editor: OtherEditor,
     },
 ];

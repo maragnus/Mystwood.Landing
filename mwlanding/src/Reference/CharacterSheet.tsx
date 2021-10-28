@@ -1,5 +1,5 @@
 import {Gifts, Ability} from "./Gifts";
-import {Occupation, Occupations, SkillChoice} from "./Occupations";
+import {Enhancements, Occupation, Occupations, SkillChoice} from "./Occupations";
 import {SkillByName} from "./Skills";
 
 export class CharacterSheet {
@@ -9,11 +9,11 @@ export class CharacterSheet {
     characterName?: string;
     religions?: Religion[];
     occupation?: Occupation;
-    enhancement?: Occupation;
+    specialty: string = "";
+    enhancement: Occupation = Enhancements[0];
     homeChapter?: HomeChapter;
     publicStory?: string;
     privateStory?: string;
-    notes?: string;
 
     // Editor - Gifts
     courage: number = 0;
@@ -31,12 +31,20 @@ export class CharacterSheet {
     // Editor - Craft Skills
     craftSkills?: undefined;
 
+    // Editor - (Dis)advantages
+    advantages: CharacterVantage[] = [];
+    disadvantages: CharacterVantage[] = [];
+
     // Editor - Other
-    advantages?: undefined;
-    disadvantages?: undefined;
     flavorTraits?: undefined;
+    unusualFeatures: string = '';
+    cures: string = '';
+    documents: string = '';
+    notes: string = '';
 
     // Calculated - Scores
+    duty: string = "";
+    livery: string = "";
     currentLevel: number = 0;
     startingLevel: number = 6;
     giftCost: number = 0;
@@ -48,6 +56,7 @@ export class CharacterSheet {
     disadvantageScore: number = 0;
 
     // Calculated - Tables
+    specialties: string[] = [];
     properties: CharacterProperty[] = [];
     abilities: CharacterAbility[] = [];
     skills: CharacterSkill[] = [];
@@ -83,6 +92,7 @@ export class CharacterSheet {
 
     // Populate reference data fields and calculated fields
     static populate(sheet: CharacterSheet) {
+        CharacterSheet.populateProfile(sheet);
         CharacterSheet.populateGifts(sheet);
         CharacterSheet.populateSkills(sheet);
         CharacterSheet.populateVantages(sheet);

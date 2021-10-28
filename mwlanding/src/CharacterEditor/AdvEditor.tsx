@@ -1,6 +1,9 @@
 import React from 'react';
-import {Box, Grid} from "@mui/material";
-import {CharacterEditorPage} from "./CharacterEditorPage";
+import {Alert, Autocomplete, Box, Chip, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
+import {CharacterEditorPage, CharacterEditorPageState} from "./CharacterEditorPage";
+import {CharacterSheet} from "../Reference/CharacterSheet";
+import {Advantages, Disadvantages, VantageByTitle} from "../Reference/Advantages";
+import {Score} from "./Common/Score";
 
 export default class AdvEditor extends CharacterEditorPage {
     afterChange(state: CharacterEditorPageState, name?: string, value?: string) {
@@ -38,8 +41,71 @@ export default class AdvEditor extends CharacterEditorPage {
             </Grid>;
 
         return <Box component="form">
-            <Grid container spacing={2}>
+            <Box sx={{p: 1.5, m: 2}}>
+                <Box sx={{
+                    display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center'
+                }} component="div">
 
+                    <Tooltip title="Sum of all advantages" arrow>
+                        <Score value={sheet.advantageScore} label="Advantages"/>
+                    </Tooltip>
+
+                    <Tooltip title="This is your balance of advantages and disadvantages, it must be zero or negative."
+                             arrow>
+                        <Score value={sheet.advantageScore - sheet.disadvantageScore}
+                               label="Balance" delta={true}/>
+                    </Tooltip>
+
+                    <Tooltip title="Sum of all disadvantages" arrow>
+                        <Score value={sheet.disadvantageScore} label="Disadvantages"/>
+                    </Tooltip>
+                </Box>
+                {warning}
+            </Box>
+            <Grid container spacing={2}>
+                {physicalSection}
+
+                <Grid item xs={12} md={6}>
+                    <Typography variant="h6">Advantages</Typography>
+
+                    <Autocomplete
+                        multiple
+                        id="advantages" aria-required={true}
+                        options={Advantages.map(x => ({name: x.name, rank: x.rank}))}
+                        getOptionLabel={(option) => `${option.name} ${option.rank}`}
+                        defaultValue={sheet.advantages}
+                        isOptionEqualToValue={(option, value) => option.name === value.name}
+                        onChange={(e, value?: any) => this.handleChange("advantages", value)}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="standard"
+                                label="Advantages"
+                            />
+                        )}
+                    />
+                </Grid>
+
+                <Grid item xs={12} md={6}>
+                    <Typography variant="h6">Disadvantages</Typography>
+
+                    <Autocomplete
+                        multiple
+                        id="disadvantages" aria-required={true}
+                        options={Disadvantages.map(x => ({name: x.name, rank: x.rank}))}
+                        getOptionLabel={(option) => `${option.name} ${option.rank}`}
+                        defaultValue={sheet.disadvantages}
+                        isOptionEqualToValue={(option, value) => option.name === value.name}
+                        onChange={(e, value?: any) => this.handleChange("disadvantages", value)}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="standard"
+                                label="Disadvantages"
+                            />
+                        )}
+                    />
+                </Grid>
             </Grid>
         </Box>;
     }

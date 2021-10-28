@@ -8,6 +8,7 @@ export enum OccupationType {
 
 export interface Occupation {
     name: string;
+    specialties?: string[];
     type: OccupationType;
     skills: (string | SkillChoice)[]
     duty?: string,
@@ -61,6 +62,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Bard/Minstrel/Thespian",
+        specialties: ["Bard", "Minstrel", "Thespian"],
         skills: ["Bardic Voice 4", "Entertainer", "News & Rumors"]
     },
     {
@@ -95,6 +97,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Clerk/Forger",
+        specialties: ["Clerk", "Forger"],
         skills: ["Copyist", "Production (2 Parchment)", "Scribe 4", "Serene Contemplation"]
     },
     {
@@ -105,6 +108,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Dancer/Juggler/Acrobat",
+        specialties: ["Dancer", "Juggler", "Acrobat"],
         livery: "performance costume",
         skills: ["Agility", "Entertainer", "Livery", "News & Rumors", "Weapon Specialization (Thrown Weapon)"]
     },
@@ -233,6 +237,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Basic,
         name: "Tailor/Leatherworker",
+        specialties: ["Tailor", "Leatherworker"],
         duty: "mending and patching",
         skills: ["Duty 1", "Medicine", "Sewing 4"]
     },
@@ -280,6 +285,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Youth,
         name: "Bard/Minstrel/Thespian (Youth)",
+        specialties: ["Bard", "Minstrel", "Thespian"],
         skills: ["Bardic Voice 4", "Entertainer", "News & Rumors"]
     },
     {
@@ -294,6 +300,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Youth,
         name: "Dancer/Juggler/Acrobat (Youth)",
+        specialties: ["Dancer", "Juggler", "Acrobat"],
         livery: "performance costume",
         skills: ["Agility", "Entertainer", "Livery", "News & Rumors", "Weapon Specialization (Thrown Weapon)"]
     },
@@ -344,6 +351,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Absolver/Flagellant",
+        specialties: ["Absolver", "Flagellant"],
         livery: "icons of faith",
         skills: ["Absolution", "Battle Rage", "Blessed", "Divine Lore", "Improved Battle Rage", "Iron Will", "Livery", "Toughness", "Weapon Specialization (Flail)", "Weapon Use (Flail)"]
     },
@@ -356,6 +364,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Artist (Author/Gilder/Painter/Sculptor)",
+        specialties: ["Artist", "Author", "Gilder", "Painter", "Sculptor"],
         skills: ["Artistry", "Income 10", "Serene Contemplation", {
             count: 1,
             choices: ["Metalworking 4", "Scribe 4", "Sewing 4", "Woodworking 4"]
@@ -414,6 +423,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Fence/Pawnbroker",
+        specialties: ["Fence", "Pawnbroker"],
         skills: ["Buy/Sell (50)", "Commerce", "Fence", "Income 10", "News & Rumors", "Retainers 1", {
             count: 1,
             choices: ["Information Gathering", "Research"]
@@ -422,6 +432,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Forester/Ranger/Gamekeeper",
+        specialties: ["Forester", "Ranger", "Gamekeeper"],
         skills: ["Pathfinding", "Production (8 Wood)", "Weapon Specialization (One Handed Axe)", "Weapon Specialization (Two Handed Axe)", "Wear Armor 2", "Woodwise", "Woodworking 4"]
     },
     {
@@ -507,6 +518,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Pit Fighter/Judicial Champion",
+        specialties: ["Pit Fighter", "Judicial Champion"],
         skills: ["Armstraining 4", "Battle Rage", "Duelist", "Entertainer", "Unarmed Combat", "Wear Armor 3"]
     },
     {
@@ -539,6 +551,7 @@ export const Occupations: Occupation[] = [
     {
         type: OccupationType.Advanced,
         name: "Sergeant at Arms/Bodyguard",
+        specialties: ["Sergeant at Arms", "Bodyguard"],
         livery: "patron’s colors",
         skills: ["Armstraining 6", "Income 10", "Leadership (retainers and followers of your patron)", "Livery", "Wear Armor 4"]
     },
@@ -646,10 +659,17 @@ export const Occupations: Occupation[] = [
 export const Enhancements: Occupation[] = [
     {
         type: OccupationType.Enhancement,
+        name: "No Enhancement",
+        skills: []
+    },
+    {
+        type: OccupationType.Enhancement,
         name: "Alchemist",
         skills: [{count: 1, choices: ["Production (Chaos)", "Production (Time)"]}]
     },
-    {type: OccupationType.Enhancement, name: "Barback", skills: ["Income 5", "Sell Drinks"]},
+    {
+        type: OccupationType.Enhancement, name: "Barback", skills: ["Income 5", "Sell Drinks"]
+    },
     {
         type: OccupationType.Enhancement,
         name: "Guild Crafter",
