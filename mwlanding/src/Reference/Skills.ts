@@ -21,6 +21,11 @@ export enum SkillRanks {
     Multiple = 'Multiple',
 }
 
+const MaterialsComponents: string[] = [
+    "Cloth", "Food", "Metal", "Parchment", "Wood",
+    "Air", "Earth", "Fire", "Water", "Chaos", "Death", "Life", "Time"
+];
+
 const WeaponTypes: string[] = [
     "Bow",
     "Claws",
@@ -605,13 +610,14 @@ export const Skills: Skill[] = [
         ranks: SkillRanks.Once,
         cost: 10
     },
-    {
-        name: "Production (Type)",
-        title: "Production X (Type)",
-        class: SkillClass.Unavailable,
-        ranks: SkillRanks.Unavailable,
-        cost: null
-    },
+    ...MaterialsComponents.map(type =>
+        ({
+            name: `Production (${type})`,
+            title: `Production X (${type})`,
+            class: SkillClass.Unavailable,
+            ranks: SkillRanks.Unavailable,
+            cost: null
+        })),
     {
         name: "Quick Learner",
         title: "Quick Learner",
