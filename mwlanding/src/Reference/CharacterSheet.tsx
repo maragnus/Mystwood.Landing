@@ -1,19 +1,19 @@
 import {Gifts, Ability} from "./Gifts";
-import {Occupation, Occupations, SkillChoice} from "./Occupations";
+import {Enhancements, Occupation, Occupations, SkillChoice} from "./Occupations";
 import {SkillByName} from "./Skills";
 
-export class CharacterSheet {
+export default class CharacterSheet {
     startingMoonstone: number = 0;
 
     // Editor - Profile
     characterName?: string;
     religions?: Religion[];
     occupation?: Occupation;
-    enhancement?: Occupation;
+    specialty: string = "";
+    enhancement: Occupation = Enhancements[0];
     homeChapter?: HomeChapter;
     publicStory?: string;
     privateStory?: string;
-    notes?: string;
 
     // Editor - Gifts
     courage: number = 0;
@@ -31,12 +31,20 @@ export class CharacterSheet {
     // Editor - Craft Skills
     craftSkills?: undefined;
 
+    // Editor - (Dis)advantages
+    advantages: CharacterVantage[] = [];
+    disadvantages: CharacterVantage[] = [];
+
     // Editor - Other
-    advantages?: undefined;
-    disadvantages?: undefined;
     flavorTraits?: undefined;
+    unusualFeatures: string = '';
+    cures: string = '';
+    documents: string = '';
+    notes: string = '';
 
     // Calculated - Scores
+    duty: string = "";
+    livery: string = "";
     currentLevel: number = 0;
     startingLevel: number = 6;
     giftCost: number = 0;
@@ -44,8 +52,11 @@ export class CharacterSheet {
     moonstoneSpent: number = 0;
     skillTokensSpend: number = 0;
     skillsPurchased: number = 0;
+    advantageScore: number = 0;
+    disadvantageScore: number = 0;
 
     // Calculated - Tables
+    specialties: string[] = [];
     properties: CharacterProperty[] = [];
     abilities: CharacterAbility[] = [];
     skills: CharacterSkill[] = [];
@@ -55,7 +66,7 @@ export class CharacterSheet {
     static mock(characterName: string, occupation: string, religions: Religion[], home: HomeChapter): CharacterSheet {
         const sheet = new CharacterSheet();
         const occupationItem = Occupations.find(i => i.name === occupation);
-        sheet.characterName = "Nico Atkinson";
+        sheet.characterName = characterName;
         sheet.occupation = occupationItem ?? Occupations[0];
         sheet.religions = religions;
         sheet.homeChapter = home;
@@ -81,8 +92,30 @@ export class CharacterSheet {
 
     // Populate reference data fields and calculated fields
     static populate(sheet: CharacterSheet) {
+        CharacterSheet.populateProfile(sheet);
         CharacterSheet.populateGifts(sheet);
         CharacterSheet.populateSkills(sheet);
+        CharacterSheet.populateVantages(sheet);
+    }
+
+    static populateVantages(sheet: CharacterSheet): void {
+        sheet.advantageScore = sheet.advantages.reduce((score, vantage) => score + vantage.rank, 0);
+        sheet.disadvantageScore = sheet.disadvantages.reduce((score, vantage) => score + vantage.rank, 0);
+    }
+
+    static populateProfile(sheet: CharacterSheet): void {
+        sheet.specialties = sheet.occupation?.specialties ?? [sheet.occupation?.name ?? "No Occupation"];
+        if (sheet.specialties.length === 1)
+            sheet.specialty = sheet.specialties[0];
+        else if (!sheet.specialties.some(x => x === sheet.specialty)) {
+            sheet.specialty = sheet.specialties[0];
+        }
+
+        sheet.duty = sheet.occupation?.duty ?? '';
+        sheet.livery = sheet.occupation?.livery ?? '';
+
+        if (!sheet.enhancement || !Enhancements.some(e => e.name === sheet.enhancement.name))
+            sheet.enhancement = Enhancements[0];
     }
 
     static populateGifts(sheet: CharacterSheet): void {
@@ -232,6 +265,11 @@ export class CharacterSheet {
         const skillCost = Math.max(0, sheet.skillCost - sheet.skillTokens);
         return sheet.giftCost + skillCost;
     }
+}
+
+export interface CharacterVantage {
+    name: string;
+    rank: number;
 }
 
 export interface CharacterChosenSkill {

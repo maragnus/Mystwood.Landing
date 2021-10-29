@@ -1,5 +1,5 @@
-import {CharacterEditorPage} from "../CharacterEditorPage";
-import {CharacterSheet, CharacterSkill, CharacterSkillChoice} from "../../Reference/CharacterSheet";
+import {CharacterEditorPage} from "../Common/CharacterEditorPage";
+import CharacterSheet, {CharacterSkill, CharacterSkillChoice} from "../../Reference/CharacterSheet";
 import {SkillClass, Skills} from "../../Reference/Skills";
 import {Box, Chip, Paper, Stack, Typography} from "@mui/material";
 import React from "react";

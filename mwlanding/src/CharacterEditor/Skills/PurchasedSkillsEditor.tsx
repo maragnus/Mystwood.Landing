@@ -1,4 +1,4 @@
-import {CharacterEditorPage} from "../CharacterEditorPage";
+import {CharacterEditorPage} from "../Common/CharacterEditorPage";
 import {PurchasedSkill} from "../../Reference/CharacterSheet";
 import {Skill, SkillByName, SkillRanks, Skills} from "../../Reference/Skills";
 import {Autocomplete, Box, Chip, IconButton, TextField, Tooltip, Typography} from "@mui/material";

@@ -1,38 +1,36 @@
 import React from 'react';
 import {Autocomplete, Box, Grid, TextField} from "@mui/material";
-import {HomeChapters, Religions} from '../Reference/CharacterSheet';
+import CharacterSheet, {HomeChapters, Religions} from '../Reference/CharacterSheet';
 import {Enhancements, Occupations, OccupationType} from '../Reference/Occupations';
-import {CharacterEditorPage} from "./CharacterEditorPage";
+import {CharacterEditorPage, CharacterEditorPageState} from "./Common/CharacterEditorPage";
 
 const occupationTypes: OccupationType[] = [OccupationType.Youth, OccupationType.Basic, OccupationType.Advanced, OccupationType.Plot];
 
 export default class ProfileEditor extends CharacterEditorPage {
+    dutyField: any;
+    liveryField: any;
+    specialtyField: any;
+
+    afterChange(state: CharacterEditorPageState, name?: string, value?: string) {
+        CharacterSheet.populateProfile(state.sheet);
+        if (name === "occupation") {
+            // this.dutyField.value = state.sheet.duty;
+            // this.liveryField.value = state.sheet.livery;
+            // this.specialtyField.value = state.sheet.specialty;
+        }
+    }
+
     render() {
+        const sheet = this.state.sheet;
+
         return <Box component="form">
             <Grid container spacing={2}>
                 <Grid item xs={12} md={12}>
                     <TextField id="characterName"
                                fullWidth required aria-required={true}
                                label="Character Name"
-                               defaultValue={this.state.sheet.characterName} variant="standard"
+                               defaultValue={sheet.characterName} variant="standard"
                                onChange={(e) => this.handleInputChange(e)}
-                    />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <Autocomplete
-                        id="home"
-                        options={HomeChapters} aria-required={true}
-                        getOptionLabel={(option) => option.title ?? ""}
-                        defaultValue={HomeChapters.find(item => item.name === this.state.sheet.homeChapter?.name)}
-                        isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => this.handleChange("homeChapter", value)}
-                        renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="standard"
-                                label="Home Chapter"
-                            />
-                        )}
                     />
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -41,7 +39,7 @@ export default class ProfileEditor extends CharacterEditorPage {
                         options={Occupations.sort((a, b) => occupationTypes.indexOf(a.type) - occupationTypes.indexOf(b.type))}
                         groupBy={(option) => option.type as string}
                         getOptionLabel={(option) => option.name ?? ""}
-                        defaultValue={Occupations.find(item => item.name === this.state.sheet.occupation?.name)}
+                        value={Occupations.find(item => item.name === sheet.occupation?.name)}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
                         onChange={(e, value?: any) => this.handleChange("occupation", value)}
                         renderInput={(params) => (
@@ -55,10 +53,26 @@ export default class ProfileEditor extends CharacterEditorPage {
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Autocomplete
+                        id="specialty" aria-required={true}
+                        options={sheet.specialties}
+                        value={sheet.specialty}
+                        onChange={(e, value?: any) => this.handleChange("specialty", value)}
+                        ref={x => this.specialtyField = x}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="standard"
+                                label="Occupational Specialty"
+                            />
+                        )}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <Autocomplete
                         id="enhancement"
                         options={Enhancements}
                         getOptionLabel={(option) => option.name ?? ""}
-                        defaultValue={Enhancements.find(item => item.name === this.state.sheet.enhancement?.name)}
+                        value={Enhancements.find(item => item.name === sheet.enhancement?.name)}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
                         onChange={(e, value?: any) => this.handleChange("enhancement", value)}
                         renderInput={(params) => (
@@ -72,11 +86,37 @@ export default class ProfileEditor extends CharacterEditorPage {
                 </Grid>
                 <Grid item xs={12} md={6}>
                     <Autocomplete
+                        id="home"
+                        options={HomeChapters} aria-required={true}
+                        getOptionLabel={(option) => option.title ?? ""}
+                        value={HomeChapters.find(item => item.name === sheet.homeChapter?.name)}
+                        isOptionEqualToValue={(option, value) => option.name === value.name}
+                        onChange={(e, value?: any) => this.handleChange("homeChapter", value)}
+                        renderInput={(params) => (
+                            <TextField
+                                {...params}
+                                variant="standard"
+                                label="Home Chapter"
+                            />
+                        )}
+                    />
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField fullWidth multiline id="duty" label="Duty" variant="standard"
+                               value={sheet.duty ?? ''} ref={x => this.dutyField = x}/>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                    <TextField fullWidth multiline id="livery" label="Livery" variant="standard"
+                               value={sheet.livery ?? ''} ref={x => this.liveryField = x}/>
+                </Grid>
+
+                <Grid item xs={12} md={12}>
+                    <Autocomplete
                         multiple
                         id="religions" aria-required={true}
                         options={Religions}
                         getOptionLabel={(option) => option.title ?? ""}
-                        defaultValue={Religions.filter(item => this.state.sheet.religions?.some(value => value.name === item.name))}
+                        defaultValue={Religions.filter(item => sheet.religions?.some(value => value.name === item.name))}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
                         onChange={(e, value?: any) => this.handleChange("religions", value)}
                         renderInput={(params) => (
@@ -91,11 +131,11 @@ export default class ProfileEditor extends CharacterEditorPage {
 
                 <Grid item xs={12}>
                     <TextField fullWidth multiline id="publicStory" label="Public Story" variant="filled"
-                               value={this.state.sheet.publicStory} onChange={(e) => this.handleInputChange(e)}/>
+                               value={sheet.publicStory} onChange={(e) => this.handleInputChange(e)}/>
                 </Grid>
                 <Grid item xs={12}>
                     <TextField fullWidth multiline id="privateStory" label="Private Story" variant="filled"
-                               value={this.state.sheet.privateStory} onChange={(e) => this.handleInputChange(e)}/>
+                               value={sheet.privateStory} onChange={(e) => this.handleInputChange(e)}/>
                 </Grid>
             </Grid>
         </Box>;
