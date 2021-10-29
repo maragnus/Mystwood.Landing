@@ -1,7 +1,7 @@
 import React from 'react';
 import {Alert, Autocomplete, Box, Chip, Grid, Paper, TextField, Tooltip, Typography} from "@mui/material";
-import {CharacterEditorPage, CharacterEditorPageState} from "./CharacterEditorPage";
-import {CharacterSheet} from "../Reference/CharacterSheet";
+import {CharacterEditorPage, CharacterEditorPageState} from "./Common/CharacterEditorPage";
+import CharacterSheet from "../Reference/CharacterSheet";
 import {Advantages, Disadvantages, VantageByTitle} from "../Reference/Advantages";
 import {Score} from "./Common/Score";
 

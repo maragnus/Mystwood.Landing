@@ -1,4 +1,4 @@
-import {CharacterSheet} from "../Reference/CharacterSheet";
+import CharacterSheet from "../../Reference/CharacterSheet";
 import * as React from "react";
 import {ChangeEvent} from "react";
 

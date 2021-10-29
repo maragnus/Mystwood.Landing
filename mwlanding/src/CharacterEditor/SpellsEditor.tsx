@@ -1,6 +1,6 @@
 import React from 'react';
 import {Alert, Box, Grid} from "@mui/material";
-import {CharacterEditorPage} from "./CharacterEditorPage";
+import {CharacterEditorPage} from "./Common/CharacterEditorPage";
 
 export default class SpellsEditor extends CharacterEditorPage {
     render() {

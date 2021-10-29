@@ -1,12 +1,25 @@
 import React from 'react';
 import {Autocomplete, Box, Grid, TextField} from "@mui/material";
-import {CharacterSheet, HomeChapters, Religions} from '../Reference/CharacterSheet';
+import CharacterSheet, {HomeChapters, Religions} from '../Reference/CharacterSheet';
 import {Enhancements, Occupations, OccupationType} from '../Reference/Occupations';
-import {CharacterEditorPage, CharacterEditorPageState} from "./CharacterEditorPage";
+import {CharacterEditorPage, CharacterEditorPageState} from "./Common/CharacterEditorPage";
 
 const occupationTypes: OccupationType[] = [OccupationType.Youth, OccupationType.Basic, OccupationType.Advanced, OccupationType.Plot];
 
 export default class ProfileEditor extends CharacterEditorPage {
+    dutyField: any;
+    liveryField: any;
+    specialtyField: any;
+
+    afterChange(state: CharacterEditorPageState, name?: string, value?: string) {
+        CharacterSheet.populateProfile(state.sheet);
+        if (name === "occupation") {
+            // this.dutyField.value = state.sheet.duty;
+            // this.liveryField.value = state.sheet.livery;
+            // this.specialtyField.value = state.sheet.specialty;
+        }
+    }
+
     render() {
         const sheet = this.state.sheet;
 

@@ -1,7 +1,6 @@
-import {CharacterEditorPage} from "../CharacterEditorPage";
-import {
+import {CharacterEditorPage} from "../Common/CharacterEditorPage";
+import CharacterSheet, {
     CharacterChosenSkill,
-    CharacterSheet,
     CharacterSkill,
     CharacterSkillChoice
 } from "../../Reference/CharacterSheet";

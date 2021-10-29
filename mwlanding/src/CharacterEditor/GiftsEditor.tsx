@@ -1,7 +1,7 @@
 import {Avatar, Box, Chip, Grid, IconButton, Paper, Rating, Stack, styled, Tooltip, Typography} from "@mui/material";
 import * as React from "react";
-import {CharacterAbility, CharacterProperty, CharacterSheet} from "../Reference/CharacterSheet";
-import {CharacterEditorPage, CharacterEditorPageState} from "./CharacterEditorPage";
+import CharacterSheet, {CharacterAbility, CharacterProperty} from "../Reference/CharacterSheet";
+import {CharacterEditorPage, CharacterEditorPageState} from "./Common/CharacterEditorPage";
 import CloseIcon from '@mui/icons-material/Close';
 import {Score} from "./Common/Score";
 

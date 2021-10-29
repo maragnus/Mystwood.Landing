@@ -1,6 +1,6 @@
 import React from 'react';
 import {Box, Grid, TextField} from "@mui/material";
-import {CharacterEditorPage} from "./CharacterEditorPage";
+import {CharacterEditorPage} from "./Common/CharacterEditorPage";
 
 export default class OtherEditor extends CharacterEditorPage {
     render() {

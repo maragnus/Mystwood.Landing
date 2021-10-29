@@ -6,23 +6,30 @@ import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import ProfileEditor from "./ProfileEditor";
-import {Burgundar, CharacterSheet, Justice} from "../Reference/CharacterSheet";
+import CharacterSheet from "../Reference/CharacterSheet";
 
-import './CharacterEditor.css';
 import GiftsEditor from "./GiftsEditor";
 import SkillsEditor from "./SkillsEditor";
 import AdvEditor from "./AdvEditor";
 import SpellsEditor from "./SpellsEditor";
 import OtherEditor from "./OtherEditor";
 import {Alert} from "@mui/material";
+import ReviewEditor from "./ReviewEditor";
+import {Character, CharacterStatus} from "../Session/Session";
+import StartDraftModal from "./Modals/StartDraftModal";
+import ContinueDraftModal from "./Modals/ContinueDraftModal";
+import SubmittedModal from "./Modals/SubmittedModal";
 
 interface CharacterEditorProps {
+    character: Character
 }
 
 interface CharacterEditorState {
     activeStep: number;
     sheet: CharacterSheet;
     originalSheet: CharacterSheet;
+    status: CharacterStatus;
+    precheckComplete: boolean;
 }
 
 interface EditorStep {
@@ -68,11 +75,12 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
     constructor(props: CharacterEditorProps) {
         super(props);
 
-        let sheet = CharacterSheet.mock('Nico Atkinson', "Artist (Author/Gilder/Painter/Sculptor)", [Justice], Burgundar);
         this.state = {
             activeStep: 0,
-            sheet: sheet,
-            originalSheet: {...sheet},
+            sheet: props.character.draft ?? props.character.sheet,
+            originalSheet: props.character.sheet,
+            status: props.character.status,
+            precheckComplete: false,
         };
     }
 
@@ -82,7 +90,39 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         this.stepRef?.savePage();
     }
 
+    startDraft(): void {
+        this.setState({
+            ...this.state,
+            sheet: {...this.state.originalSheet},
+            status: CharacterStatus.Draft,
+            precheckComplete: true,
+        });
+    }
+
+    continueDraft(): void {
+        this.setState({
+            ...this.state,
+            precheckComplete: true,
+        });
+    }
+
+
     render() {
+        if (!precheckComplete) {
+            switch (this.state.status) {
+                case CharacterStatus.Current:
+                    return (<StartDraftModal character={this.props.character} onEdit={this.startDraft.bind(this)}/>);
+
+                case CharacterStatus.Draft:
+                    return (
+                        <ContinueDraftModal character={this.props.character}
+                                            onContinue={this.continueDraft.bind(this)}
+                                            onStartOver={this.startDraft.bind(this)}/>);
+                case CharacterStatus.Submitted:
+                    return (<SubmittedModal character={this.props.character}/>);
+            }
+        }
+
         const handleNext = () => {
             this.savePage();
             this.setState((state, props) => ({activeStep: state.activeStep + 1}));
@@ -110,7 +150,8 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         };
 
         const activeStep = this.state.activeStep;
-        const ActiveStepComponent = steps[activeStep].editor
+        const ActiveStepComponent = activeStep < steps.length ? steps[activeStep].editor :
+            ReviewEditor;
 
         return (
             <Box sx={{width: '100%'}}>
@@ -133,9 +174,8 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                 {activeStep === steps.length ? (
                     // Review Step
                     <React.Fragment>
-                        <Typography sx={{mt: 2, mb: 1}}>
-                            Please carefully review your changes before submitting.
-                        </Typography>
+                        <ActiveStepComponent sheet={this.state.sheet} originalSheet={this.state.originalSheet}
+                                             handleSheetChange={sheetChange} ref={(page: any) => this.stepRef = page}/>
                         <Box sx={{display: 'flex', flexDirection: 'row', pt: 2}}>
                             <Button color="inherit" onClick={handleBack} sx={{mr: 1}}>
                                 Back

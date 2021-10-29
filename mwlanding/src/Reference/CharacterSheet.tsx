@@ -2,7 +2,7 @@ import {Gifts, Ability} from "./Gifts";
 import {Enhancements, Occupation, Occupations, SkillChoice} from "./Occupations";
 import {SkillByName} from "./Skills";
 
-export class CharacterSheet {
+export default class CharacterSheet {
     startingMoonstone: number = 0;
 
     // Editor - Profile
@@ -66,7 +66,7 @@ export class CharacterSheet {
     static mock(characterName: string, occupation: string, religions: Religion[], home: HomeChapter): CharacterSheet {
         const sheet = new CharacterSheet();
         const occupationItem = Occupations.find(i => i.name === occupation);
-        sheet.characterName = "Nico Atkinson";
+        sheet.characterName = characterName;
         sheet.occupation = occupationItem ?? Occupations[0];
         sheet.religions = religions;
         sheet.homeChapter = home;
