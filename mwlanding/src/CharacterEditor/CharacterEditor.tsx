@@ -108,7 +108,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
 
 
     render() {
-        if (!precheckComplete) {
+        if (!this.state.precheckComplete) {
             switch (this.state.status) {
                 case CharacterStatus.Current:
                     return (<StartDraftModal character={this.props.character} onEdit={this.startDraft.bind(this)}/>);
