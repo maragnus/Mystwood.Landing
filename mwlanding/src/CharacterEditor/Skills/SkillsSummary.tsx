@@ -1,13 +1,16 @@
 import {CharacterEditorPage} from "../Common/CharacterEditorPage";
 import CharacterSheet, {CharacterSkill, CharacterSkillChoice} from "../../Reference/CharacterSheet";
-import {SkillClass, Skills} from "../../Reference/Skills";
+import {SkillByName, SkillClass, Skills} from "../../Reference/Skills";
 import {Box, Chip, Paper, Stack, Typography} from "@mui/material";
 import React from "react";
 import {SkillList, SkillListItem} from "./SkillList";
 
 
 function SkillChip(props: { skill: CharacterSkill }) {
-    return <Chip label={props.skill.name}/>;
+    const rank = props.skill.rank === 0 ? ""
+        : ((SkillByName(props.skill.name).rank ?? 1) * props.skill.rank);
+
+    return <Chip label={`${props.skill.name} ${rank}`}/>;
 }
 
 

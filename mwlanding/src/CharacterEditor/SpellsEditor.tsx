@@ -14,22 +14,6 @@ import {CharacterEditorPage} from "./Common/CharacterEditorPage";
 import {Spell, SpellByName, Spells} from "../Reference/Spells";
 import {Close} from "@mui/icons-material";
 
-const styles = {
-    card: {
-        // Provide some spacing between cards
-        margin: 16,
-
-        // Use flex layout with column direction for components in the card
-        // (CardContent and CardActions)
-        display: "flex",
-        flexDirection: "column",
-
-        // Justify the content so that CardContent will always be at the top of the card,
-        // and CardActions will be at the bottom
-        justifyContent: "space-between"
-    }
-};
-
 export default class SpellsEditor extends CharacterEditorPage {
     render() {
         const sheet = this.state.sheet;
@@ -43,24 +27,26 @@ export default class SpellsEditor extends CharacterEditorPage {
         };
 
         const spellCards = spells.map(x => (
-            <Grid item sx={{m:1}} xs component={Card}>
-                <CardHeader
-                    action={
-                        <IconButton aria-label="settings">
-                            <Close/>
-                        </IconButton>
-                    }
-                    title={x.name}
-                    subheader={`${x.type}, ${x.mana} Mana`}
-                />
-                <CardContent>{x.effect}</CardContent>
+            <Grid item xs={6} sm={4} md={3} sx={{m: -0.5}}>
+                <Card sx={{height: "100%"}}>
+                    <CardHeader
+                        action={
+                            <IconButton aria-label="settings">
+                                <Close/>
+                            </IconButton>
+                        }
+                        title={x.name}
+                        subheader={`${x.type}, ${x.mana} Mana`}
+                    />
+                    <CardContent>{x.effect}</CardContent>
+                </Card>
             </Grid>
         ));
 
         return <Box component="form">
-            <Grid container spacing={0} alignItems="stretch" justifyContent="flex-start" sx={{gap: "10px"}}>
+            <Grid container spacing={2} alignItems="stretch" justifyContent="flex-start" sx={{gap: "10px"}}>
                 <Grid item xs={12}>
-                    <Typography variant="h6" sx={{pt: 2}}>Purchased</Typography>
+                    <Typography variant="h6" sx={{pt: 2}}>Add Spell</Typography>
                     <Autocomplete
                         id="spells" sx={{my: 2}}
                         options={availableSpells}
@@ -68,10 +54,8 @@ export default class SpellsEditor extends CharacterEditorPage {
                         groupBy={(o) => o.category}
                         onChange={(e, value?: any) => addSpell(value as Spell)}
                         renderInput={(params) => (
-                            <TextField
-                                {...params}
-                                variant="standard"
-                                label="Add Spell"
+                            <TextField {...params} variant="filled" label="Add Spell"
+                                      helperText="Search in this box to add a spell"
                             />
                         )}
                     />
