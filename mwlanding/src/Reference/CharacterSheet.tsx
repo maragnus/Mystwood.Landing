@@ -1,6 +1,8 @@
 import {Gifts, Ability} from "./Gifts";
-import {Enhancements, Occupation, Occupations, SkillChoice} from "./Occupations";
+import {Enhancements, OccupationByName, Occupations, SkillChoice} from "./Occupations";
 import {SkillByName} from "./Skills";
+import Religion from "./Religion";
+import HomeChapter from "./HomeChapter";
 
 export default class CharacterSheet {
     startingMoonstone: number = 0;
@@ -8,9 +10,9 @@ export default class CharacterSheet {
     // Editor - Profile
     characterName?: string;
     religions?: Religion[];
-    occupation?: Occupation;
+    occupation?: string;
     specialty: string = "";
-    enhancement: Occupation = Enhancements[0];
+    enhancement: string = Enhancements[0].name;
     homeChapter?: HomeChapter;
     publicStory?: string;
     privateStory?: string;
@@ -70,7 +72,7 @@ export default class CharacterSheet {
         const sheet = new CharacterSheet();
         const occupationItem = Occupations.find(i => i.name === occupation);
         sheet.characterName = characterName;
-        sheet.occupation = occupationItem ?? Occupations[0];
+        sheet.occupation = occupationItem?.name ?? Occupations[0].name;
         sheet.religions = religions;
         sheet.homeChapter = home;
         sheet.courage = 5;
@@ -107,18 +109,20 @@ export default class CharacterSheet {
     }
 
     static populateProfile(sheet: CharacterSheet): void {
-        sheet.specialties = sheet.occupation?.specialties ?? [sheet.occupation?.name ?? "No Occupation"];
+        const occupation = OccupationByName(sheet.occupation ?? "No Occupation");
+
+        sheet.specialties = occupation.specialties ?? [occupation.name ?? "No Occupation"];
         if (sheet.specialties.length === 1)
             sheet.specialty = sheet.specialties[0];
         else if (!sheet.specialties.some(x => x === sheet.specialty)) {
             sheet.specialty = sheet.specialties[0];
         }
 
-        sheet.duty = sheet.occupation?.duty ?? '';
-        sheet.livery = sheet.occupation?.livery ?? '';
+        sheet.duty = occupation.duty ?? '';
+        sheet.livery = occupation.livery ?? '';
 
-        if (!sheet.enhancement || !Enhancements.some(e => e.name === sheet.enhancement.name))
-            sheet.enhancement = Enhancements[0];
+        if (!sheet.enhancement || !Enhancements.some(e => e.name === sheet.enhancement))
+            sheet.enhancement = Enhancements[0].name;
     }
 
     static populateGifts(sheet: CharacterSheet): void {
@@ -143,19 +147,20 @@ export default class CharacterSheet {
         sheet.occupationSkills = [];
         sheet.occupationSkillsChoices = [];
 
-        CharacterSheet.populateOccupation(sheet, sheet.occupation);
-        CharacterSheet.populateOccupation(sheet, sheet.enhancement);
-        CharacterSheet.populateChosenSkills(sheet);
         CharacterSheet.populatePurchasedSkills(sheet);
+        sheet.moonstoneSpent = CharacterSheet.CalculateCost(sheet);
 
+        if (sheet.occupation) {
+            CharacterSheet.populateOccupation(sheet, sheet.occupation);
+            CharacterSheet.populateOccupation(sheet, sheet.enhancement);
+            CharacterSheet.populateChosenSkills(sheet);
+        }
         // Sort skills
         sheet.skills = sheet.skills // Sort by name, then by rank
             .sort((a, b) =>
                 (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : (
                     (a.rank > b.rank) ? 1 : ((b.rank > a.rank) ? -1 : 0
                     ))));
-
-        sheet.moonstoneSpent = CharacterSheet.CalculateCost(sheet);
     }
 
     static populatePurchasedSkills(sheet: CharacterSheet): void {
@@ -200,7 +205,9 @@ export default class CharacterSheet {
         ];
     }
 
-    static populateOccupation(sheet: CharacterSheet, occupation: Occupation | undefined): void {
+    static populateOccupation(sheet: CharacterSheet, occupationName: string): void {
+        const occupation = OccupationByName(occupationName);
+
         if (!occupation || !occupation.skills)
             return;
 
@@ -307,25 +314,3 @@ export type PurchasedSkill = {
     name: string;
     purchasedRank: number;
 }
-
-export type HomeChapter = {
-    name: string;
-    title: string;
-}
-
-export const Albion: HomeChapter = {name: "albion", title: "Albion"};
-export const Burgundar: HomeChapter = {name: "burgundar", title: "Burgundar"};
-export const TheKeep: HomeChapter = {name: "keep", title: "The Keep"};
-
-export const HomeChapters: HomeChapter[] = [Albion, Burgundar, TheKeep];
-
-export type Religion = {
-    name: string;
-    title: string;
-}
-
-export const Justice: Religion = {name: "justice", title: "Follower of Justice"};
-export const Mercy: Religion = {name: "mercy", title: "Follower of Mercy"};
-export const Wild: Religion = {name: "wild", title: "Follower of the Wild"};
-
-export const Religions: Religion[] = [Justice, Mercy, Wild];

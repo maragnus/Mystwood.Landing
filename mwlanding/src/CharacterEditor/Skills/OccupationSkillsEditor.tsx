@@ -82,7 +82,7 @@ export class OccupationSkillsEditor extends CharacterEditorPage {
             <SkillChoices skills={choice} isSkillChecked={isSkillChecked} toggleSkill={toggleSkill}/>);
 
         return <Box component="form">
-            <Typography variant="h6" sx={{pt: 2}}>{this.state.sheet.occupation?.name}</Typography>
+            <Typography variant="h6" sx={{pt: 2}}>{this.state.sheet.occupation}</Typography>
             <SkillList body={skills}/>
             {choices}
         </Box>;

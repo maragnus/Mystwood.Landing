@@ -72,7 +72,7 @@ export class SkillsSummary extends CharacterEditorPage {
             <Typography variant="h6" sx={{pt: 2}}>Free</Typography>
             <SkillList body={free}/>
 
-            <Typography variant="h6" sx={{pt: 2}}>{this.state.sheet.occupation?.name}</Typography>
+            <Typography variant="h6" sx={{pt: 2}}>{this.state.sheet.occupation}</Typography>
             <SkillList body={skills}/>
             {choices}
 

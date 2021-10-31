@@ -1,4 +1,6 @@
-import CharacterSheet, {Albion, Burgundar, Justice, Mercy, TheKeep, Wild} from "../Reference/CharacterSheet";
+import CharacterSheet from "../Reference/CharacterSheet";
+import {Wild, Mercy, Justice} from "../Reference/Religion";
+import {TheKeep, Burgundar, Albion} from "../Reference/HomeChapter";
 
 export enum CharacterStatus {
     New = "New",
@@ -41,7 +43,7 @@ export class ApplicationSession {
             characters: characters.map((c, id) => ({
                 id: id,
                 name: c.characterName ?? "",
-                subtitle: `Level ${c.currentLevel} ${c.occupation?.name} from ${c.homeChapter?.title}`,
+                subtitle: `Level ${c.currentLevel} ${c.occupation} from ${c.homeChapter?.title}`,
                 sheet: c,
                 draft: statuses[id] === CharacterStatus.Draft ? {...c} : undefined,
                 status: statuses[id]

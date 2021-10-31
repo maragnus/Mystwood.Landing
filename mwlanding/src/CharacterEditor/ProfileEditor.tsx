@@ -1,8 +1,10 @@
 import React from 'react';
 import {Autocomplete, Box, Grid, TextField} from "@mui/material";
-import CharacterSheet, {HomeChapters, Religions} from '../Reference/CharacterSheet';
+import CharacterSheet from '../Reference/CharacterSheet';
 import {Enhancements, Occupations, OccupationType} from '../Reference/Occupations';
 import {CharacterEditorPage, CharacterEditorPageState} from "./Common/CharacterEditorPage";
+import {HomeChapters} from "../Reference/HomeChapter";
+import {Religions} from "../Reference/Religion";
 
 const occupationTypes: OccupationType[] = [OccupationType.Youth, OccupationType.Basic, OccupationType.Advanced, OccupationType.Plot];
 
@@ -39,9 +41,9 @@ export default class ProfileEditor extends CharacterEditorPage {
                         options={Occupations.sort((a, b) => occupationTypes.indexOf(a.type) - occupationTypes.indexOf(b.type))}
                         groupBy={(option) => option.type as string}
                         getOptionLabel={(option) => option.name ?? ""}
-                        value={Occupations.find(item => item.name === sheet.occupation?.name)}
+                        value={Occupations.find(item => item.name === sheet.occupation)}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => this.handleChange("occupation", value)}
+                        onChange={(e, value?: any) => this.handleChange("occupation", value.name)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -70,10 +72,9 @@ export default class ProfileEditor extends CharacterEditorPage {
                 <Grid item xs={12} md={6}>
                     <Autocomplete
                         id="enhancement"
-                        options={Enhancements}
-                        getOptionLabel={(option) => option.name ?? ""}
-                        value={Enhancements.find(item => item.name === sheet.enhancement?.name)}
-                        isOptionEqualToValue={(option, value) => option.name === value.name}
+                        options={Enhancements.map(e => e.name)}
+                        getOptionLabel={(option) => option ?? ""}
+                        value={sheet.enhancement}
                         onChange={(e, value?: any) => this.handleChange("enhancement", value)}
                         renderInput={(params) => (
                             <TextField

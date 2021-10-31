@@ -689,3 +689,14 @@ export const Enhancements: Occupation[] = [
         skills: ["Income (+5)", "Livery"]
     },
 ];
+
+
+const occupationsLookup: Map<string, Occupation> =
+    [...Occupations, ...Enhancements]
+        .reduce((dict, occupation) => {
+            dict.set(occupation.name, occupation);
+            return dict;
+        }, new Map<string, Occupation>());
+
+export const OccupationByName: ((name: string) => Occupation) = (name: string) =>
+    occupationsLookup.get(name) ?? Occupations[0];
