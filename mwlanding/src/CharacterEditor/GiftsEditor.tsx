@@ -105,7 +105,7 @@ export default class GiftsEditor extends CharacterEditorPage {
             const info = !displayInline ? undefined :
                 <GiftInfo name={gift.title} abilities={this.state.sheet.abilities}
                           properties={this.state.sheet.properties}/>;
-            return <Grid item xs={12} sm={6} md={4}>
+            return <Grid item sm={12} md={6} lg={4}>
                 <GiftEditor title={gift.title} name={gift.name} value={sheet[gift.name]}
                             onChange={(name, value) => this.handleChange(name, value)}/>
                 {info}
@@ -175,7 +175,7 @@ export default class GiftsEditor extends CharacterEditorPage {
                     </Tooltip>
                 </Box>
 
-                <Box>Your starting level is {this.state.sheet.startingLevel}</Box>
+                <Box><Typography sx={{ mt: 2 }} variant="h6" align="center">Your starting level is {this.state.sheet.startingLevel}</Typography></Box>
             </Box>
             <Grid container spacing={2}>
                 {gifts}

@@ -43,7 +43,7 @@ export class ApplicationSession {
             characters: characters.map((c, id) => ({
                 id: id,
                 name: c.characterName ?? "",
-                subtitle: `Level ${c.currentLevel} ${c.occupation} from ${c.homeChapter?.title}`,
+                subtitle: `Level ${c.currentLevel} ${c.occupation} from ${c.homeChapter}`,
                 sheet: c,
                 draft: statuses[id] === CharacterStatus.Draft ? {...c} : undefined,
                 status: statuses[id]

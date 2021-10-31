@@ -9,11 +9,11 @@ export default class CharacterSheet {
 
     // Editor - Profile
     characterName?: string;
-    religions?: Religion[];
+    religions?: string[];
     occupation?: string;
     specialty: string = "";
     enhancement: string = Enhancements[0].name;
-    homeChapter?: HomeChapter;
+    homeChapter?: string;
     publicStory?: string;
     privateStory?: string;
 
@@ -73,8 +73,8 @@ export default class CharacterSheet {
         const occupationItem = Occupations.find(i => i.name === occupation);
         sheet.characterName = characterName;
         sheet.occupation = occupationItem?.name ?? Occupations[0].name;
-        sheet.religions = religions;
-        sheet.homeChapter = home;
+        sheet.religions = religions.map(x => x.name);
+        sheet.homeChapter = home.name;
         sheet.courage = 5;
         sheet.prowess = 3;
         sheet.dexterity = 1;

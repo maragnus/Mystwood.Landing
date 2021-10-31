@@ -37,7 +37,7 @@ export const Gifts: Gift[] = [
         ranks: [
             {
                 rank: 1,
-                properties: ["+0", "1", ""],
+                properties: ["+0", "1", "-"],
                 abilities: [
                     {name: "Use of Arms", rank: 0, title: "Use of Arms"},
                     {name: "Battle Endurance (Disengage)", rank: 0, title: "Battle Endurance (Disengage)"},
@@ -45,14 +45,14 @@ export const Gifts: Gift[] = [
             },
             {
                 rank: 2,
-                properties: ["+1", "2", ""],
+                properties: ["+1", "2", "-"],
                 abilities: [
                     {name: "Toughness", rank: 1, title: "Toughness I"},
                 ],
             },
             {
                 rank: 3,
-                properties: ["+1", "3", ""],
+                properties: ["+1", "3", "-"],
                 abilities: [
                     {name: "Battle Endurance (Heal 2)", rank: 0, title: "Battle Endurance (Heal 2)"},
                 ],

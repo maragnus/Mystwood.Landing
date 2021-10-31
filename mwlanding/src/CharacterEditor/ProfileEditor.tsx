@@ -90,9 +90,9 @@ export default class ProfileEditor extends CharacterEditorPage {
                         id="home"
                         options={HomeChapters} aria-required={true}
                         getOptionLabel={(option) => option.title ?? ""}
-                        value={HomeChapters.find(item => item.name === sheet.homeChapter?.name)}
+                        value={HomeChapters.find(item => item.name === sheet.homeChapter)}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => this.handleChange("homeChapter", value)}
+                        onChange={(e, value?: any) => this.handleChange("homeChapter", value.name)}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
@@ -117,9 +117,9 @@ export default class ProfileEditor extends CharacterEditorPage {
                         id="religions" aria-required={true}
                         options={Religions}
                         getOptionLabel={(option) => option.title ?? ""}
-                        defaultValue={Religions.filter(item => sheet.religions?.some(value => value.name === item.name))}
+                        defaultValue={Religions.filter(item => sheet.religions?.some(value => value === item.name))}
                         isOptionEqualToValue={(option, value) => option.name === value.name}
-                        onChange={(e, value?: any) => this.handleChange("religions", value)}
+                        onChange={(e, value?: any) => this.handleChange("religions", value.map((x: any) => x.name))}
                         renderInput={(params) => (
                             <TextField
                                 {...params}
