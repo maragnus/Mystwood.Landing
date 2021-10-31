@@ -35,6 +35,9 @@ export default class CharacterSheet {
     advantages: CharacterVantage[] = [];
     disadvantages: CharacterVantage[] = [];
 
+    // Editor - Spells
+    spells: string[] = [];
+
     // Editor - Other
     flavorTraits?: undefined;
     unusualFeatures: string = '';

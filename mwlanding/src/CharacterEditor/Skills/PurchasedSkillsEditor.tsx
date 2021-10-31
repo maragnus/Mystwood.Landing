@@ -69,10 +69,7 @@ export class PurchasedSkillsEditor extends CharacterEditorPage {
 
         const addSkill = (skill: Skill): void => {
             this.handleChange("purchasedSkills",
-                purchasedSkills.push({
-                    name: skill.name,
-                    purchasedRank: 1,
-                }));
+                [...purchasedSkills, {name: skill.name, purchasedRank: 1}]);
             this.savePage();
         };
         const purchased = purchasedSkills.map(skill => <PurchasedSkillChip skill={skill} changeSkill={changeSkill}/>);
@@ -104,11 +101,8 @@ export class PurchasedSkillsEditor extends CharacterEditorPage {
                 getOptionLabel={(option) => option.title + "   [" + option.class + ", " + option.cost + " MS, " + option.ranks + "]"}
                 onChange={(e, value?: any) => addSkill(value as Skill)}
                 renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        variant="standard"
-                        label="Purchase New Skill"
-                    />
+                    <TextField {...params} variant="filled" label="Purchase New Skill"
+                               helperText="Search in this box to add a skill"/>
                 )}
             />
             <SkillList body={purchased}/>
