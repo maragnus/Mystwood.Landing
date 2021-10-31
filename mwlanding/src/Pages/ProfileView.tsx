@@ -37,7 +37,7 @@ export default function ProfileView() {
 
     return (
         <Container maxWidth="md">
-            <Typography variant="h4" sx={{mt: 2}}>Your Profile</Typography>
+            <Typography variant="h4" sx={{mt: 2}} align="center">Your Profile</Typography>
             <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }}>
             <Tabs
                 orientation="vertical"

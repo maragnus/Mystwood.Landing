@@ -155,7 +155,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
 
         return (
             <Box sx={{width: '100%'}}>
-                <Typography sx={{mt: 2, mb: 1}}>
+                <Typography sx={{mt: 2, mb: 1}} align="center">
                     Drafting changes to <strong>Niko Atkinson</strong>
                 </Typography>
                 <Stepper activeStep={activeStep} alternativeLabel>
@@ -195,7 +195,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                                 Back
                             </Button>
                             <Box sx={{flex: '1 1 auto'}}>
-                                <Typography sx={{mt: 2, mb: 1}} variant="h4">{steps[activeStep].title}</Typography>
+                                <Typography sx={{mt: 2, mb: 1}} variant="h4" align="center">{steps[activeStep].title}</Typography>
                             </Box>
                             <Button onClick={handleNext}>
                                 {activeStep === steps.length - 1 ? 'Review' : 'Next'}

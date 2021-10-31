@@ -38,7 +38,7 @@ export default function CharacterList() {
         <SessionContext.Consumer>
             {context => (
                 <Container maxWidth="sm">
-                    <Typography variant="h4" sx={{mt: 2}}>Your Characters</Typography>
+                    <Typography variant="h4" sx={{mt: 2}} align="center">Your Characters</Typography>
                     <CharacterItems characters={context.characters}/>
                 </Container>
             )}

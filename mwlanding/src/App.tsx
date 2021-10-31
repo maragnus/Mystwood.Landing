@@ -9,6 +9,8 @@ import CharacterList from "./Pages/CharacterList";
 import CharacterView from "./CharacterView/CharacterView";
 import SessionProvider from "./Session/SessionProvider";
 import SessionContext from "./Session/SessionContext";
+import Landing from "./Pages/Landing";
+import NotImplemented from "./Pages/NotImplemented";
 
 interface CharacterParams {
     id?: string
@@ -33,6 +35,13 @@ function App() {
     return (
         <SessionProvider>
             <Container sx={{pb: 7}} maxWidth="lg" className="App">
+                <Route exact path="/" component={Landing}/>
+                <Route exact path="/skills">
+                    <NotImplemented title="Skills Directory"/>
+                </Route>
+                <Route exact path="/events">
+                    <NotImplemented title="Events Calendar"/>
+                </Route>
                 <Route exact path="/profile" component={ProfileView}/>
                 <Route exact path="/characters" component={CharacterList}/>
                 <Route exact path="/characters/:id" component={ViewCharacter}/>
