@@ -1,5 +1,5 @@
-import {CharacterEditorPage} from "../Common/CharacterEditorPage";
-import {PurchasedSkill} from "../../Reference/CharacterSheet";
+import {CharacterEditorPage, CharacterEditorPageState} from "../Common/CharacterEditorPage";
+import CharacterSheet, {PurchasedSkill} from "../../Reference/CharacterSheet";
 import {Skill, SkillByName, SkillRanks, Skills} from "../../Reference/Skills";
 import {Autocomplete, Box, Chip, IconButton, TextField, Tooltip, Typography} from "@mui/material";
 import React from "react";
@@ -45,6 +45,10 @@ function PurchasedSkillChip(props: { skill: PurchasedSkill, changeSkill: (skill:
 }
 
 export class PurchasedSkillsEditor extends CharacterEditorPage {
+    afterChange(state: CharacterEditorPageState, name?: string, value?: string) {
+        CharacterSheet.populateSkills(state.sheet);
+    }
+
     render() {
         // Lazy state access
         const purchasedSkills = this.state.sheet.purchasedSkills;
