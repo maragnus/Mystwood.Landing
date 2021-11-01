@@ -668,20 +668,27 @@ export const Enhancements: Occupation[] = [
         skills: [{count: 1, choices: ["Production (Chaos)", "Production (Time)"]}]
     },
     {
-        type: OccupationType.Enhancement, name: "Barback", skills: ["Income 5", "Sell Drinks"]
+        type: OccupationType.Enhancement,
+        name: "Barback",
+        skills: ["Income 5", "Sell Drinks"]
     },
     {
         type: OccupationType.Enhancement,
         name: "Guild Crafter",
-        skills: ["Guild Wages", "Livery (guild patch and visible tools of the trade). +2 Craft Points to any one Craft Skill you possess."]
+        skills: ["Guild Wages", "Livery", "Craft Points +2"],
+        livery: "guild patch and visible tools of the trade",
     },
     {
         type: OccupationType.Enhancement,
         name: "Master Crafter",
         livery: "guild patch and visible tools of the trade",
-        skills: ["Guild Wages", "Instruction", "Livery", "Masterwork", "Retain 1 Retain Basic Occupations skills", "+4 Craft Points to any one Craft Skill you possess"]
+        skills: ["Guild Wages", "Instruction", "Livery", "Masterwork", "Retainer 1", "Craft Points +4"]
     },
-    {type: OccupationType.Enhancement, name: "Master Healer", skills: ["Medicine"]},
+    {
+        type: OccupationType.Enhancement,
+        name: "Master Healer",
+        skills: ["Medicine"]
+    },
     {
         type: OccupationType.Enhancement,
         name: "Town Guard Auxiliary",

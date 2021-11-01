@@ -110,6 +110,7 @@ export default class CharacterSheet {
 
     static populateProfile(sheet: CharacterSheet): void {
         const occupation = OccupationByName(sheet.occupation ?? "No Occupation");
+        const enhancement = OccupationByName(sheet.enhancement);
 
         sheet.specialties = occupation.specialties ?? [occupation.name ?? "No Occupation"];
         if (sheet.specialties.length === 1)
@@ -118,8 +119,8 @@ export default class CharacterSheet {
             sheet.specialty = sheet.specialties[0];
         }
 
-        sheet.duty = occupation.duty ?? '';
-        sheet.livery = occupation.livery ?? '';
+        sheet.duty = [occupation.duty, enhancement.duty].filter(x => !!x).join(",");
+        sheet.livery = [occupation.livery, enhancement.livery].filter(x => !!x).join(",");
 
         if (!sheet.enhancement || !Enhancements.some(e => e.name === sheet.enhancement))
             sheet.enhancement = Enhancements[0].name;

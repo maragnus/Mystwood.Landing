@@ -15,11 +15,6 @@ export default class ProfileEditor extends CharacterEditorPage {
 
     afterChange(state: CharacterEditorPageState, name?: string, value?: string) {
         CharacterSheet.populateProfile(state.sheet);
-        if (name === "occupation") {
-            // this.dutyField.value = state.sheet.duty;
-            // this.liveryField.value = state.sheet.livery;
-            // this.specialtyField.value = state.sheet.specialty;
-        }
     }
 
     render() {
