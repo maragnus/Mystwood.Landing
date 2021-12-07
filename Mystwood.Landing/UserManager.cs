@@ -9,7 +9,7 @@ namespace Mystwood.Landing
         string? Name,
         string[] Emails,
         string? Phone,
-        string Location
+        string? Location
     );
 
     public interface IUserManager
@@ -132,8 +132,8 @@ namespace Mystwood.Landing
             return new UserProfile(
                 account.Name,
                 account.EmailAddresses!.Select(x => x.Email).ToArray(),
-                account.PhoneNumber!,
-                account.Location
+                account.PhoneNumber ?? "",
+                account.Location ?? ""
             );
         }
 

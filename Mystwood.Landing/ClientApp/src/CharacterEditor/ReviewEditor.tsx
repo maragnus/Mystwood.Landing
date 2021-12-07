@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import {Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
 import {CharacterEditorPage} from "./Common/CharacterEditorPage";
-import humanizeString from "humanize-string";
+//import humanizeString from "humanize-string";
 
 const fields: { name: string, title: string }[] = [
     "characterName",
@@ -42,7 +42,7 @@ const fields: { name: string, title: string }[] = [
     "cures",
     "documents",
     "notes",
-].map(n => ({name: n, title: humanizeString(n)}))
+].map(n => ({name: n, title: n}))
 
 export default class ReviewEditor extends CharacterEditorPage {
     render() {

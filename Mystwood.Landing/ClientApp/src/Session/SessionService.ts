@@ -33,7 +33,6 @@ export class SessionService {
     private _nextSubscriptionId: number = 0;
     private _email?: string;
     private _sessionId?: string;
-    private _profile: AccountProfile = { name: "Undefined", email: [] };
 
     private static readonly SessionIdKey = "MWL_SESSION_ID";
     private static readonly ProfileKey = "MWL_PROFILE";
@@ -110,7 +109,7 @@ export class SessionService {
         return JSON.parse(profileJson);
     }
 
-    private static parseProfile(profile?: Profile) {
+    private parseProfile(profile?: Profile) {
         const p = {
             name: profile?.name ?? "Undefined",
             location: profile?.location,

@@ -1,4 +1,4 @@
-/**
+**
  * @fileoverview gRPC-Web generated client stub for larp
  * @enhanceable
  * @public

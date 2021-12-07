@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Routes, Route, useParams } from 'react-router-dom';
 import {Paper, Container} from "@mui/material";
 import CharacterEditor from "./CharacterEditor/CharacterEditor";

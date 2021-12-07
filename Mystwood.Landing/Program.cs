@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Internal;
 using Mystwood.Landing;
 using Mystwood.Landing.Data;
@@ -20,7 +20,7 @@ builder.Services.AddCors(cors =>
     cors.AddPolicy("GrpcCors", policy => policy
         .WithMethods("POST", "OPTIONS")
         .AllowAnyHeader()
-        .WithOrigins("https://localhost:5002")
+        .WithOrigins("https://localhost:5002", "https://mystwoodlanding.azurewebsites.net")
         .WithExposedHeaders("Grpc-Status", "Grpc-Message"));
 });
 
