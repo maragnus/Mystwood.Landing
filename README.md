@@ -1,9 +1,12 @@
+# GRPC Usage
 
+This project uses gRPC for client/server communication. 
 
-Using this to generate protobuf for ReactJS typescript
+## Update grpc in ClientApp
+Generate protobuf for ReactJS typescript
 https://github.com/stephenh/ts-proto#quickstart
 
-# Update grpc in ClientApp
+```
 choco install protoc
 cd Mystwood.Landing\ClientApp
 yarn add ts-proto
@@ -14,3 +17,4 @@ protoc --plugin=protoc-gen-ts_proto=.\node_modules\.bin\protoc-gen-ts_proto.cmd 
 
 copy larp.ts src\Protos\Larp.ts
 del larp.ts
+```
