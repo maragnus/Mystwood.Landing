@@ -1,0 +1,109 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Mystwood.Landing.GrpcLarp";
+
+package larp;
+
+message ProfileEmail {
+    string email = 1;
+    bool verified = 2;
+}
+
+message Profile {
+    string name = 1;
+    string location = 2;
+    repeated ProfileEmail emails = 3;
+    string phone = 4;
+}
+
+message Character {
+    string character_id = 1;
+    string live_json = 2;
+    string draft_json = 3;
+    string metadata = 4;
+}
+
+enum ValidationResponseCode {
+    SUCCESS = 0;
+    EXPIRED = 1;
+    INVALID = 2;
+}
+
+service Larp {
+    rpc InitiateLogin(InitiateLoginRequest) returns (InitiateLoginResponse) {}
+    rpc ConfirmLogin(ConfirmLoginRequest) returns (ConfirmLoginResponse) {}
+
+    rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {}
+    
+    rpc SetProfileName(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+    rpc SetProfileLocation(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+    rpc SetProfilePhone(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+    rpc AddProfileEmail(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+    rpc RemoveProfileEmail(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+
+    rpc GetCharacters(GetCharactersRequest) returns (GetCharactersResponse) {}
+    rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (UpdateCharacterResponse) {}
+}
+
+// Include this in any message that requires an authenticated session
+
+message SessionIdentifier {
+    string session_id = 1;
+}
+
+// Requests and Responses
+
+message InitiateLoginRequest {
+    string email = 1;
+}
+
+message InitiateLoginResponse {
+    ValidationResponseCode status_code = 1; 
+    string message = 2;
+}
+
+message ConfirmLoginRequest {
+    string email = 1;
+    string code = 2;
+}
+
+message ConfirmLoginResponse {
+    SessionIdentifier session = 1;
+    ValidationResponseCode status_code = 2;
+    string message = 3;
+    Profile profile = 4;
+}
+
+message UpdateProfileRequest {
+    SessionIdentifier session = 1;
+    string value = 2;
+}
+
+message UpdateProfileResponse {
+    Profile profile = 1;
+}
+
+message GetProfileRequest {
+    SessionIdentifier session = 1;
+}
+
+message GetProfileResponse {
+    Profile profile = 1;
+}
+
+message GetCharactersRequest {
+    SessionIdentifier session = 1;
+}
+
+message GetCharactersResponse {
+    repeated Character character = 1;
+}
+
+message UpdateCharacterRequest {
+    SessionIdentifier session = 1;
+    Character character = 2;
+}
+
+message UpdateCharacterResponse {
+    Character character = 1;
+}
