@@ -14,10 +14,6 @@ import NotImplemented from "./Pages/NotImplemented";
 import LoginPage from "./Session/LoginPage";
 import ConfirmPage from "./Session/ConfirmPage";
 
-interface CharacterParams {
-    id?: string
-}
-
 function ViewCharacter() {
     const { characterId } = useParams();
     return (<CharacterView id={characterId}/>);

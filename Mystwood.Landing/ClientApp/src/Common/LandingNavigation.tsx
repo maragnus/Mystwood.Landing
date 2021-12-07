@@ -3,7 +3,6 @@ import BottomNavigation from '@mui/material/BottomNavigation';
 import BottomNavigationAction from '@mui/material/BottomNavigationAction';
 import {
     LockOpenOutlined,
-    ExitToAppOutlined,
     CalendarToday,
     GroupsOutlined,
     BookOutlined,
@@ -11,7 +10,6 @@ import {
 } from "@mui/icons-material";
 import {NavLink} from 'react-router-dom';
 import sessionService from "../Session/SessionService";
-import {Fragment} from "react";
 
 export default class LandingNavigation extends React.Component<any, any> {
     constructor(props: any) {

@@ -47,7 +47,7 @@ export default function ConfirmPage() {
         let email: string = (data.get('email') as string ?? "").trim();
         let code: string = (data.get('code') as string ?? "").trim();
 
-        if (code.length != 6) {
+        if (code.length !== 6) {
             setMessage("You didn't enter a valid code");
             setDetails("The code from your email should be exactly six (6) letters and numbers. " +
                 "Please check your email and make sure you are providing the most recent code sent.");

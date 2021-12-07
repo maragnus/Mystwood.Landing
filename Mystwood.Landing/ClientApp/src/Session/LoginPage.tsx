@@ -1,19 +1,15 @@
 import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
+import {createTheme, ThemeProvider} from '@mui/material/styles';
 import logo from '../logo.webp';
-import sessionService, {ConfirmStatus, LoginStatus} from "./SessionService";
+import sessionService, {LoginStatus} from "./SessionService";
 import {NavLink, useNavigate} from "react-router-dom";
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
 
@@ -71,8 +67,7 @@ export default function LoginPage() {
                     setDetails("We're not sure what went wrong. Please try a different email address.");
                     break;
             }
-        }
-        catch (e: any) {
+        } catch (e: any) {
 
             setMessage("There was network or server error. Please try again.")
             setDetails(e.toString());
@@ -91,7 +86,7 @@ export default function LoginPage() {
     return (
         <ThemeProvider theme={theme}>
             <Container component="main" maxWidth="xs">
-                <CssBaseline />
+                <CssBaseline/>
                 <Box
                     sx={{
                         marginTop: 8,
@@ -106,7 +101,7 @@ export default function LoginPage() {
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                         <TextField
                             margin="normal"
                             required
@@ -121,7 +116,7 @@ export default function LoginPage() {
                             type="submit"
                             fullWidth
                             variant="contained"
-                            sx={{ mt: 3, mb: 2 }}
+                            sx={{mt: 3, mb: 2}}
                         >
                             Sign In or Register
                         </Button>
@@ -137,9 +132,9 @@ export default function LoginPage() {
                                 </NavLink>
                             </Grid>
                         </Grid>
-                    </Box> 
+                    </Box>
                 </Box>
-                <Copyright sx={{ mt: 8, mb: 4 }} />
+                <Copyright sx={{mt: 8, mb: 4}}/>
                 <Dialog
                     open={open}
                     onClose={handleClose}

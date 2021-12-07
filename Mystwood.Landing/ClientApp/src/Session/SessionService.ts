@@ -12,7 +12,7 @@ export interface AccountProfile {
     location?: string;
     phone?: string;
     email: string[];
-};
+}
 
 export enum LoginStatus {
     Success,
@@ -50,9 +50,9 @@ export class SessionService {
         // Make sure that all sessions identify if we are signed out
         setInterval(function() {
             let sessionId: string | undefined = localStorage.getItem(SessionService.SessionIdKey) ?? "";
-            if (sessionId == "") sessionId = undefined;
+            if (sessionId === "") sessionId = undefined;
 
-            if (sessionId != sessionService._sessionId)
+            if (sessionId !== sessionService._sessionId)
                 sessionService.updateState(sessionId);
         }, 1000);
     }
@@ -90,7 +90,7 @@ export class SessionService {
 
         const subscriptionIndex = this._callbacks
             .map((element, index) => element.subscription === subscriptionId ? { found: true, index: index } : { found: false, index: 0 })
-            .filter(element => element.found === true);
+            .filter(element => element.found);
 
         if (subscriptionIndex.length !== 1)
             throw new Error(`Found an invalid number of subscriptions ${subscriptionIndex.length}`);
@@ -110,7 +110,7 @@ export class SessionService {
         return JSON.parse(profileJson);
     }
 
-    private parseProfile(profile?: Profile) {
+    private static parseProfile(profile?: Profile) {
         const p = {
             name: profile?.name ?? "Undefined",
             location: profile?.location,
