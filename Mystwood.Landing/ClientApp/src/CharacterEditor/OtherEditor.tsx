@@ -9,7 +9,7 @@ export default class OtherEditor extends CharacterEditorPage {
         return <Box component="form">
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    <TextField fullWidth multiline id="cures" label="Unusual Features" variant="filled"
+                    <TextField fullWidth multiline id="unusualFeatures" label="Unusual Features" variant="filled"
                                value={sheet.unusualFeatures} onChange={(e) => this.handleInputChange(e)}/>
                 </Grid>
 

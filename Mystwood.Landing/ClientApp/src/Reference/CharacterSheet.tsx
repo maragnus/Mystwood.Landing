@@ -198,10 +198,14 @@ export default class CharacterSheet {
     static populateChosenSkills(sheet: CharacterSheet): void {
         sheet.skills = [
             ...sheet.skills,
-            ...sheet.purchasedSkills.map(s => ({
+            ...sheet.occupationSkills.map(s => ({
                 name: s.name,
-                rank: s.purchasedRank,
-                source: "purchased"
+                rank: s.rank,
+                source: s.source
+            })),
+            ...sheet.chosenSkills.map(s => ({
+                name: s.name,
+                source: "choice"
             } as CharacterSkill))
         ];
     }
