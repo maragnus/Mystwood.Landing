@@ -16,9 +16,10 @@ import sessionService from "../Session/SessionService";
 import {useNavigate} from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import DeleteIcon from '@mui/icons-material/Delete';
+import {BusyButton} from "../Common/BusyButton";
 
 function TabPanel(props: any) {
-    const { children, value, index, ...other } = props;
+    const {children, value, index, ...other} = props;
 
     return (
         <div
@@ -29,7 +30,7 @@ function TabPanel(props: any) {
             {...other}
         >
             {value === index && (
-                <Box sx={{ p: 3 }}>
+                <Box sx={{p: 3}}>
                     <Typography>{children}</Typography>
                 </Box>
             )}
@@ -45,10 +46,13 @@ function tabProps(index: number) {
 }
 
 function EditProfile() {
+    const [busy, setBusy] = React.useState(false);
+
     let profile = sessionService.getProfile();
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        setBusy(true);
 
         let name: string = (data.get('name') as string ?? "").trim();
         let location: string = (data.get('location') as string ?? "").trim();
@@ -58,16 +62,16 @@ function EditProfile() {
             await sessionService.setName(name);
             await sessionService.setLocation(location);
             await sessionService.setPhone(phone);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             alert(e);
+        } finally {
+            setBusy(false);
+            profile = sessionService.getProfile();
         }
-
-        profile = sessionService.getProfile();
     }
 
     return (
-        <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+        <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
             <TextField
                 margin="normal"
                 required
@@ -102,66 +106,67 @@ function EditProfile() {
                 defaultValue={profile.phone}
             />
 
-            <Button
-                type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-            >
-                Save
-            </Button>
+            <BusyButton label="Save" busy={busy} sx={{mt: 3, mb: 2}}/>
         </Box>
     );
 }
 
 
 function EditEmail() {
+    const [busy, setBusy] = React.useState(false);
+
     const [profile, setProfile] = React.useState(sessionService.getProfile());
 
     async function remove(email: string) {
+        setBusy(true);
         try {
             await sessionService.removeEmail(email);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             alert(e);
         }
-        setProfile(sessionService.getProfile());
+        finally {
+            setBusy(false);
+            setProfile(sessionService.getProfile());
+        }
     }
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        setBusy(true);
 
         let email: string = (data.get('email') as string ?? "").trim();
 
         try {
             await sessionService.addEmail(email);
-        }
-        catch (e: any) {
+        } catch (e: any) {
             alert(e);
         }
-        setProfile(sessionService.getProfile());
+        finally {
+            setBusy(false);
+            setProfile(sessionService.getProfile());
+        }
     }
 
     const addresses = profile.email.map(email => (
         <ListItem
             secondaryAction={
-                <IconButton edge="end" aria-label="delete" onClick={() => remove(email)}>
-                    <DeleteIcon />
+                <IconButton edge="end" aria-label="delete" onClick={() => remove(email)} disabled={busy}>
+                    <DeleteIcon/>
                 </IconButton>
             }
         >
-            <ListItemText primary={email} secondary="Unverified" />
+            <ListItemText primary={email} secondary="Unverified"/>
         </ListItem>
-    )) ;
+    ));
 
     return (
         <Box>
             <List>
-            { addresses }
+                {addresses}
             </List>
 
-            <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
                 <TextField
                     margin="normal"
                     required
@@ -172,14 +177,7 @@ function EditEmail() {
                     autoComplete="email"
                     autoFocus
                 />
-                <Button
-                    type="submit"
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                >
-                    Add
-                </Button>
+                <BusyButton label="Add" busy={busy} sx={{mt: 3, mb: 2}} />
             </Box>
         </Box>
     );
@@ -201,56 +199,56 @@ export default function ProfileView() {
     return (
         <Container maxWidth="md">
             <Typography variant="h4" sx={{mt: 2}} align="center">Your Profile</Typography>
-            <Box sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }}>
-            <Tabs
-                orientation="vertical"
-                variant="scrollable"
-                value={value}
-                onChange={handleChange}
-                aria-label="Vertical tabs example"
-                sx={{ borderRight: 1, borderColor: 'divider' }}
-            >
-                <Tab label="Profile" {...tabProps(0)} />
-                <Tab label="Email" {...tabProps(1)} />
-                <Tab label="Attendance" {...tabProps(2)} />
-                <Tab label="Two-factor" {...tabProps(3)} />
-                <Tab label="Personal data" {...tabProps(4)} />
-                <Button variant="contained" onClick={logout} sx={{mt:2, mx:1}}>Logout</Button>
-            </Tabs>
-            <TabPanel value={value} index={0}>
-                <Typography variant="h5" sx={{my: 2}} align="center">Personal Profile</Typography>
+            <Box sx={{flexGrow: 1, bgcolor: 'background.paper', display: 'flex'}}>
+                <Tabs
+                    orientation="vertical"
+                    variant="scrollable"
+                    value={value}
+                    onChange={handleChange}
+                    aria-label="Vertical tabs example"
+                    sx={{borderRight: 1, borderColor: 'divider'}}
+                >
+                    <Tab label="Profile" {...tabProps(0)} />
+                    <Tab label="Email" {...tabProps(1)} />
+                    <Tab label="Attendance" {...tabProps(2)} />
+                    <Tab label="Two-factor" {...tabProps(3)} />
+                    <Tab label="Personal data" {...tabProps(4)} />
+                    <Button variant="contained" onClick={logout} sx={{mt: 2, mx: 1}}>Logout</Button>
+                </Tabs>
+                <TabPanel value={value} index={0}>
+                    <Typography variant="h5" sx={{my: 2}} align="center">Personal Profile</Typography>
 
-                <EditProfile />
-            </TabPanel>
-            <TabPanel value={value} index={1}>
-                <Typography variant="h5" sx={{my: 2}} align="center">Authorized Emails</Typography>
+                    <EditProfile/>
+                </TabPanel>
+                <TabPanel value={value} index={1}>
+                    <Typography variant="h5" sx={{my: 2}} align="center">Authorized Emails</Typography>
 
-                <EditEmail />
-            </TabPanel>
-            <TabPanel value={value} index={2}>
-                <Typography variant="h5" sx={{my: 2}} align="center">Event Attendance</Typography>
+                    <EditEmail/>
+                </TabPanel>
+                <TabPanel value={value} index={2}>
+                    <Typography variant="h5" sx={{my: 2}} align="center">Event Attendance</Typography>
 
-                <Alert severity="warning">
-                    <AlertTitle>Not Implemented</AlertTitle>
-                    This area has not been implemented yet.
-                </Alert>
-            </TabPanel>
-            <TabPanel value={value} index={3}>
-                <Typography variant="h5" sx={{my: 2}} align="center">Two-factor</Typography>
+                    <Alert severity="warning">
+                        <AlertTitle>Not Implemented</AlertTitle>
+                        This area has not been implemented yet.
+                    </Alert>
+                </TabPanel>
+                <TabPanel value={value} index={3}>
+                    <Typography variant="h5" sx={{my: 2}} align="center">Two-factor</Typography>
 
-                <Alert severity="warning">
-                    <AlertTitle>Not Implemented</AlertTitle>
-                    This area has not been implemented yet.
-                </Alert>
-            </TabPanel>
-            <TabPanel value={value} index={4}>
-                <Typography variant="h5" sx={{my: 2}} align="center">Personal data</Typography>
+                    <Alert severity="warning">
+                        <AlertTitle>Not Implemented</AlertTitle>
+                        This area has not been implemented yet.
+                    </Alert>
+                </TabPanel>
+                <TabPanel value={value} index={4}>
+                    <Typography variant="h5" sx={{my: 2}} align="center">Personal data</Typography>
 
-                <Alert severity="warning">
-                    <AlertTitle>Not Implemented</AlertTitle>
-                    This area has not been implemented yet.
-                </Alert>
-            </TabPanel>
+                    <Alert severity="warning">
+                        <AlertTitle>Not Implemented</AlertTitle>
+                        This area has not been implemented yet.
+                    </Alert>
+                </TabPanel>
             </Box>
         </Container>
     );

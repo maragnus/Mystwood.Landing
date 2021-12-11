@@ -14,6 +14,7 @@ import {createTheme, ThemeProvider} from '@mui/material/styles';
 import logo from '../logo.webp';
 import sessionService, {ConfirmStatus} from "./SessionService";
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
+import {BusyButton} from "../Common/BusyButton";
 
 function Copyright(props: any) {
     return (
@@ -32,6 +33,7 @@ const theme = createTheme();
 
 export default function ConfirmPage() {
     let navigate = useNavigate();
+    const [busy, setBusy] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [message, setMessage] = React.useState("No message");
     const [details, setDetails] = React.useState("No message");
@@ -41,6 +43,7 @@ export default function ConfirmPage() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+        setBusy(true);
 
         setDetails("");
 
@@ -52,6 +55,7 @@ export default function ConfirmPage() {
             setDetails("The code from your email should be exactly six (6) letters and numbers. " +
                 "Please check your email and make sure you are providing the most recent code sent.");
             setOpen(true);
+            setBusy(false);
             return;
         }
 
@@ -80,14 +84,14 @@ export default function ConfirmPage() {
                         "Please check your email and make sure you are providing the most recent code sent.");
                     break;
             }
-        }
-        catch (e: any) {
+        } catch (e: any) {
 
             setMessage("There was network or server error. Please try again.")
             setDetails(e.toString());
+        } finally {
+            setBusy(false);
+            setOpen(true);
         }
-
-        setOpen(true);
     };
 
     async function handleClose() {
@@ -118,7 +122,7 @@ export default function ConfirmPage() {
                     <Typography component="p">
                         We've emailed you a code. Please check your email and enter the code below.
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, width: "100%"}}>
                         <TextField
                             margin="normal"
                             required
@@ -143,14 +147,7 @@ export default function ConfirmPage() {
                             control={<Checkbox value="remember" color="primary"/>}
                             label="Remember me"
                         />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{mt: 3, mb: 2}}
-                        >
-                            Sign In
-                        </Button>
+                        <BusyButton label="Sign In" busy={busy} />
                         <Grid container>
                             <Grid item xs>
                                 <NavLink to="/login">

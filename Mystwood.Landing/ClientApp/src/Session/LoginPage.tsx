@@ -12,6 +12,7 @@ import logo from '../logo.webp';
 import sessionService, {LoginStatus} from "./SessionService";
 import {NavLink, useNavigate} from "react-router-dom";
 import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
+import {BusyButton} from "../Common/BusyButton";
 
 function Copyright(props: any) {
     return (
@@ -26,10 +27,12 @@ function Copyright(props: any) {
     );
 }
 
+
 const theme = createTheme();
 
 export default function LoginPage() {
-    let navigate = useNavigate();
+    const navigate = useNavigate();
+    const [busy, setBusy] = React.useState(false);
     const [open, setOpen] = React.useState(false);
     const [message, setMessage] = React.useState("No message");
     const [details, setDetails] = React.useState("No message");
@@ -37,6 +40,8 @@ export default function LoginPage() {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
+
+        setBusy(true);
 
         setDetails("");
 
@@ -46,6 +51,7 @@ export default function LoginPage() {
             setMessage("You must enter a valid email address");
             setDetails("Please provide your email address to get a code to sign in.");
             setOpen(true);
+            setBusy(false);
             return;
         }
 
@@ -54,6 +60,7 @@ export default function LoginPage() {
 
             switch (status) {
                 case LoginStatus.Success:
+                    setBusy(false);
                     navigate("/confirm");
                     return;
 
@@ -68,12 +75,13 @@ export default function LoginPage() {
                     break;
             }
         } catch (e: any) {
-
             setMessage("There was network or server error. Please try again.")
             setDetails(e.toString());
         }
-
-        setOpen(true);
+        finally {
+            setBusy(false);
+            setOpen(true);
+        }
     };
 
     async function handleClose() {
@@ -97,11 +105,11 @@ export default function LoginPage() {
                 >
 
                     <img src={logo} alt="Mystwood Logo"
-                         style={{maxWidth: "75%", height: "auto"}}/>
+                         style={{maxWidth: "100%", height: "auto"}}/>
                     <Typography component="h1" variant="h5">
                         Sign in
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1}}>
+                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{mt: 1, width: "100%"}}>
                         <TextField
                             margin="normal"
                             required
@@ -112,23 +120,16 @@ export default function LoginPage() {
                             autoComplete="email"
                             autoFocus
                         />
-                        <Button
-                            type="submit"
-                            fullWidth
-                            variant="contained"
-                            sx={{mt: 3, mb: 2}}
-                        >
-                            Sign In or Register
-                        </Button>
+                        <BusyButton label="Sign In or Register" busy={busy} />
                         <Grid container>
                             <Grid item xs>
                                 <NavLink to="/confirm">
-                                    I already have a code
+                                    <Typography variant="body2">I already have a code</Typography>
                                 </NavLink>
                             </Grid>
                             <Grid item>
                                 <NavLink to="/demo">
-                                    {"Enter demo mode"}
+                                    <Typography variant="body2">Enter demo mode</Typography>
                                 </NavLink>
                             </Grid>
                         </Grid>
