@@ -15,15 +15,15 @@ namespace Mystwood.Landing
     public interface IUserManager
     {
         Task<string> CreateSessionId(string email, string peer);
-        Task<bool> VerifySessionId(string sessionId);
-        Task<UserProfile> GetProfile(string sessionId);
+        Task<int?> VerifySessionId(string sessionId);
+        Task<UserProfile> GetProfile(int accountId);
         Task<bool> ValidateAccount(string email, string peer);
 
-        Task SetName(string sessionId, string newValue);
-        Task SetLocation(string sessionId, string newValue);
-        Task SetPhone(string sessionId, string newValue);
-        Task AddEmail(string sessionId, string email);
-        Task RemoveEmail(string sessionId, string email);
+        Task SetName(int accountId, string newValue);
+        Task SetLocation(int accountId, string newValue);
+        Task SetPhone(int accountId, string newValue);
+        Task AddEmail(int accountId, string email);
+        Task RemoveEmail(int accountId, string email);
     }
 
     public class UserManager : IUserManager
@@ -37,11 +37,11 @@ namespace Mystwood.Landing
             _clock = systemClock;
         }
 
-        private async Task UpdateProfile(string sessionId, Action<Account> updateAction)
+        private async Task UpdateProfile(int accountId, Action<Account> updateAction)
         {
             var account = await _db.Accounts
               .Include(x => x.EmailAddresses)
-              .FirstOrDefaultAsync(x => x.Sessions!.Any(s => s.Id == sessionId));
+              .FirstOrDefaultAsync(x => x.Id == accountId);
 
             if (account == null)
                 throw new UserManagerException("Session ID not found");
@@ -53,9 +53,9 @@ namespace Mystwood.Landing
             await _db.SaveChangesAsync();
         }
 
-        public async Task AddEmail(string sessionId, string email)
+        public async Task AddEmail(int accountId, string email)
         {
-            await UpdateProfile(sessionId, account =>
+            await UpdateProfile(accountId, account =>
             {
                 var normalized = email.Trim().ToUpper();
                 if (account.EmailAddresses!.Any(s => s.EmailNormalized == normalized))
@@ -68,9 +68,9 @@ namespace Mystwood.Landing
                 });
             });
         }
-        public async Task RemoveEmail(string sessionId, string email)
+        public async Task RemoveEmail(int accountId, string email)
         {
-            await UpdateProfile(sessionId, account =>
+            await UpdateProfile(accountId, account =>
             {
                 if (account.EmailAddresses!.Count == 1)
                     throw new UserManagerException("Cannot delete last email address");
@@ -120,14 +120,12 @@ namespace Mystwood.Landing
             return code;
         }
 
-        public async Task<UserProfile> GetProfile(string sessionId)
+        public async Task<UserProfile> GetProfile(int accountId)
         {
             var account = await _db.Accounts
                 .Include(x => x.EmailAddresses)
-                .FirstOrDefaultAsync(x => x.Sessions!.Any(s => s.Id == sessionId));
-
-            if (account == null)
-                throw new UserManagerException("Session ID not found");
+                .FirstOrDefaultAsync(x => x.Id == accountId)
+                ?? throw new UserManagerException("Account ID not found");
 
             return new UserProfile(
                 account.Name,
@@ -137,25 +135,25 @@ namespace Mystwood.Landing
             );
         }
 
-        public async Task SetLocation(string sessionId, string newValue)
+        public async Task SetLocation(int accountId, string newValue)
         {
-            await UpdateProfile(sessionId, account =>
+            await UpdateProfile(accountId, account =>
             {
                 account.Location = newValue.Trim();
             });
         }
 
-        public async Task SetName(string sessionId, string newValue)
+        public async Task SetName(int accountId, string newValue)
         {
-            await UpdateProfile(sessionId, account =>
+            await UpdateProfile(accountId, account =>
             {
                 account.Name = newValue.Trim();
             });
         }
 
-        public async Task SetPhone(string sessionId, string newValue)
+        public async Task SetPhone(int accountId, string newValue)
         {
-            await UpdateProfile(sessionId, account =>
+            await UpdateProfile(accountId, account =>
             {
                 account.PhoneNumber = newValue.Trim();
             });
@@ -168,13 +166,13 @@ namespace Mystwood.Landing
             return account?.IsValid ?? true;
         }
 
-        public async Task<bool> VerifySessionId(string sessionId)
+        public async Task<int?> VerifySessionId(string sessionId)
         {
             var session = await _db.Sessions
                 .FirstOrDefaultAsync(x => x.Id == sessionId && x.Account.IsValid == true);
 
             if (session == null)
-                return false;
+                return null;
 
             // Update last accessed time once per day
             var now = _clock.UtcNow;
@@ -185,7 +183,7 @@ namespace Mystwood.Landing
                 await _db.SaveChangesAsync();
             }
 
-            return true;
+            return session.AccountId;
         }
     }
 }

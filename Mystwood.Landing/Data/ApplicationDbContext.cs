@@ -8,7 +8,10 @@ public class ApplicationDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Character>().HasIndex(x => x.AccountId);
         modelBuilder.Entity<CharacterRevision>().HasIndex(x => x.CharacterId);
+        modelBuilder.Entity<CharacterRevisionEvent>().HasIndex(x => x.CharacterRevisionId);
+
     }
 
     public DbSet<Account> Accounts { get; set; } = null!;
@@ -17,4 +20,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<Token> Tokens { get; set; } = null!;
     public DbSet<Character> Characters { get; set; } = null!;
     public DbSet<CharacterRevision> CharacterRevisions { get; set; } = null!;
+    public DbSet<CharacterRevisionEvent> CharacterRevisionEvents { get; set; } = null!;
 }

@@ -24,12 +24,15 @@ builder.Services.AddCors(cors =>
         .WithExposedHeaders("Grpc-Status", "Grpc-Message"));
 });
 
+builder.Services.AddSingleton<ISystemClock, SystemClock>();
+
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection(SmtpOptions.SectionName));
 builder.Services.AddScoped<IEmailManager, EmailManager>();
 
 builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
-builder.Services.AddSingleton<ISystemClock, SystemClock>();
+builder.Services.AddScoped<ICharacterManager, CharacterManager>();
+
 builder.Services.AddDbContext<ApplicationDbContext>(o => o
     .UseSqlServer(builder.Configuration["ConnectionStrings:ApplicationDb"]));
 

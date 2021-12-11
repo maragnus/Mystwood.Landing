@@ -11,14 +11,16 @@ public class LarpService : Larp.LarpBase
     private readonly ITokenManager _tokenManager;
     private readonly IEmailManager _emailManager;
     private readonly IUserManager _userManager;
+    private readonly ICharacterManager _characterManager;
 
-    public LarpService(ILogger<LarpService> logger, IEmailManager emailManager, ITokenManager tokenManager, IOptions<AccountOptions> options, IUserManager userManager)
+    public LarpService(ILogger<LarpService> logger, IEmailManager emailManager, ITokenManager tokenManager, IOptions<AccountOptions> options, IUserManager userManager, ICharacterManager characterManager)
     {
         _logger = logger;
         _emailManager = emailManager;
         _tokenManager = tokenManager;
         _options = options.Value;
         _userManager = userManager;
+        _characterManager = characterManager;
     }
 
     public override async Task<InitiateLoginResponse> InitiateLogin(InitiateLoginRequest request, ServerCallContext context)
@@ -47,7 +49,11 @@ public class LarpService : Larp.LarpBase
             };
 
         var sessionId = await _userManager.CreateSessionId(request.Email, context.Peer);
-        Profile profile = await BuildProfile(sessionId);
+
+        var accountId = await _userManager.VerifySessionId(sessionId) ??
+            throw new Exception("Unauthorized");
+
+        var profile = await BuildProfile(accountId);
 
         return new ConfirmLoginResponse()
         {
@@ -57,9 +63,9 @@ public class LarpService : Larp.LarpBase
         };
     }
 
-    private async Task<Profile> BuildProfile(string sessionId)
+    private async Task<Profile> BuildProfile(int accountId)
     {
-        var userProfile = await _userManager.GetProfile(sessionId);
+        var userProfile = await _userManager.GetProfile(accountId);
         var profile = new Profile
         {
             Name = userProfile.Name ?? "",
@@ -70,104 +76,82 @@ public class LarpService : Larp.LarpBase
         return profile;
     }
 
+    private async Task<UpdateProfileResponse> CreateProfileResponse(int accountId) =>
+        new UpdateProfileResponse()
+        {
+            Profile = await BuildProfile(accountId)
+        };
+
     public override async Task<UpdateProfileResponse> AddProfileEmail(UpdateProfileRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
-
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        await _userManager.AddEmail(sessionId, request.Value);
+        await _userManager.AddEmail(accountId, request.Value);
 
-        return new UpdateProfileResponse()
-        {
-            Profile = await BuildProfile(sessionId)
-        };
+        return await CreateProfileResponse(accountId);
     }
 
     public override async Task<UpdateProfileResponse> RemoveProfileEmail(UpdateProfileRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
-
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        await _userManager.RemoveEmail(sessionId, request.Value);
+        await _userManager.RemoveEmail(accountId, request.Value);
 
-        return new UpdateProfileResponse()
-        {
-            Profile = await BuildProfile(sessionId)
-        };
+        return await CreateProfileResponse(accountId);
     }
 
     public override async Task<UpdateProfileResponse> SetProfileName(UpdateProfileRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
-
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        await _userManager.SetName(sessionId, request.Value);
+        await _userManager.SetName(accountId, request.Value);
 
-        return new UpdateProfileResponse()
-        {
-            Profile = await BuildProfile(sessionId)
-        };
+        return await CreateProfileResponse(accountId);
     }
 
     public override async Task<UpdateProfileResponse> SetProfileLocation(UpdateProfileRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
-
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        await _userManager.SetLocation(sessionId, request.Value);
+        await _userManager.SetLocation(accountId, request.Value);
 
-        return new UpdateProfileResponse()
-        {
-            Profile = await BuildProfile(sessionId)
-        };
+        return await CreateProfileResponse(accountId);
     }
 
     public override async Task<UpdateProfileResponse> SetProfilePhone(UpdateProfileRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
-
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        await _userManager.SetPhone(sessionId, request.Value);
+        await _userManager.SetPhone(accountId, request.Value);
 
-        return new UpdateProfileResponse()
-        {
-            Profile = await BuildProfile(sessionId)
-        };
+        return await CreateProfileResponse(accountId);
     }
 
     public override async Task<GetProfileResponse> GetProfile(GetProfileRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
-
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
-
         return new GetProfileResponse()
         {
-            Profile = await BuildProfile(sessionId)
-        };
+            Profile = await BuildProfile(accountId)
+        }; ;
     }
 
     public override async Task<GetCharactersResponse> GetCharacters(GetCharactersRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
-
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         var response = new GetCharactersResponse();
 
         response.Character.Clear();
+
+        var characters = await _characterManager.GetCharacters(accountId);
         // TODO -- do something
 
         return response;
@@ -175,9 +159,8 @@ public class LarpService : Larp.LarpBase
 
     public override async Task<UpdateCharacterResponse> UpdateCharacterDraft(UpdateCharacterRequest request, ServerCallContext context)
     {
-        var sessionId = request.Session.SessionId;
 
-        if (!await _userManager.VerifySessionId(sessionId))
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         // TODO -- do something
