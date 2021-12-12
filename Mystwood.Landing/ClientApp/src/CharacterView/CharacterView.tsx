@@ -6,7 +6,7 @@ import {ReligionByName} from "../Reference/Religion";
 import {Star} from "@mui/icons-material";
 import CharacterSheet from "../Reference/CharacterSheet";
 import {useMountEffect} from "../Pages/UseMountEffect";
-import sessionService, {CharacterSummary} from "../Session/SessionService";
+import sessionService from "../Session/SessionService";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 
 function Gift(params: { title: string, value: number }) {
@@ -131,7 +131,7 @@ export default function CharacterView(params: { id?: string }) {
 
     const homeChapter = HomeChaptersByName(sheet.homeChapter!).title;
     let religions = (sheet.religions ?? []).map(x => ReligionByName(x ?? "").title);
-    if (religions.length == 0)
+    if (religions.length === 0)
         religions = ["Not Religious"];
 
     const skills: { title: string, name: string, value: number }[] = [];
