@@ -1,21 +1,23 @@
 import * as React from "react";
 import {
-    Avatar, Button, Container, Chip,
-    List, ListItem, ListItemAvatar,
-    ListItemButton, ListItemText, Typography, Box,
+    Avatar,
+    Box,
+    Button,
+    Chip,
+    Container,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemButton,
+    ListItemText,
+    Typography,
 } from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import CreateIcon from '@mui/icons-material/Create';
 import {Link, useNavigate} from "react-router-dom";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
-import {useEffect} from 'react'
 import sessionService, {CharacterSummary} from "../Session/SessionService";
-
-function useMountEffect(effect: any) {
-    return useEffect(() => {
-        effect()
-    }, [])
-}
+import {useMountEffect} from "./UseMountEffect";
 
 function CharacterItems(props: { characters: CharacterSummary[] }): any {
     const navigate = useNavigate();

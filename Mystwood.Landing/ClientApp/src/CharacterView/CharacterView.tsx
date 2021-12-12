@@ -1,11 +1,13 @@
 import * as React from "react";
 import {Grid, Container} from "@mui/material";
-import {mockCharacters} from "../Session/Mocks";
 import tree from '../tree.webp';
 import {HomeChaptersByName} from "../Reference/HomeChapter";
 import {ReligionByName} from "../Reference/Religion";
 import {Star} from "@mui/icons-material";
 import CharacterSheet from "../Reference/CharacterSheet";
+import {useMountEffect} from "../Pages/UseMountEffect";
+import sessionService, {CharacterSummary} from "../Session/SessionService";
+import AwesomeSpinner from "../Common/AwesomeSpinner";
 
 function Gift(params: { title: string, value: number }) {
     let i: number;
@@ -111,12 +113,26 @@ function Block(params: { title?: string, text: string }) {
 }
 
 export default function CharacterView(params: { id?: string }) {
-    const character = mockCharacters()[parseInt(params.id ?? "0")];
-    const sheet = character.live;
-    CharacterSheet.populate(sheet);
+    const [busy, setBusy] = React.useState(true);
+    const [sheet, setSheet] = React.useState<CharacterSheet>({} as CharacterSheet);
+
+    useMountEffect(async () => {
+        const character = await sessionService.getCharacter(params.id!);
+        let sheet = (character.live.characterName === undefined)
+            ? character.live  as CharacterSheet: character.draft as CharacterSheet;
+        CharacterSheet.populate(sheet);
+        setSheet(sheet);
+        setBusy(false);
+    });
+
+    if (busy) {
+        return (<AwesomeSpinner/>);
+    }
 
     const homeChapter = HomeChaptersByName(sheet.homeChapter!).title;
-    const religions = sheet.religions!.map(x => ReligionByName(x ?? "").title);
+    let religions = (sheet.religions ?? []).map(x => ReligionByName(x ?? "").title);
+    if (religions.length == 0)
+        religions = ["Not Religious"];
 
     const skills: { title: string, name: string, value: number }[] = [];
     sheet.skills.forEach(x => {

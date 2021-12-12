@@ -246,10 +246,12 @@ export class SessionService {
     }
 
     private static toCharacter(result: CharacterResponse) {
+        const emptySheet = new CharacterSheet();
+
         return {
             id: result.character?.characterId,
-            draft: JSON.parse(result.character?.draftJson ?? "{}"),
-            live: JSON.parse(result.character?.draftJson ?? "{}"),
+            draft: {...emptySheet, ...JSON.parse(result.character?.draftJson ?? "{}")},
+            live:  {...emptySheet, ...JSON.parse(result.character?.draftJson ?? "{}")},
             status: CharacterStatus.New // TODO
         } as Character;
     }

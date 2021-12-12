@@ -104,8 +104,8 @@ export default class CharacterSheet {
     }
 
     static populateVantages(sheet: CharacterSheet): void {
-        sheet.advantageScore = sheet.advantages.reduce((score, vantage) => score + vantage.rank, 0);
-        sheet.disadvantageScore = sheet.disadvantages.reduce((score, vantage) => score + vantage.rank, 0);
+        sheet.advantageScore = (sheet.advantages ?? []).reduce((score, vantage) => score + vantage.rank, 0);
+        sheet.disadvantageScore = (sheet.disadvantages ?? []).reduce((score, vantage) => score + vantage.rank, 0);
     }
 
     static populateProfile(sheet: CharacterSheet): void {
@@ -166,7 +166,7 @@ export default class CharacterSheet {
 
     static populatePurchasedSkills(sheet: CharacterSheet): void {
         // Clean up any skills without ranks
-        sheet.purchasedSkills = sheet.purchasedSkills.filter(s => s.purchasedRank > 0);
+        sheet.purchasedSkills = (sheet.purchasedSkills ?? []).filter(s => s.purchasedRank > 0);
 
         const purchases: { ranks: number, cost: number }[] =
             sheet.purchasedSkills.map(skill => ({
@@ -239,7 +239,7 @@ export default class CharacterSheet {
     }
 
     static populateGift(sheet: CharacterSheet, giftName: string, giftRank: number) {
-        if (giftRank < 1)
+        if (giftRank === undefined || giftRank < 1)
             return;
 
         let gift = Gifts.filter(g => g.name === giftName)[0];
