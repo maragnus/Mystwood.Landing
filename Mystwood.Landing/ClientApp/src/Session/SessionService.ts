@@ -1,6 +1,12 @@
-import {Character} from "./Session";
+import {Character, CharacterStatus} from "./Session";
 import {larpClient} from "./LarpService";
-import {Profile, ValidationResponseCode} from "../Protos/Larp";
+import {
+    CharacterResponse,
+    CharacterSummary as LarpCharacterSummary,
+    Profile,
+    ValidationResponseCode
+} from "../Protos/Larp";
+import CharacterSheet from "../Reference/CharacterSheet";
 
 export interface SessionCallback {
     callback: (() => void);
@@ -21,14 +27,21 @@ export enum LoginStatus {
 }
 
 export enum ConfirmStatus {
-    Success ,
+    Success,
     AlreadyUsed,
     Expired,
     Invalid
 }
 
+export interface CharacterSummary {
+    id: string;
+    name: string;
+    player: string,
+    status: CharacterStatus,
+    summary: string;
+}
+
 export class SessionService {
-    private _characters: Character[] = [];
     private _callbacks: SessionCallback[] = [];
     private _nextSubscriptionId: number = 0;
     private _email?: string;
@@ -47,7 +60,7 @@ export class SessionService {
 
     startInterval() {
         // Make sure that all sessions identify if we are signed out
-        setInterval(function() {
+        setInterval(function () {
             let sessionId: string | undefined = localStorage.getItem(SessionService.SessionIdKey) ?? "";
             if (sessionId === "") sessionId = undefined;
 
@@ -79,7 +92,7 @@ export class SessionService {
     }
 
     subscribe(callback: (() => void)): number {
-        this._callbacks.push({ callback, subscription: this._nextSubscriptionId++ });
+        this._callbacks.push({callback, subscription: this._nextSubscriptionId++});
         return this._nextSubscriptionId - 1;
     }
 
@@ -88,7 +101,10 @@ export class SessionService {
             return;
 
         const subscriptionIndex = this._callbacks
-            .map((element, index) => element.subscription === subscriptionId ? { found: true, index: index } : { found: false, index: 0 })
+            .map((element, index) => element.subscription === subscriptionId ? {
+                found: true,
+                index: index
+            } : {found: false, index: 0})
             .filter(element => element.found);
 
         if (subscriptionIndex.length !== 1)
@@ -109,7 +125,7 @@ export class SessionService {
         return JSON.parse(profileJson);
     }
 
-    private parseProfile(profile?: Profile) {
+    private static parseProfile(profile?: Profile) {
         const p = {
             name: profile?.name ?? "Undefined",
             location: profile?.location,
@@ -126,44 +142,46 @@ export class SessionService {
 
         try {
             const response = await larpClient.GetProfile({session: {sessionId: this._sessionId}});
-            this.parseProfile(response.profile);
+            SessionService.parseProfile(response.profile);
 
             this.notifySubscribers();
 
             return this.getProfile();
-        }
-        catch {
+        } catch {
             return this.getProfile();
         }
     }
 
     async setName(newValue: string) {
-        const response = await larpClient.SetProfileName({ session: {sessionId: this._sessionId}, value: newValue });
-        this.parseProfile(response.profile);
+        const response = await larpClient.SetProfileName({session: {sessionId: this._sessionId}, value: newValue});
+        SessionService.parseProfile(response.profile);
         this.notifySubscribers();
     }
 
     async setLocation(newValue: string) {
-        const response = await larpClient.SetProfileLocation({ session: {sessionId: this._sessionId}, value: newValue });
-        this.parseProfile(response.profile);
+        const response = await larpClient.SetProfileLocation({session: {sessionId: this._sessionId}, value: newValue});
+        SessionService.parseProfile(response.profile);
         this.notifySubscribers();
     }
 
     async setPhone(newValue: string) {
-        const response = await larpClient.SetProfilePhone({ session: {sessionId: this._sessionId}, value: newValue });
-        this.parseProfile(response.profile);
+        const response = await larpClient.SetProfilePhone({session: {sessionId: this._sessionId}, value: newValue});
+        SessionService.parseProfile(response.profile);
         this.notifySubscribers();
     }
 
     async addEmail(newEmail: string) {
-        const response = await larpClient.AddProfileEmail({ session: {sessionId: this._sessionId}, value: newEmail });
-        this.parseProfile(response.profile);
+        const response = await larpClient.AddProfileEmail({session: {sessionId: this._sessionId}, value: newEmail});
+        SessionService.parseProfile(response.profile);
         this.notifySubscribers();
     }
 
     async removeEmail(exisingEmail: string) {
-        const response = await larpClient.RemoveProfileEmail({ session: {sessionId: this._sessionId}, value: exisingEmail });
-        this.parseProfile(response.profile);
+        const response = await larpClient.RemoveProfileEmail({
+            session: {sessionId: this._sessionId},
+            value: exisingEmail
+        });
+        SessionService.parseProfile(response.profile);
         this.notifySubscribers();
     }
 
@@ -175,7 +193,7 @@ export class SessionService {
 
     async login(email: string): Promise<LoginStatus> {
         this._email = email;
-        const result = await larpClient.InitiateLogin({ email: email });
+        const result = await larpClient.InitiateLogin({email: email});
         switch (result.statusCode) {
             case ValidationResponseCode.SUCCESS:
                 return LoginStatus.Success;
@@ -188,7 +206,7 @@ export class SessionService {
         const result = await larpClient.ConfirmLogin({email: email, code: code});
         switch (result.statusCode) {
             case ValidationResponseCode.SUCCESS:
-                this.parseProfile(result.profile);
+                SessionService.parseProfile(result.profile);
                 this.updateState(result.session?.sessionId);
                 return ConfirmStatus.Success;
             case ValidationResponseCode.EXPIRED:
@@ -198,8 +216,61 @@ export class SessionService {
         }
     }
 
-    static get instance(): SessionService { return sessionService }
- }
+    static get instance(): SessionService {
+        return sessionService
+    }
+
+    async createCharacter(characterName: string, homeChapter: string): Promise<Character> {
+        const result = await larpClient.CreateCharacterDraft({
+            session: {sessionId: this._sessionId},
+            characterName: characterName,
+            homeChapter: homeChapter
+        });
+        return SessionService.toCharacter(result);
+    }
+
+    async getCharacter(id: string): Promise<Character> {
+        const result = await larpClient.GetCharacter({session: {sessionId: this._sessionId}, characterId: id});
+        return SessionService.toCharacter(result);
+    }
+
+    async updateCharacter(id: string, draft: CharacterSheet, isReview: boolean): Promise<Character> {
+        const result = await larpClient.UpdateCharacterDraft({
+            session: {sessionId: this._sessionId},
+            characterId: id,
+            draftJson: JSON.stringify(draft),
+            isReview: isReview
+        });
+
+        return SessionService.toCharacter(result);
+    }
+
+    private static toCharacter(result: CharacterResponse) {
+        return {
+            id: result.character?.characterId,
+            draft: JSON.parse(result.character?.draftJson ?? "{}"),
+            live: JSON.parse(result.character?.draftJson ?? "{}"),
+            status: CharacterStatus.New // TODO
+        } as Character;
+    }
+
+    async getCharacters(): Promise<CharacterSummary[]> {
+        console.log("Step 1");
+        const result = await larpClient.GetCharacters({session: {sessionId: this._sessionId}});
+        console.log("Step 2");
+        return result.characters.map(x => SessionService.buildCharacter(x));
+    }
+
+    private static buildCharacter(x: LarpCharacterSummary): CharacterSummary {
+        return {
+            id: x.characterId,
+            name: x.characterName ?? "Unnamed",
+            player: x.playerName,
+            status: CharacterStatus.New, // TODO
+            summary: `${x.homeChapter}, ${x.specialty}, Level ${x.level}`
+        } as CharacterSummary
+    }
+}
 
 const sessionService: SessionService = new SessionService();
 

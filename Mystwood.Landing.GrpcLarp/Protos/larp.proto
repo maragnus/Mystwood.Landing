@@ -19,8 +19,21 @@ message Profile {
 message Character {
     string character_id = 1;
     string live_json = 2;
-    string draft_json = 3;
-    string metadata = 4;
+    bool is_live = 3;
+    string draft_json = 4;
+    bool is_review = 5;
+    string metadata = 6;
+}
+
+message CharacterSummary {
+    string character_id = 1;
+    string character_name = 2;
+    string home_chapter = 3;
+    string player_name = 4;
+    string specialty = 5;
+    int32 level = 6;
+    bool is_live = 7;
+    bool is_review = 8;
 }
 
 enum ValidationResponseCode {
@@ -42,7 +55,9 @@ service Larp {
     rpc RemoveProfileEmail(UpdateProfileRequest) returns (UpdateProfileResponse) {}
 
     rpc GetCharacters(GetCharactersRequest) returns (GetCharactersResponse) {}
-    rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (UpdateCharacterResponse) {}
+    rpc GetCharacter(GetCharacterRequest) returns (CharacterResponse) {}
+    rpc CreateCharacterDraft(CreateCharacterRequest) returns (CharacterResponse) {}
+    rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (CharacterResponse) {}
 }
 
 // Include this in any message that requires an authenticated session
@@ -96,14 +111,27 @@ message GetCharactersRequest {
 }
 
 message GetCharactersResponse {
-    repeated Character character = 1;
+    repeated CharacterSummary characters = 1;
+}
+
+message CreateCharacterRequest {
+    SessionIdentifier session = 1;
+    string character_name = 2;
+    string home_chapter = 3;
 }
 
 message UpdateCharacterRequest {
     SessionIdentifier session = 1;
-    Character character = 2;
+    string character_id = 2;
+    string draft_json = 3;
+    bool is_review = 4;
 }
 
-message UpdateCharacterResponse {
+message GetCharacterRequest {
+    SessionIdentifier session = 1;
+    string character_id = 2;
+}
+
+message CharacterResponse {
     Character character = 1;
 }

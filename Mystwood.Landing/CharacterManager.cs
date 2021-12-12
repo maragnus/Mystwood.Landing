@@ -2,12 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Internal;
 using Mystwood.Landing.Data;
+using Mystwood.Landing.GrpcLarp;
+using Character = Mystwood.Landing.GrpcLarp.Character;
+using DbCharacter = Mystwood.Landing.Data.Character;
 
 namespace Mystwood.Landing;
 
 public interface ICharacterManager
 {
-    Task<IEnumerable<CharacterData>> GetCharacters(int accountId);
+    Task<IEnumerable<CharacterSummary>> GetCharacters(int accountId);
+    Task<Character> GetCharacter(int accountId, string characterId);
+    Task<Character> CreateCharacter(int accountId, string characterName, string homeChapter);
+    Task<Character> UpdateCharacterDraft(int accountId, string draftJson, bool isReview);
 }
 
 public enum CharacterDataState
@@ -17,16 +23,6 @@ public enum CharacterDataState
     Draft,
     Review
 }
-
-public record CharacterData(
-    string Id,
-    string CharacterName,
-    string? PlayerName,
-    CharacterDataState State,
-    string? Specialty,
-    string? HomeChapter,
-    int? CurrentLevel
-);
 
 public class CharacterManager : ICharacterManager
 {
@@ -39,14 +35,37 @@ public class CharacterManager : ICharacterManager
         _clock = systemClock;
     }
 
-    public async Task<IEnumerable<CharacterData>> GetCharacters(int accountId)
+    public async Task<Character> GetCharacter(int accountId, string characterId)
     {
-        var revisions = await _db.CharacterRevisions.Include(x => x.Character)
+        var id = Guid.Parse(characterId);
+
+        var revisions = await _db.CharacterRevisions
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.Character)
             .Where(x => x.Character!.AccountId == accountId)
+            .Where(x => x.Character!.Id == id)
             .Where(x => x.State != CharacterState.Archived)
             .ToListAsync();
 
-        return revisions.GroupBy(x => x.Character!).Select(ch =>
+
+        return DbToCharacter(revisions.First().Character!);
+    }
+
+    public async Task<IEnumerable<CharacterSummary>> GetCharacters(int accountId)
+    {
+        var revisions = await _db.CharacterRevisions
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.Character)
+            .Where(x => x.Character!.AccountId == accountId)
+            .Where(x => x.State != CharacterState.Archived)
+            .ToListAsync();
+        return ToCharacterData(revisions);
+    }
+
+    private static IEnumerable<CharacterSummary> ToCharacterData(IEnumerable<CharacterRevision> revisions) =>
+        revisions
+        .GroupBy(x => x.Character!)
+        .Select(ch =>
         {
             var live = ch.FirstOrDefault(y => y.State == CharacterState.Live);
             var draft = ch.FirstOrDefault(y => y.State == CharacterState.Draft);
@@ -58,25 +77,77 @@ public class CharacterManager : ICharacterManager
 
             var json = JsonDocument.Parse(current.Json!);
 
-            CharacterDataState state;
-            if (live != null && draft == null && review == null)
-                state = CharacterDataState.Live;
-            else if (review != null)
-                state = CharacterDataState.Review;
-            else if (live != null)
-                state = CharacterDataState.New;
-            else
-                state = CharacterDataState.Draft;
+            return new CharacterSummary
+            {
+                CharacterId = ch.Key.Id!.Value.ToString(),
+                CharacterName = ch.Key.Name!,
+                PlayerName = "",
+                HomeChapter = TryGetStringProperty(json.RootElement, "homeChapter") ?? "Undefined",
+                Specialty = TryGetStringProperty(json.RootElement, "specialty") ?? "Undefined",
+                Level = TryGetInt32Property(json.RootElement, "currentLevel") ?? 0,
+                IsLive = live != null,
+                IsReview = review != null,
+            };
+        })
+        .Where(x => x != null);
 
-            return new CharacterData(
-                ch.Key.Id!.Value.ToString(),
-                ch.Key.Name!,
-                PlayerName: null,
-                state,
-                json.RootElement.GetProperty("specialty").GetString(),
-                json.RootElement.GetProperty("homeChapter").GetString(),
-                json.RootElement.GetProperty("currentLevel").GetInt32()
-            );
-        });
+    public static string? TryGetStringProperty(JsonElement element, string propertyName, string? defaultValue = default) =>
+        element.TryGetProperty(propertyName, out var property) ? property.GetString() ?? defaultValue : defaultValue;
+
+    public static int? TryGetInt32Property(JsonElement element, string propertyName) =>
+        element.TryGetProperty(propertyName, out var property)
+        ? (property.TryGetInt32(out var value) ? value : null)
+        : null;
+
+    public async Task<Character> CreateCharacter(int accountId, string characterName, string homeChapter)
+    {
+        var json = new
+        {
+            characterName = characterName,
+            home = homeChapter
+        };
+
+        var now = _clock.UtcNow;
+        var ch = new DbCharacter()
+        {
+            AccountId = accountId,
+            CreatedOn = now,
+            Name = characterName,
+            CharacterRevisions =
+            {
+                new CharacterRevision()
+                {
+                    CreatedOn= now,
+                    CharacterRevisionEvents = {
+                        new CharacterRevisionEvent {
+                            ChangedOn = now,
+                            State = CharacterState.Draft
+                        }
+                    },
+                    State = CharacterState.Draft,
+                    Json = JsonSerializer.Serialize(json)
+                }
+            }
+        };
+        _db.Characters.Add(ch);
+        await _db.SaveChangesAsync();
+
+        return DbToCharacter(ch);
+    }
+
+    private static Character DbToCharacter(DbCharacter ch) =>
+        new Character
+        {
+            CharacterId = ch.Id.ToString(),
+            LiveJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == CharacterState.Live)?.Json ?? "{}",
+            DraftJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == CharacterState.Draft || x.State == CharacterState.Review)?.Json ?? "{}",
+            IsLive = ch.CharacterRevisions.Any(x => x.State == CharacterState.Live),
+            IsReview = ch.CharacterRevisions.Any(x => x.State == CharacterState.Review),
+            Metadata = ch.Metadata ?? "{}"
+        };
+
+    public Task<Character> UpdateCharacterDraft(int accountId, string draftJson, bool isReview)
+    {
+        throw new NotImplementedException("UpdateCharacterDraft");
     }
 }

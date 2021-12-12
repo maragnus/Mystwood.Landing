@@ -6,13 +6,28 @@ import {
 } from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import CreateIcon from '@mui/icons-material/Create';
-import {Link} from "react-router-dom";
-import SessionContext from "../Session/SessionContext";
-import {Character} from "../Session/Session";
+import {Link, useNavigate} from "react-router-dom";
+import AwesomeSpinner from "../Common/AwesomeSpinner";
+import {useEffect} from 'react'
+import sessionService, {CharacterSummary} from "../Session/SessionService";
 
-function CharacterItems(props: { characters: Character[] }): any {
-    const items = props.characters.map(c =>
-        <ListItem key={c.id} secondaryAction={
+function useMountEffect(effect: any) {
+    return useEffect(() => {
+        effect()
+    }, [])
+}
+
+function CharacterItems(props: { characters: CharacterSummary[] }): any {
+    const navigate = useNavigate();
+
+    const handleNew = async (event: React.MouseEvent<HTMLButtonElement>) => {
+        event.preventDefault();
+        navigate("/characters/new");
+        return;
+    }
+
+    const items = props.characters.map((c, index) =>
+        <ListItem key={index} secondaryAction={
             <Button startIcon={<CreateIcon/>} component={Link} to={`/characters/${c.id}/draft`}>
                 Edit
             </Button>
@@ -25,23 +40,42 @@ function CharacterItems(props: { characters: Character[] }): any {
                 </ListItemAvatar>
                 <ListItemText
                     primary={c.name}
-                    secondary={(<Box>{c.subtitle} <Chip label={c.status}/></Box>)}
+                    secondary={(<Box>{c.summary} <Chip label={c.status}/></Box>)}
                 />
             </ListItemButton>
         </ListItem>);
 
-    return <List>{items}</List>;
+    return <List>
+        {items}
+        <ListItem key={10000}>
+            <Button
+                type="button"
+                fullWidth
+                variant="contained"
+                sx={{mt: 3, mb: 2}}
+                onClick={handleNew}
+            >
+                Create New Character
+            </Button>
+        </ListItem>
+    </List>;
 }
 
 export default function CharacterList() {
+    const [busy, setBusy] = React.useState(true);
+    const [characters, setCharacters] = React.useState<CharacterSummary[]>([]);
+
+    useMountEffect(async () => {
+        const characters = await sessionService.getCharacters();
+        setCharacters(characters);
+        setBusy(false);
+    });
+
     return (
-        <SessionContext.Consumer>
-            {context => (
-                <Container maxWidth="sm">
-                    <Typography variant="h4" sx={{mt: 2}} align="center">Your Characters</Typography>
-                    <CharacterItems characters={context.characters}/>
-                </Container>
-            )}
-        </SessionContext.Consumer>
+        <Container maxWidth="sm">
+            <Typography variant="h4" sx={{mt: 2}} align="center">Your Characters</Typography>
+            {busy && <AwesomeSpinner/>}
+            {!busy && <CharacterItems characters={characters}/>}
+        </Container>
     );
 }

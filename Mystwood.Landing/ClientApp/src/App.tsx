@@ -13,6 +13,7 @@ import Landing from "./Pages/Landing";
 import NotImplemented from "./Pages/NotImplemented";
 import LoginPage from "./Session/LoginPage";
 import ConfirmPage from "./Session/ConfirmPage";
+import CharacterNew from "./CharacterEditor/CharacterNew";
 
 function ViewCharacter() {
     const { characterId } = useParams();
@@ -42,7 +43,8 @@ function App() {
                     <Route path="/confirm" element={<ConfirmPage/>}/>
                     <Route path="/profile" element={<ProfileView/>}/>
                     <Route path="/characters" element={<CharacterList/>} />
-                    <Route path="/characters/:characterId" element={<ViewCharacter />} /> 
+                    <Route path="/characters/new" element={<CharacterNew />} />
+                    <Route path="/characters/:characterId" element={<ViewCharacter />} />
                     <Route path="/characters/:characterId/delete" element={<NotImplemented title="Character Deletion"/>} />
                     <Route path="/characters/:characterId/draft" element={<EditCharacter />} />
                 </Routes>

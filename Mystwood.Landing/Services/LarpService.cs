@@ -139,7 +139,7 @@ public class LarpService : Larp.LarpBase
         return new GetProfileResponse()
         {
             Profile = await BuildProfile(accountId)
-        }; ;
+        };
     }
 
     public override async Task<GetCharactersResponse> GetCharacters(GetCharactersRequest request, ServerCallContext context)
@@ -147,25 +147,42 @@ public class LarpService : Larp.LarpBase
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        var response = new GetCharactersResponse();
-
-        response.Character.Clear();
-
         var characters = await _characterManager.GetCharacters(accountId);
-        // TODO -- do something
+
+        var response = new GetCharactersResponse();
+        response.Characters.AddRange(characters);
 
         return response;
     }
 
-    public override async Task<UpdateCharacterResponse> UpdateCharacterDraft(UpdateCharacterRequest request, ServerCallContext context)
+    public override async Task<CharacterResponse> GetCharacter(GetCharacterRequest request, ServerCallContext context)
+    {
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
+            throw new Exception("Unauthorized");
+
+        var character = await _characterManager.GetCharacter(accountId, request.CharacterId);
+
+        return new CharacterResponse() { Character = character };
+    }
+
+    public override async Task<CharacterResponse> UpdateCharacterDraft(UpdateCharacterRequest request, ServerCallContext context)
     {
 
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        // TODO -- do something
+        var character = await _characterManager.UpdateCharacterDraft(accountId, request.DraftJson, request.IsReview);
 
-        return new UpdateCharacterResponse() { Character = request.Character };
+        return new CharacterResponse() { Character = character };
     }
 
+    public override async Task<CharacterResponse> CreateCharacterDraft(CreateCharacterRequest request, ServerCallContext context)
+    {
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
+            throw new Exception("Unauthorized");
+
+        var character = await _characterManager.CreateCharacter(accountId, request.CharacterName, request.HomeChapter);
+
+        return new CharacterResponse() { Character = character };
+    }
 }

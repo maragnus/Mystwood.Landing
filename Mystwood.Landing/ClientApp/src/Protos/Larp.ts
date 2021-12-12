@@ -63,8 +63,21 @@ export interface Profile {
 export interface Character {
   characterId: string;
   liveJson: string;
+  isLive: boolean;
   draftJson: string;
+  isReview: boolean;
   metadata: string;
+}
+
+export interface CharacterSummary {
+  characterId: string;
+  characterName: string;
+  homeChapter: string;
+  playerName: string;
+  specialty: string;
+  level: number;
+  isLive: boolean;
+  isReview: boolean;
 }
 
 export interface SessionIdentifier {
@@ -114,15 +127,28 @@ export interface GetCharactersRequest {
 }
 
 export interface GetCharactersResponse {
-  character: Character[];
+  characters: CharacterSummary[];
+}
+
+export interface CreateCharacterRequest {
+  session?: SessionIdentifier;
+  characterName: string;
+  homeChapter: string;
 }
 
 export interface UpdateCharacterRequest {
   session?: SessionIdentifier;
-  character?: Character;
+  characterId: string;
+  draftJson: string;
+  isReview: boolean;
 }
 
-export interface UpdateCharacterResponse {
+export interface GetCharacterRequest {
+  session?: SessionIdentifier;
+  characterId: string;
+}
+
+export interface CharacterResponse {
   character?: Character;
 }
 
@@ -292,7 +318,9 @@ export const Profile = {
 const baseCharacter: object = {
   characterId: "",
   liveJson: "",
+  isLive: false,
   draftJson: "",
+  isReview: false,
   metadata: "",
 };
 
@@ -307,11 +335,17 @@ export const Character = {
     if (message.liveJson !== "") {
       writer.uint32(18).string(message.liveJson);
     }
+    if (message.isLive === true) {
+      writer.uint32(24).bool(message.isLive);
+    }
     if (message.draftJson !== "") {
-      writer.uint32(26).string(message.draftJson);
+      writer.uint32(34).string(message.draftJson);
+    }
+    if (message.isReview === true) {
+      writer.uint32(40).bool(message.isReview);
     }
     if (message.metadata !== "") {
-      writer.uint32(34).string(message.metadata);
+      writer.uint32(50).string(message.metadata);
     }
     return writer;
   },
@@ -330,9 +364,15 @@ export const Character = {
           message.liveJson = reader.string();
           break;
         case 3:
-          message.draftJson = reader.string();
+          message.isLive = reader.bool();
           break;
         case 4:
+          message.draftJson = reader.string();
+          break;
+        case 5:
+          message.isReview = reader.bool();
+          break;
+        case 6:
           message.metadata = reader.string();
           break;
         default:
@@ -353,10 +393,18 @@ export const Character = {
       object.liveJson !== undefined && object.liveJson !== null
         ? String(object.liveJson)
         : "";
+    message.isLive =
+      object.isLive !== undefined && object.isLive !== null
+        ? Boolean(object.isLive)
+        : false;
     message.draftJson =
       object.draftJson !== undefined && object.draftJson !== null
         ? String(object.draftJson)
         : "";
+    message.isReview =
+      object.isReview !== undefined && object.isReview !== null
+        ? Boolean(object.isReview)
+        : false;
     message.metadata =
       object.metadata !== undefined && object.metadata !== null
         ? String(object.metadata)
@@ -369,7 +417,9 @@ export const Character = {
     message.characterId !== undefined &&
       (obj.characterId = message.characterId);
     message.liveJson !== undefined && (obj.liveJson = message.liveJson);
+    message.isLive !== undefined && (obj.isLive = message.isLive);
     message.draftJson !== undefined && (obj.draftJson = message.draftJson);
+    message.isReview !== undefined && (obj.isReview = message.isReview);
     message.metadata !== undefined && (obj.metadata = message.metadata);
     return obj;
   },
@@ -380,8 +430,161 @@ export const Character = {
     const message = { ...baseCharacter } as Character;
     message.characterId = object.characterId ?? "";
     message.liveJson = object.liveJson ?? "";
+    message.isLive = object.isLive ?? false;
     message.draftJson = object.draftJson ?? "";
+    message.isReview = object.isReview ?? false;
     message.metadata = object.metadata ?? "";
+    return message;
+  },
+};
+
+const baseCharacterSummary: object = {
+  characterId: "",
+  characterName: "",
+  homeChapter: "",
+  playerName: "",
+  specialty: "",
+  level: 0,
+  isLive: false,
+  isReview: false,
+};
+
+export const CharacterSummary = {
+  encode(
+    message: CharacterSummary,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.characterId !== "") {
+      writer.uint32(10).string(message.characterId);
+    }
+    if (message.characterName !== "") {
+      writer.uint32(18).string(message.characterName);
+    }
+    if (message.homeChapter !== "") {
+      writer.uint32(26).string(message.homeChapter);
+    }
+    if (message.playerName !== "") {
+      writer.uint32(34).string(message.playerName);
+    }
+    if (message.specialty !== "") {
+      writer.uint32(42).string(message.specialty);
+    }
+    if (message.level !== 0) {
+      writer.uint32(48).int32(message.level);
+    }
+    if (message.isLive === true) {
+      writer.uint32(56).bool(message.isLive);
+    }
+    if (message.isReview === true) {
+      writer.uint32(64).bool(message.isReview);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): CharacterSummary {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseCharacterSummary } as CharacterSummary;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.characterId = reader.string();
+          break;
+        case 2:
+          message.characterName = reader.string();
+          break;
+        case 3:
+          message.homeChapter = reader.string();
+          break;
+        case 4:
+          message.playerName = reader.string();
+          break;
+        case 5:
+          message.specialty = reader.string();
+          break;
+        case 6:
+          message.level = reader.int32();
+          break;
+        case 7:
+          message.isLive = reader.bool();
+          break;
+        case 8:
+          message.isReview = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CharacterSummary {
+    const message = { ...baseCharacterSummary } as CharacterSummary;
+    message.characterId =
+      object.characterId !== undefined && object.characterId !== null
+        ? String(object.characterId)
+        : "";
+    message.characterName =
+      object.characterName !== undefined && object.characterName !== null
+        ? String(object.characterName)
+        : "";
+    message.homeChapter =
+      object.homeChapter !== undefined && object.homeChapter !== null
+        ? String(object.homeChapter)
+        : "";
+    message.playerName =
+      object.playerName !== undefined && object.playerName !== null
+        ? String(object.playerName)
+        : "";
+    message.specialty =
+      object.specialty !== undefined && object.specialty !== null
+        ? String(object.specialty)
+        : "";
+    message.level =
+      object.level !== undefined && object.level !== null
+        ? Number(object.level)
+        : 0;
+    message.isLive =
+      object.isLive !== undefined && object.isLive !== null
+        ? Boolean(object.isLive)
+        : false;
+    message.isReview =
+      object.isReview !== undefined && object.isReview !== null
+        ? Boolean(object.isReview)
+        : false;
+    return message;
+  },
+
+  toJSON(message: CharacterSummary): unknown {
+    const obj: any = {};
+    message.characterId !== undefined &&
+      (obj.characterId = message.characterId);
+    message.characterName !== undefined &&
+      (obj.characterName = message.characterName);
+    message.homeChapter !== undefined &&
+      (obj.homeChapter = message.homeChapter);
+    message.playerName !== undefined && (obj.playerName = message.playerName);
+    message.specialty !== undefined && (obj.specialty = message.specialty);
+    message.level !== undefined && (obj.level = message.level);
+    message.isLive !== undefined && (obj.isLive = message.isLive);
+    message.isReview !== undefined && (obj.isReview = message.isReview);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<CharacterSummary>, I>>(
+    object: I
+  ): CharacterSummary {
+    const message = { ...baseCharacterSummary } as CharacterSummary;
+    message.characterId = object.characterId ?? "";
+    message.characterName = object.characterName ?? "";
+    message.homeChapter = object.homeChapter ?? "";
+    message.playerName = object.playerName ?? "";
+    message.specialty = object.specialty ?? "";
+    message.level = object.level ?? 0;
+    message.isLive = object.isLive ?? false;
+    message.isReview = object.isReview ?? false;
     return message;
   },
 };
@@ -1089,8 +1292,8 @@ export const GetCharactersResponse = {
     message: GetCharactersResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
-    for (const v of message.character) {
-      Character.encode(v!, writer.uint32(10).fork()).ldelim();
+    for (const v of message.characters) {
+      CharacterSummary.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -1102,12 +1305,14 @@ export const GetCharactersResponse = {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseGetCharactersResponse } as GetCharactersResponse;
-    message.character = [];
+    message.characters = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.character.push(Character.decode(reader, reader.uint32()));
+          message.characters.push(
+            CharacterSummary.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -1119,20 +1324,20 @@ export const GetCharactersResponse = {
 
   fromJSON(object: any): GetCharactersResponse {
     const message = { ...baseGetCharactersResponse } as GetCharactersResponse;
-    message.character = (object.character ?? []).map((e: any) =>
-      Character.fromJSON(e)
+    message.characters = (object.characters ?? []).map((e: any) =>
+      CharacterSummary.fromJSON(e)
     );
     return message;
   },
 
   toJSON(message: GetCharactersResponse): unknown {
     const obj: any = {};
-    if (message.character) {
-      obj.character = message.character.map((e) =>
-        e ? Character.toJSON(e) : undefined
+    if (message.characters) {
+      obj.characters = message.characters.map((e) =>
+        e ? CharacterSummary.toJSON(e) : undefined
       );
     } else {
-      obj.character = [];
+      obj.characters = [];
     }
     return obj;
   },
@@ -1141,13 +1346,113 @@ export const GetCharactersResponse = {
     object: I
   ): GetCharactersResponse {
     const message = { ...baseGetCharactersResponse } as GetCharactersResponse;
-    message.character =
-      object.character?.map((e) => Character.fromPartial(e)) || [];
+    message.characters =
+      object.characters?.map((e) => CharacterSummary.fromPartial(e)) || [];
     return message;
   },
 };
 
-const baseUpdateCharacterRequest: object = {};
+const baseCreateCharacterRequest: object = {
+  characterName: "",
+  homeChapter: "",
+};
+
+export const CreateCharacterRequest = {
+  encode(
+    message: CreateCharacterRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.characterName !== "") {
+      writer.uint32(18).string(message.characterName);
+    }
+    if (message.homeChapter !== "") {
+      writer.uint32(26).string(message.homeChapter);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): CreateCharacterRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseCreateCharacterRequest } as CreateCharacterRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.characterName = reader.string();
+          break;
+        case 3:
+          message.homeChapter = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): CreateCharacterRequest {
+    const message = { ...baseCreateCharacterRequest } as CreateCharacterRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.characterName =
+      object.characterName !== undefined && object.characterName !== null
+        ? String(object.characterName)
+        : "";
+    message.homeChapter =
+      object.homeChapter !== undefined && object.homeChapter !== null
+        ? String(object.homeChapter)
+        : "";
+    return message;
+  },
+
+  toJSON(message: CreateCharacterRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.characterName !== undefined &&
+      (obj.characterName = message.characterName);
+    message.homeChapter !== undefined &&
+      (obj.homeChapter = message.homeChapter);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<CreateCharacterRequest>, I>>(
+    object: I
+  ): CreateCharacterRequest {
+    const message = { ...baseCreateCharacterRequest } as CreateCharacterRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.characterName = object.characterName ?? "";
+    message.homeChapter = object.homeChapter ?? "";
+    return message;
+  },
+};
+
+const baseUpdateCharacterRequest: object = {
+  characterId: "",
+  draftJson: "",
+  isReview: false,
+};
 
 export const UpdateCharacterRequest = {
   encode(
@@ -1160,8 +1465,14 @@ export const UpdateCharacterRequest = {
         writer.uint32(10).fork()
       ).ldelim();
     }
-    if (message.character !== undefined) {
-      Character.encode(message.character, writer.uint32(18).fork()).ldelim();
+    if (message.characterId !== "") {
+      writer.uint32(18).string(message.characterId);
+    }
+    if (message.draftJson !== "") {
+      writer.uint32(26).string(message.draftJson);
+    }
+    if (message.isReview === true) {
+      writer.uint32(32).bool(message.isReview);
     }
     return writer;
   },
@@ -1180,7 +1491,13 @@ export const UpdateCharacterRequest = {
           message.session = SessionIdentifier.decode(reader, reader.uint32());
           break;
         case 2:
-          message.character = Character.decode(reader, reader.uint32());
+          message.characterId = reader.string();
+          break;
+        case 3:
+          message.draftJson = reader.string();
+          break;
+        case 4:
+          message.isReview = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1196,10 +1513,18 @@ export const UpdateCharacterRequest = {
       object.session !== undefined && object.session !== null
         ? SessionIdentifier.fromJSON(object.session)
         : undefined;
-    message.character =
-      object.character !== undefined && object.character !== null
-        ? Character.fromJSON(object.character)
-        : undefined;
+    message.characterId =
+      object.characterId !== undefined && object.characterId !== null
+        ? String(object.characterId)
+        : "";
+    message.draftJson =
+      object.draftJson !== undefined && object.draftJson !== null
+        ? String(object.draftJson)
+        : "";
+    message.isReview =
+      object.isReview !== undefined && object.isReview !== null
+        ? Boolean(object.isReview)
+        : false;
     return message;
   },
 
@@ -1209,10 +1534,10 @@ export const UpdateCharacterRequest = {
       (obj.session = message.session
         ? SessionIdentifier.toJSON(message.session)
         : undefined);
-    message.character !== undefined &&
-      (obj.character = message.character
-        ? Character.toJSON(message.character)
-        : undefined);
+    message.characterId !== undefined &&
+      (obj.characterId = message.characterId);
+    message.draftJson !== undefined && (obj.draftJson = message.draftJson);
+    message.isReview !== undefined && (obj.isReview = message.isReview);
     return obj;
   },
 
@@ -1224,19 +1549,95 @@ export const UpdateCharacterRequest = {
       object.session !== undefined && object.session !== null
         ? SessionIdentifier.fromPartial(object.session)
         : undefined;
-    message.character =
-      object.character !== undefined && object.character !== null
-        ? Character.fromPartial(object.character)
-        : undefined;
+    message.characterId = object.characterId ?? "";
+    message.draftJson = object.draftJson ?? "";
+    message.isReview = object.isReview ?? false;
     return message;
   },
 };
 
-const baseUpdateCharacterResponse: object = {};
+const baseGetCharacterRequest: object = { characterId: "" };
 
-export const UpdateCharacterResponse = {
+export const GetCharacterRequest = {
   encode(
-    message: UpdateCharacterResponse,
+    message: GetCharacterRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.characterId !== "") {
+      writer.uint32(18).string(message.characterId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetCharacterRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGetCharacterRequest } as GetCharacterRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.characterId = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetCharacterRequest {
+    const message = { ...baseGetCharacterRequest } as GetCharacterRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.characterId =
+      object.characterId !== undefined && object.characterId !== null
+        ? String(object.characterId)
+        : "";
+    return message;
+  },
+
+  toJSON(message: GetCharacterRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.characterId !== undefined &&
+      (obj.characterId = message.characterId);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetCharacterRequest>, I>>(
+    object: I
+  ): GetCharacterRequest {
+    const message = { ...baseGetCharacterRequest } as GetCharacterRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.characterId = object.characterId ?? "";
+    return message;
+  },
+};
+
+const baseCharacterResponse: object = {};
+
+export const CharacterResponse = {
+  encode(
+    message: CharacterResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.character !== undefined) {
@@ -1245,15 +1646,10 @@ export const UpdateCharacterResponse = {
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): UpdateCharacterResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CharacterResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = {
-      ...baseUpdateCharacterResponse,
-    } as UpdateCharacterResponse;
+    const message = { ...baseCharacterResponse } as CharacterResponse;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1268,10 +1664,8 @@ export const UpdateCharacterResponse = {
     return message;
   },
 
-  fromJSON(object: any): UpdateCharacterResponse {
-    const message = {
-      ...baseUpdateCharacterResponse,
-    } as UpdateCharacterResponse;
+  fromJSON(object: any): CharacterResponse {
+    const message = { ...baseCharacterResponse } as CharacterResponse;
     message.character =
       object.character !== undefined && object.character !== null
         ? Character.fromJSON(object.character)
@@ -1279,7 +1673,7 @@ export const UpdateCharacterResponse = {
     return message;
   },
 
-  toJSON(message: UpdateCharacterResponse): unknown {
+  toJSON(message: CharacterResponse): unknown {
     const obj: any = {};
     message.character !== undefined &&
       (obj.character = message.character
@@ -1288,12 +1682,10 @@ export const UpdateCharacterResponse = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<UpdateCharacterResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<CharacterResponse>, I>>(
     object: I
-  ): UpdateCharacterResponse {
-    const message = {
-      ...baseUpdateCharacterResponse,
-    } as UpdateCharacterResponse;
+  ): CharacterResponse {
+    const message = { ...baseCharacterResponse } as CharacterResponse;
     message.character =
       object.character !== undefined && object.character !== null
         ? Character.fromPartial(object.character)
@@ -1339,10 +1731,18 @@ export interface Larp {
     request: DeepPartial<GetCharactersRequest>,
     metadata?: grpc.Metadata
   ): Promise<GetCharactersResponse>;
+  GetCharacter(
+    request: DeepPartial<GetCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse>;
+  CreateCharacterDraft(
+    request: DeepPartial<CreateCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse>;
   UpdateCharacterDraft(
     request: DeepPartial<UpdateCharacterRequest>,
     metadata?: grpc.Metadata
-  ): Promise<UpdateCharacterResponse>;
+  ): Promise<CharacterResponse>;
 }
 
 export class LarpClientImpl implements Larp {
@@ -1359,6 +1759,8 @@ export class LarpClientImpl implements Larp {
     this.AddProfileEmail = this.AddProfileEmail.bind(this);
     this.RemoveProfileEmail = this.RemoveProfileEmail.bind(this);
     this.GetCharacters = this.GetCharacters.bind(this);
+    this.GetCharacter = this.GetCharacter.bind(this);
+    this.CreateCharacterDraft = this.CreateCharacterDraft.bind(this);
     this.UpdateCharacterDraft = this.UpdateCharacterDraft.bind(this);
   }
 
@@ -1461,10 +1863,32 @@ export class LarpClientImpl implements Larp {
     );
   }
 
+  GetCharacter(
+    request: DeepPartial<GetCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse> {
+    return this.rpc.unary(
+      LarpGetCharacterDesc,
+      GetCharacterRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  CreateCharacterDraft(
+    request: DeepPartial<CreateCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse> {
+    return this.rpc.unary(
+      LarpCreateCharacterDraftDesc,
+      CreateCharacterRequest.fromPartial(request),
+      metadata
+    );
+  }
+
   UpdateCharacterDraft(
     request: DeepPartial<UpdateCharacterRequest>,
     metadata?: grpc.Metadata
-  ): Promise<UpdateCharacterResponse> {
+  ): Promise<CharacterResponse> {
     return this.rpc.unary(
       LarpUpdateCharacterDraftDesc,
       UpdateCharacterRequest.fromPartial(request),
@@ -1675,6 +2099,50 @@ export const LarpGetCharactersDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
+export const LarpGetCharacterDesc: UnaryMethodDefinitionish = {
+  methodName: "GetCharacter",
+  service: LarpDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetCharacterRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...CharacterResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpCreateCharacterDraftDesc: UnaryMethodDefinitionish = {
+  methodName: "CreateCharacterDraft",
+  service: LarpDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return CreateCharacterRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...CharacterResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
 export const LarpUpdateCharacterDraftDesc: UnaryMethodDefinitionish = {
   methodName: "UpdateCharacterDraft",
   service: LarpDesc,
@@ -1688,7 +2156,7 @@ export const LarpUpdateCharacterDraftDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...UpdateCharacterResponse.decode(data),
+        ...CharacterResponse.decode(data),
         toObject() {
           return this;
         },

@@ -35,7 +35,7 @@ function StartDraftModal(props: { character: Character, onEdit: () => void }) {
             <Box sx={{...style}}>
                 <h2 id="child-modal-title">Draft Changes to Character?</h2>
                 <p id="child-modal-description">
-                    Would you like to start a new draft of changes to {props.character.name}?
+                    Would you like to start a new draft of changes to {props.character.live.characterName}?
                 </p>
                 <p>
                     Once you complete your draft, you can submit your changes for review. If approved, the draft

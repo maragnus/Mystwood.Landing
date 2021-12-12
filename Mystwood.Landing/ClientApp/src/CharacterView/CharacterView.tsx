@@ -112,7 +112,7 @@ function Block(params: { title?: string, text: string }) {
 
 export default function CharacterView(params: { id?: string }) {
     const character = mockCharacters()[parseInt(params.id ?? "0")];
-    const sheet = character.sheet;
+    const sheet = character.live;
     CharacterSheet.populate(sheet);
 
     const homeChapter = HomeChaptersByName(sheet.homeChapter!).title;

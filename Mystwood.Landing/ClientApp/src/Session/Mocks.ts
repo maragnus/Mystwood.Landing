@@ -12,11 +12,11 @@ export function mockCharacters(): Character[] {
     const statuses: CharacterStatus[] = [CharacterStatus.Current, CharacterStatus.Draft, CharacterStatus.Submitted];
 
     return characters.map((c, id) => ({
-        id: id,
+        id: id.toString(),
         name: c.characterName ?? "",
         subtitle: `Level ${c.currentLevel} ${c.occupation} from ${c.homeChapter}`,
-        sheet: c,
-        draft: statuses[id] === CharacterStatus.Draft ? {...c} : undefined,
+        live: c,
+        draft: statuses[id] === CharacterStatus.Draft ? {...c} : {} as CharacterSheet,
         status: statuses[id]
     }))
 }

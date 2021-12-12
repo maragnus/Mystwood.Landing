@@ -77,8 +77,8 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
 
         this.state = {
             activeStep: 0,
-            sheet: props.character.draft ?? props.character.sheet,
-            originalSheet: props.character.sheet,
+            sheet: props.character.draft ?? props.character.live!,
+            originalSheet: props.character.live!,
             status: props.character.status,
             precheckComplete: false,
         };
@@ -105,7 +105,6 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
             precheckComplete: true,
         });
     }
-
 
     render() {
         if (!this.state.precheckComplete) {

@@ -10,11 +10,9 @@ export enum CharacterStatus {
 }
 
 export interface Character {
-    id: number;
-    name: string;
-    subtitle: string;
-    sheet: CharacterSheet;
-    draft?: CharacterSheet;
+    id: string;
+    live: CharacterSheet;
+    draft: CharacterSheet;
     status: CharacterStatus;
 }
 
@@ -41,11 +39,11 @@ export class ApplicationSession {
                 email: "acrion@gmail.com"
             },
             characters: characters.map((c, id) => ({
-                id: id,
+                id: id.toString(),
                 name: c.characterName ?? "",
                 subtitle: `Level ${c.currentLevel} ${c.occupation} from ${c.homeChapter}`,
-                sheet: c,
-                draft: statuses[id] === CharacterStatus.Draft ? {...c} : undefined,
+                live: c,
+                draft: statuses[id] === CharacterStatus.Draft ? {...c} : {} as CharacterSheet,
                 status: statuses[id]
             }))
         };

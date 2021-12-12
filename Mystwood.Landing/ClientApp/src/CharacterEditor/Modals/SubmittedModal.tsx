@@ -35,7 +35,7 @@ function SubmittedModal(props: { character: Character }) {
             <Box sx={{...style}}>
                 <h2 id="child-modal-title">Draft Already Submitted</h2>
                 <p id="child-modal-description">
-                    You have already submitted the draft for {props.character.name}.
+                    You have already submitted the draft for {props.character.live.characterName}.
                 </p>
                 <p>
                     You cannot make changes to your character until it has been reviewed.

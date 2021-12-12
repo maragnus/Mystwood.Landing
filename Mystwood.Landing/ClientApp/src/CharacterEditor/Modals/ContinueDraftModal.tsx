@@ -35,7 +35,7 @@ function ContinueDraftModal(props: { character: Character, onContinue: () => voi
             <Box sx={{...style}}>
                 <h2 id="child-modal-title">Continue Draft?</h2>
                 <p id="child-modal-description">
-                    Would you like to continue where you left off with the draft for {props.character.name}?
+                    Would you like to continue where you left off with the draft for {props.character.live.characterName}?
                 </p>
                 <Typography component="p" variant="body2" mb={2}>
                     Once you complete your draft, you can submit your changes for review. If approved, the draft
