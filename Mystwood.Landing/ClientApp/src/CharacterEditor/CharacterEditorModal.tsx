@@ -1,11 +1,10 @@
-import {Character} from "../../Session/Session";
-import { useNavigate } from "react-router-dom";
+import * as React from "react";
+import { useNavigate  } from "react-router-dom";
 import {Modal} from "@mui/material";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
-import * as React from "react";
 
-function SubmittedModal(props: { character: Character }) {
+export default function CharacterEditorModal(props: { children: React.ReactNode }) {
     const navigate = useNavigate();
 
     const style = {
@@ -33,19 +32,10 @@ function SubmittedModal(props: { character: Character }) {
             aria-describedby="child-modal-description"
         >
             <Box sx={{...style}}>
-                <h2 id="child-modal-title">Draft Already Submitted</h2>
-                <p id="child-modal-description">
-                    You have already submitted the draft for {props.character.live.characterName}.
-                </p>
-                <p>
-                    You cannot make changes to your character until it has been reviewed.
-                    Your draft has been submitted for approval. If approved, the draft
-                    will be closed and the changes applied to your character sheet.
-                </p>
+                <h2 id="child-modal-title">Draft Changes to Character?</h2>
+                {props.children}
                 <Button onClick={handleExit} sx={{mx: 1}}>Cancel</Button>
             </Box>
         </Modal>
     );
 }
-
-export default SubmittedModal;

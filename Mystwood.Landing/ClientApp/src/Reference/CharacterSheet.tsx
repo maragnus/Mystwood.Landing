@@ -1,8 +1,6 @@
 import {Gifts, Ability} from "./Gifts";
-import {Enhancements, OccupationByName, Occupations, SkillChoice} from "./Occupations";
+import {Enhancements, OccupationByName, SkillChoice} from "./Occupations";
 import {SkillByName} from "./Skills";
-import Religion from "./Religion";
-import HomeChapter from "./HomeChapter";
 
 export default class CharacterSheet {
     startingMoonstone: number = 0;
@@ -67,33 +65,6 @@ export default class CharacterSheet {
     skills: CharacterSkill[] = [];
     occupationSkills: CharacterSkill[] = [];
     occupationSkillsChoices: CharacterSkillChoice[] = [];
-
-    static mock(characterName: string, occupation: string, religions: Religion[], home: HomeChapter): CharacterSheet {
-        const sheet = new CharacterSheet();
-        const occupationItem = Occupations.find(i => i.name === occupation);
-        sheet.characterName = characterName;
-        sheet.occupation = occupationItem?.name ?? Occupations[0].name;
-        sheet.religions = religions.map(x => x.name);
-        sheet.homeChapter = home.name;
-        sheet.courage = 5;
-        sheet.prowess = 3;
-        sheet.dexterity = 1;
-        sheet.chosenSkills = [
-            {name: "Metalworking 4"},
-            {name: "Engineering"}
-        ];
-        sheet.publicStory = "Nico struggled with watching the injustices of the big city. Any attempt to intervene landed him in a " +
-            "cell, every, single, time. Now, on the front lines, he can make a difference and be appreciated for it."
-
-        const boughtSkills = ["Income", "Agility", "Fully Armored"];
-        sheet.purchasedSkills = boughtSkills.map(skillName => ({
-            name: SkillByName(skillName).name,
-            purchasedRank: 1,
-        }));
-        CharacterSheet.populate(sheet);
-        sheet.startingMoonstone = sheet.moonstoneSpent;
-        return sheet;
-    }
 
     // Populate reference data fields and calculated fields
     static populate(sheet: CharacterSheet) {
@@ -279,6 +250,12 @@ export default class CharacterSheet {
     static CalculateCost(sheet: CharacterSheet) {
         const skillCost = Math.max(0, sheet.skillCost - sheet.skillTokens);
         return sheet.giftCost + skillCost;
+    }
+
+
+    // Removes unnecessary calculated fields before saving
+    static unpopulate(sheet: CharacterSheet): void {
+        // do nothing
     }
 }
 

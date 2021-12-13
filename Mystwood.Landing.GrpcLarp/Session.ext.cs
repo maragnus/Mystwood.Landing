@@ -16,3 +16,8 @@ partial class SessionIdentifier
         SessionId = sessionId;
     }
 }
+
+partial class Character
+{
+    public int AccountId { get; set; }
+}

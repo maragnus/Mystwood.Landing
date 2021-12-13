@@ -11,17 +11,10 @@ namespace Mystwood.Landing;
 public interface ICharacterManager
 {
     Task<IEnumerable<CharacterSummary>> GetCharacters(int accountId);
-    Task<Character> GetCharacter(int accountId, string characterId);
+    Task<Character> GetCharacter(string characterId);
     Task<Character> CreateCharacter(int accountId, string characterName, string homeChapter);
-    Task<Character> UpdateCharacterDraft(int accountId, string draftJson, bool isReview);
-}
-
-public enum CharacterDataState
-{
-    New,
-    Live,
-    Draft,
-    Review
+    Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson, bool isReview);
+    Task<Character> ApproveCharacter(string characterId);
 }
 
 public class CharacterManager : ICharacterManager
@@ -35,14 +28,13 @@ public class CharacterManager : ICharacterManager
         _clock = systemClock;
     }
 
-    public async Task<Character> GetCharacter(int accountId, string characterId)
+    public async Task<Character> GetCharacter(string characterId)
     {
         var id = Guid.Parse(characterId);
 
         var revisions = await _db.CharacterRevisions
             .AsNoTrackingWithIdentityResolution()
             .Include(x => x.Character)
-            .Where(x => x.Character!.AccountId == accountId)
             .Where(x => x.Character!.Id == id)
             .Where(x => x.State != CharacterState.Archived)
             .ToListAsync();
@@ -138,6 +130,7 @@ public class CharacterManager : ICharacterManager
     private static Character DbToCharacter(DbCharacter ch) =>
         new Character
         {
+            AccountId = ch.AccountId!.Value,
             CharacterId = ch.Id.ToString(),
             LiveJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == CharacterState.Live)?.Json ?? "{}",
             DraftJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == CharacterState.Draft || x.State == CharacterState.Review)?.Json ?? "{}",
@@ -146,8 +139,93 @@ public class CharacterManager : ICharacterManager
             Metadata = ch.Metadata ?? "{}"
         };
 
-    public Task<Character> UpdateCharacterDraft(int accountId, string draftJson, bool isReview)
+    public async Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson, bool isReview)
     {
-        throw new NotImplementedException("UpdateCharacterDraft");
+        var id = Guid.Parse(characterId);
+        var now = _clock.UtcNow;
+
+        var revisions = await _db.CharacterRevisions
+            .Include(x => x.Character)
+            .Where(x => x.Character!.AccountId == accountId)
+            .Where(x => x.Character!.Id == id)
+            .Where(x => x.State != CharacterState.Archived)
+            .ToListAsync();
+
+        var targetState = isReview ? CharacterState.Review : CharacterState.Draft;
+
+        var draft = revisions.FirstOrDefault(x => x.State != CharacterState.Live);
+        if (draft == null)
+        {
+            // Create a new draft
+            draft = new CharacterRevision
+            {
+                CharacterId = id,
+                CreatedOn = now,
+                State = targetState,
+                CharacterRevisionEvents = {
+                    new CharacterRevisionEvent
+                    {
+                        ChangedOn = now,
+                        State = targetState
+                    }
+                },
+                Json = draftJson
+            };
+            revisions.Add(draft);
+            _db.CharacterRevisions.Add(draft);
+        }
+        else
+        {
+            // Update the existing draft
+            if (draft.State != targetState)
+            {
+                draft.State = targetState;
+                draft.CharacterRevisionEvents.Add(new CharacterRevisionEvent
+                {
+                    ChangedOn = now,
+                    State = targetState
+                });
+            }
+            draft.Json = draftJson;
+        }
+
+        await _db.SaveChangesAsync();
+        return await GetCharacter(characterId);
+    }
+
+    public async Task<Character> ApproveCharacter(string characterId)
+    {
+        var id = Guid.Parse(characterId);
+        var now = _clock.UtcNow;
+
+        var revisions = await _db.CharacterRevisions
+            .Include(x => x.Character)
+            .Where(x => x.Character!.Id == id)
+            .Where(x => x.State != CharacterState.Archived)
+            .ToListAsync();
+
+        // Archive the Live revision
+        var live = revisions.FirstOrDefault(x => x.State == CharacterState.Live);
+        if (live != null)
+        {
+            live.State = CharacterState.Archived;
+            live.CharacterRevisionEvents.Add(new CharacterRevisionEvent
+            {
+                ChangedOn = now,
+                State = CharacterState.Archived
+            });
+        }
+
+        // Promote the Draft/Review revision
+        var draft = revisions.First(x => x.State != CharacterState.Live);
+        draft.State = CharacterState.Live;
+        draft.CharacterRevisionEvents.Add(new CharacterRevisionEvent
+        {
+            ChangedOn = now,
+            State = CharacterState.Live
+        });
+
+        await _db.SaveChangesAsync();
+        return await GetCharacter(characterId);
     }
 }

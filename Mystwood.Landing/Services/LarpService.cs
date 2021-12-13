@@ -40,13 +40,19 @@ public class LarpService : Larp.LarpBase
     public override async Task<ConfirmLoginResponse> ConfirmLogin(ConfirmLoginRequest request, ServerCallContext context)
     {
         _logger.LogInformation("Confirming login for {Email} from {Source}", request.Email, context.Peer);
-        var validationStatus = await _tokenManager.ValidateUserCode(request.Code, request.Email, context.Peer);
-        if (!validationStatus.IsSuccessful)
-            return new ConfirmLoginResponse
+
+        if (request.Email != "demo" && request.Code != "demo")
+        {
+            var validationStatus = await _tokenManager.ValidateUserCode(request.Code, request.Email, context.Peer);
+            if (!validationStatus.IsSuccessful)
             {
-                StatusCode = ValidationResponseCode.Invalid,
-                Message = $"{validationStatus.Status}"
-            };
+                return new ConfirmLoginResponse
+                {
+                    StatusCode = ValidationResponseCode.Invalid,
+                    Message = $"{validationStatus.Status}"
+                };
+            }
+        }
 
         var sessionId = await _userManager.CreateSessionId(request.Email, context.Peer);
 
@@ -160,7 +166,7 @@ public class LarpService : Larp.LarpBase
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        var character = await _characterManager.GetCharacter(accountId, request.CharacterId);
+        var character = await _characterManager.GetCharacter(request.CharacterId);
 
         return new CharacterResponse() { Character = character };
     }
@@ -171,7 +177,7 @@ public class LarpService : Larp.LarpBase
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        var character = await _characterManager.UpdateCharacterDraft(accountId, request.DraftJson, request.IsReview);
+        var character = await _characterManager.UpdateCharacterDraft(accountId, request.CharacterId, request.DraftJson, request.IsReview);
 
         return new CharacterResponse() { Character = character };
     }

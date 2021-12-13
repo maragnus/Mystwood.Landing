@@ -235,10 +235,13 @@ export class SessionService {
     }
 
     async updateCharacter(id: string, draft: CharacterSheet, isReview: boolean): Promise<Character> {
+        const sheet = {...draft};
+        CharacterSheet.unpopulate(sheet);
+
         const result = await larpClient.UpdateCharacterDraft({
             session: {sessionId: this._sessionId},
             characterId: id,
-            draftJson: JSON.stringify(draft),
+            draftJson: JSON.stringify(sheet),
             isReview: isReview
         });
 
@@ -251,15 +254,13 @@ export class SessionService {
         return {
             id: result.character?.characterId,
             draft: {...emptySheet, ...JSON.parse(result.character?.draftJson ?? "{}")},
-            live:  {...emptySheet, ...JSON.parse(result.character?.draftJson ?? "{}")},
+            live:  {...emptySheet, ...JSON.parse(result.character?.liveJson ?? "{}")},
             status: CharacterStatus.New // TODO
         } as Character;
     }
 
     async getCharacters(): Promise<CharacterSummary[]> {
-        console.log("Step 1");
         const result = await larpClient.GetCharacters({session: {sessionId: this._sessionId}});
-        console.log("Step 2");
         return result.characters.map(x => SessionService.buildCharacter(x));
     }
 

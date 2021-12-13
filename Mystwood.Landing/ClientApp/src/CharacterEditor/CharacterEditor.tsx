@@ -13,23 +13,31 @@ import SkillsEditor from "./SkillsEditor";
 import AdvEditor from "./AdvEditor";
 import SpellsEditor from "./SpellsEditor";
 import OtherEditor from "./OtherEditor";
-import {Alert} from "@mui/material";
 import ReviewEditor from "./ReviewEditor";
-import {Character, CharacterStatus} from "../Session/Session";
-import StartDraftModal from "./Modals/StartDraftModal";
-import ContinueDraftModal from "./Modals/ContinueDraftModal";
-import SubmittedModal from "./Modals/SubmittedModal";
+import {Character} from "../Session/Session";
+import sessionService from "../Session/SessionService";
+import AwesomeSpinner from "../Common/AwesomeSpinner";
+import CharacterEditorModal from "./CharacterEditorModal";
+
+enum EditorState {
+    Loading = 0,
+    ConfirmDraft, // Start drafting new changes?
+    ConfirmContinue, // Continue your draft or start over?
+    ConfirmStartOver, // Are you sure you want to start over?
+    Editing
+}
 
 interface CharacterEditorProps {
-    character: Character
+    characterId: string;
 }
 
 interface CharacterEditorState {
+    state: EditorState;
     activeStep: number;
     sheet: CharacterSheet;
     originalSheet: CharacterSheet;
-    status: CharacterStatus;
-    precheckComplete: boolean;
+    character?: Character;
+    characterName?: string;
 }
 
 interface EditorStep {
@@ -76,12 +84,38 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         super(props);
 
         this.state = {
+            state: EditorState.Loading,
             activeStep: 0,
-            sheet: props.character.draft ?? props.character.live!,
-            originalSheet: props.character.live!,
-            status: props.character.status,
-            precheckComplete: false,
+            sheet: new CharacterSheet(),
+            originalSheet: new CharacterSheet(),
         };
+    }
+
+    async componentDidMount() {
+        const character = await sessionService.getCharacter(this.props.characterId);
+
+        let state: EditorState = EditorState.Loading;
+
+        const isLive = character.live?.characterName !== undefined;
+        const isDraft = character.draft?.characterName !== undefined;
+
+        if (isLive && isDraft)
+            state = EditorState.ConfirmContinue;
+        else if (isLive && !isDraft)
+            state = EditorState.ConfirmDraft;
+        else if (!isLive)
+            state = EditorState.Editing;
+
+        const sheet = isLive ? character.live : character.draft;
+
+        this.setState({
+            ...this.state,
+            state: state,
+            character: character,
+            characterName: sheet?.characterName,
+            originalSheet: sheet,
+            sheet: sheet
+        });
     }
 
     stepRef?: any;
@@ -90,36 +124,75 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         this.stepRef?.savePage();
     }
 
-    startDraft(): void {
+    start(state: EditorState, sheet: CharacterSheet): void {
         this.setState({
             ...this.state,
-            sheet: {...this.state.originalSheet},
-            status: CharacterStatus.Draft,
-            precheckComplete: true,
+            state: state,
+            sheet: {...sheet}
         });
+    }
+
+    startDraft(): void {
+        this.start(EditorState.Editing, this.state.character!.live);
     }
 
     continueDraft(): void {
-        this.setState({
-            ...this.state,
-            precheckComplete: true,
-        });
+        this.start(EditorState.Editing, this.state.character!.draft);
+    }
+
+    startOverDraft(): void {
+        this.start(EditorState.ConfirmStartOver, new CharacterSheet());
+    }
+
+    confirmStartOverDraft(): void {
+        this.start(EditorState.Editing, this.state.character!.live);
     }
 
     render() {
-        if (!this.state.precheckComplete) {
-            switch (this.state.status) {
-                case CharacterStatus.Current:
-                    return (<StartDraftModal character={this.props.character} onEdit={this.startDraft.bind(this)}/>);
+        const characterName = this.state.characterName;
 
-                case CharacterStatus.Draft:
-                    return (
-                        <ContinueDraftModal character={this.props.character}
-                                            onContinue={this.continueDraft.bind(this)}
-                                            onStartOver={this.startDraft.bind(this)}/>);
-                case CharacterStatus.Submitted:
-                    return (<SubmittedModal character={this.props.character}/>);
-            }
+        switch (this.state.state) {
+            case EditorState.Loading:
+                return (<AwesomeSpinner />);
+            case EditorState.ConfirmDraft:
+                return (<CharacterEditorModal>
+                    <p id="child-modal-description">
+                        Would you like to start a new draft of changes to {characterName}?
+                    </p>
+                    <p>
+                        Once you complete your draft, you can submit your changes for review. If approved, the draft
+                        will be closed and the changes applied to your character sheet. You can pause and resume your
+                        draft at any time.
+                    </p>
+                    <Button onClick={this.startDraft.bind(this)} variant="contained" sx={{mx: 1}}>Make Changes</Button>
+                </CharacterEditorModal>);
+
+            case EditorState.ConfirmContinue:
+                return (<CharacterEditorModal>
+                    <p id="child-modal-description">
+                        Continue your drafted changes for {characterName}?
+                    </p>
+                    <p>
+                        You've already started drafting changes to your character, you can continue right where you left off.
+                        Once you complete your draft, you can submit your changes for review. If approved, the draft
+                        will be closed and the changes applied to your character sheet
+                    </p>
+                    <Button onClick={this.startOverDraft.bind(this)} variant="contained" color="error" sx={{mx: 1}}>Start Over</Button>
+                    <Button onClick={this.continueDraft.bind(this)} variant="contained" color="success" sx={{mx: 1}}>Continue Draft</Button>
+                </CharacterEditorModal>);
+
+            case EditorState.ConfirmStartOver:
+                return (<CharacterEditorModal>
+                    <p id="child-modal-description">
+                        Delete your draft and start over for {characterName}?
+                    </p>
+                    <p>
+                        You've already started drafting changes to your character. This will erase those changes and
+                        you will start with fresh changes from your live character sheet.
+                    </p>
+                    <Button onClick={this.confirmStartOverDraft.bind(this)} variant="contained" color="error" sx={{mx: 1}}>Start Over</Button>
+                    <Button onClick={this.continueDraft.bind(this)} variant="contained" color="success" sx={{mx: 1}}>Continue Draft</Button>
+                </CharacterEditorModal>);
         }
 
         const handleNext = () => {
@@ -137,7 +210,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
             this.setState(({activeStep: 0}));
         };
 
-        const sheetChange = (changes: object) => {
+        const sheetChange = async (changes: object) => {
             this.setState((state: CharacterEditorState, props: CharacterEditorProps) => {
                 const newSheet = {
                     ...state.sheet,
@@ -146,6 +219,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                 CharacterSheet.populate(newSheet);
                 state.sheet = newSheet;
             });
+            await sessionService.updateCharacter(this.props.characterId, this.state.sheet, false);
         };
 
         const activeStep = this.state.activeStep;
@@ -207,7 +281,6 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                                 Back
                             </Button>
                             <Box sx={{flex: '1 1 auto'}}>
-                                <Alert severity="info"> Demonstration mode is active. No changes will be saved.</Alert>
                             </Box>
                             <Button onClick={handleNext}>
                                 {activeStep === steps.length - 1 ? 'Review' : 'Next'}
