@@ -3,11 +3,11 @@ export default interface HomeChapter {
     title: string;
 }
 
-export const Albion: HomeChapter = {name: "albion", title: "Albion"};
 export const Burgundar: HomeChapter = {name: "burgundar", title: "Burgundar"};
 export const TheKeep: HomeChapter = {name: "keep", title: "The Keep"};
+export const Novgorond: HomeChapter = {name: "novgorond", title: "Novgorond"};
 
-export const HomeChapters: HomeChapter[] = [Albion, Burgundar, TheKeep];
+export const HomeChapters: HomeChapter[] = [Burgundar, TheKeep, Novgorond];
 
 const religionLookup: Map<string, HomeChapter> =
     HomeChapters.reduce((dict, item) => {

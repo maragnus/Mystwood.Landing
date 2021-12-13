@@ -270,7 +270,7 @@ export class SessionService {
         return {
             id: x.characterId,
             name: x.characterName ?? "Unnamed",
-            player: x.playerName,
+            player: x.accountName,
             status: CharacterStatus.New, // TODO
             summary: `${homeChapter.title}, ${x.specialty}, Level ${x.level}`
         } as CharacterSummary

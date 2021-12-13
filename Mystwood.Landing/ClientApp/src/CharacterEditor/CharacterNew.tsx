@@ -25,13 +25,13 @@ export default function CharacterNew() {
         const homeChapter: string | undefined = HomeChapters.find(x => x.title === home)?.name;
 
         if (name.length < 3 || homeChapter === undefined) {
-            alert("Please populate all fields to continue." + homeChapter);
+            alert("Please populate all fields to continue.");
             setBusy(false);
             return;
         }
 
         try {
-            let character = await sessionService.createCharacter(name, home);
+            let character = await sessionService.createCharacter(name, homeChapter);
 
             navigate("/characters/" + character.id + "/draft");
 

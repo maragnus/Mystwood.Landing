@@ -98,7 +98,7 @@ export class PurchasedSkillsEditor extends CharacterEditorPage {
                     </Tooltip>
                 </Box>
             </Box>
-            <Typography variant="h6" sx={{pt: 2}}>Purchased</Typography>
+            <Typography variant="h6" sx={{pt: 2}}>Purchase a skill</Typography>
             <Autocomplete
                 id="skills"
                 options={purchasableSkills}
@@ -109,6 +109,7 @@ export class PurchasedSkillsEditor extends CharacterEditorPage {
                                helperText="Search in this box to add a skill"/>
                 )}
             />
+            <Typography variant="h6" sx={{pt: 2}}>Your purchased skills</Typography>
             <SkillList body={purchased}/>
         </Box>;
     }

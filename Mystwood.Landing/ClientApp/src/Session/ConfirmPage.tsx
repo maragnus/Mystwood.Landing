@@ -1,33 +1,21 @@
 import * as React from 'react';
-import {NavLink, useNavigate} from "react-router-dom";
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import logo from '../logo.webp';
 import sessionService, {ConfirmStatus} from "./SessionService";
-import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
+import {NavLink, useNavigate} from "react-router-dom";
+import {
+    Box,
+    Button, Checkbox,
+    Container,
+    CssBaseline,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle, FormControlLabel, Grid, TextField, Typography
+} from "@mui/material";
 import {BusyButton} from "../Common/BusyButton";
-
-function Copyright(props: any) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mystwood.org/">
-                Mystwood Landing
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
+import {Copyright} from "../Common/Copyright";
 
 const theme = createTheme();
 
@@ -147,7 +135,7 @@ export default function ConfirmPage() {
                             control={<Checkbox value="remember" color="primary"/>}
                             label="Remember me"
                         />
-                        <BusyButton label="Sign In" busy={busy} />
+                        <BusyButton label="Sign In" busy={busy}/>
                         <Grid container>
                             <Grid item xs>
                                 <NavLink to="/login">

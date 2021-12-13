@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Internal;
+using Microsoft.Extensions.Options;
 using Mystwood.Landing.Data;
 
 namespace Mystwood.Landing
@@ -30,11 +31,13 @@ namespace Mystwood.Landing
     {
         private readonly ApplicationDbContext _db;
         private readonly ISystemClock _clock;
+        private readonly MystwoodOptions options;
 
-        public UserManager(ApplicationDbContext db, ISystemClock systemClock)
+        public UserManager(ApplicationDbContext db, ISystemClock systemClock, IOptions<MystwoodOptions> options)
         {
             _db = db;
             _clock = systemClock;
+            this.options = options.Value;
         }
 
         private async Task UpdateProfile(int accountId, Action<Account> updateAction)
@@ -84,6 +87,8 @@ namespace Mystwood.Landing
 
         public async Task<string> CreateSessionId(string email, string peer)
         {
+            email = email.Trim();
+
             var account = await _db.Accounts
                 .FirstOrDefaultAsync(x => x.EmailAddresses!.Any(ea => ea.EmailNormalized == email.ToUpper()));
 
@@ -100,6 +105,7 @@ namespace Mystwood.Landing
                     EmailAddresses = new List<EmailAddress>() {
                         new EmailAddress { EmailNormalized = email.ToUpper(), Email = email }
                     },
+                    IsAdmin = options.Admins.Contains(email),
                     Created = _clock.UtcNow
                 };
                 _db.Accounts.Add(account);

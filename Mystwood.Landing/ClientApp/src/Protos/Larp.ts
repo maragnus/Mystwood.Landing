@@ -54,10 +54,12 @@ export interface ProfileEmail {
 }
 
 export interface Profile {
+  accountId: number;
   name: string;
   location: string;
   emails: ProfileEmail[];
   phone: string;
+  isAdmin: boolean;
 }
 
 export interface Character {
@@ -70,10 +72,11 @@ export interface Character {
 }
 
 export interface CharacterSummary {
+  accountId: number;
+  accountName: string;
   characterId: string;
   characterName: string;
   homeChapter: string;
-  playerName: string;
   specialty: string;
   level: number;
   isLive: boolean;
@@ -152,6 +155,43 @@ export interface CharacterResponse {
   character?: Character;
 }
 
+export interface GetAccountRequest {
+  session?: SessionIdentifier;
+  accountId: number;
+}
+
+export interface GetAccountResponse {
+  profile?: Profile;
+}
+
+export interface SearchAccountsRequest {
+  session?: SessionIdentifier;
+  query: string;
+}
+
+export interface SearchAccountsResponse {
+  profiles: Profile[];
+}
+
+export interface SetAdminRequest {
+  session?: SessionIdentifier;
+  accountId: number;
+  isAdmin: boolean;
+}
+
+export interface SetAdminResponse {
+  profile?: Profile;
+}
+
+export interface SearchCharactersRequest {
+  session?: SessionIdentifier;
+  query: string;
+}
+
+export interface SearchCharactersResponse {
+  characters: CharacterSummary[];
+}
+
 const baseProfileEmail: object = { email: "", verified: false };
 
 export const ProfileEmail = {
@@ -219,24 +259,36 @@ export const ProfileEmail = {
   },
 };
 
-const baseProfile: object = { name: "", location: "", phone: "" };
+const baseProfile: object = {
+  accountId: 0,
+  name: "",
+  location: "",
+  phone: "",
+  isAdmin: false,
+};
 
 export const Profile = {
   encode(
     message: Profile,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
+    if (message.accountId !== 0) {
+      writer.uint32(8).int32(message.accountId);
+    }
     if (message.name !== "") {
-      writer.uint32(10).string(message.name);
+      writer.uint32(18).string(message.name);
     }
     if (message.location !== "") {
-      writer.uint32(18).string(message.location);
+      writer.uint32(26).string(message.location);
     }
     for (const v of message.emails) {
-      ProfileEmail.encode(v!, writer.uint32(26).fork()).ldelim();
+      ProfileEmail.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     if (message.phone !== "") {
-      writer.uint32(34).string(message.phone);
+      writer.uint32(42).string(message.phone);
+    }
+    if (message.isAdmin === true) {
+      writer.uint32(48).bool(message.isAdmin);
     }
     return writer;
   },
@@ -250,16 +302,22 @@ export const Profile = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.name = reader.string();
+          message.accountId = reader.int32();
           break;
         case 2:
-          message.location = reader.string();
+          message.name = reader.string();
           break;
         case 3:
-          message.emails.push(ProfileEmail.decode(reader, reader.uint32()));
+          message.location = reader.string();
           break;
         case 4:
+          message.emails.push(ProfileEmail.decode(reader, reader.uint32()));
+          break;
+        case 5:
           message.phone = reader.string();
+          break;
+        case 6:
+          message.isAdmin = reader.bool();
           break;
         default:
           reader.skipType(tag & 7);
@@ -271,6 +329,10 @@ export const Profile = {
 
   fromJSON(object: any): Profile {
     const message = { ...baseProfile } as Profile;
+    message.accountId =
+      object.accountId !== undefined && object.accountId !== null
+        ? Number(object.accountId)
+        : 0;
     message.name =
       object.name !== undefined && object.name !== null
         ? String(object.name)
@@ -286,11 +348,16 @@ export const Profile = {
       object.phone !== undefined && object.phone !== null
         ? String(object.phone)
         : "";
+    message.isAdmin =
+      object.isAdmin !== undefined && object.isAdmin !== null
+        ? Boolean(object.isAdmin)
+        : false;
     return message;
   },
 
   toJSON(message: Profile): unknown {
     const obj: any = {};
+    message.accountId !== undefined && (obj.accountId = message.accountId);
     message.name !== undefined && (obj.name = message.name);
     message.location !== undefined && (obj.location = message.location);
     if (message.emails) {
@@ -301,16 +368,19 @@ export const Profile = {
       obj.emails = [];
     }
     message.phone !== undefined && (obj.phone = message.phone);
+    message.isAdmin !== undefined && (obj.isAdmin = message.isAdmin);
     return obj;
   },
 
   fromPartial<I extends Exact<DeepPartial<Profile>, I>>(object: I): Profile {
     const message = { ...baseProfile } as Profile;
+    message.accountId = object.accountId ?? 0;
     message.name = object.name ?? "";
     message.location = object.location ?? "";
     message.emails =
       object.emails?.map((e) => ProfileEmail.fromPartial(e)) || [];
     message.phone = object.phone ?? "";
+    message.isAdmin = object.isAdmin ?? false;
     return message;
   },
 };
@@ -439,10 +509,11 @@ export const Character = {
 };
 
 const baseCharacterSummary: object = {
+  accountId: 0,
+  accountName: "",
   characterId: "",
   characterName: "",
   homeChapter: "",
-  playerName: "",
   specialty: "",
   level: 0,
   isLive: false,
@@ -454,29 +525,32 @@ export const CharacterSummary = {
     message: CharacterSummary,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
+    if (message.accountId !== 0) {
+      writer.uint32(8).int32(message.accountId);
+    }
+    if (message.accountName !== "") {
+      writer.uint32(18).string(message.accountName);
+    }
     if (message.characterId !== "") {
-      writer.uint32(10).string(message.characterId);
+      writer.uint32(26).string(message.characterId);
     }
     if (message.characterName !== "") {
-      writer.uint32(18).string(message.characterName);
+      writer.uint32(34).string(message.characterName);
     }
     if (message.homeChapter !== "") {
-      writer.uint32(26).string(message.homeChapter);
-    }
-    if (message.playerName !== "") {
-      writer.uint32(34).string(message.playerName);
+      writer.uint32(42).string(message.homeChapter);
     }
     if (message.specialty !== "") {
-      writer.uint32(42).string(message.specialty);
+      writer.uint32(50).string(message.specialty);
     }
     if (message.level !== 0) {
-      writer.uint32(48).int32(message.level);
+      writer.uint32(56).int32(message.level);
     }
     if (message.isLive === true) {
-      writer.uint32(56).bool(message.isLive);
+      writer.uint32(64).bool(message.isLive);
     }
     if (message.isReview === true) {
-      writer.uint32(64).bool(message.isReview);
+      writer.uint32(72).bool(message.isReview);
     }
     return writer;
   },
@@ -489,27 +563,30 @@ export const CharacterSummary = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.characterId = reader.string();
+          message.accountId = reader.int32();
           break;
         case 2:
-          message.characterName = reader.string();
+          message.accountName = reader.string();
           break;
         case 3:
-          message.homeChapter = reader.string();
+          message.characterId = reader.string();
           break;
         case 4:
-          message.playerName = reader.string();
+          message.characterName = reader.string();
           break;
         case 5:
-          message.specialty = reader.string();
+          message.homeChapter = reader.string();
           break;
         case 6:
-          message.level = reader.int32();
+          message.specialty = reader.string();
           break;
         case 7:
-          message.isLive = reader.bool();
+          message.level = reader.int32();
           break;
         case 8:
+          message.isLive = reader.bool();
+          break;
+        case 9:
           message.isReview = reader.bool();
           break;
         default:
@@ -522,6 +599,14 @@ export const CharacterSummary = {
 
   fromJSON(object: any): CharacterSummary {
     const message = { ...baseCharacterSummary } as CharacterSummary;
+    message.accountId =
+      object.accountId !== undefined && object.accountId !== null
+        ? Number(object.accountId)
+        : 0;
+    message.accountName =
+      object.accountName !== undefined && object.accountName !== null
+        ? String(object.accountName)
+        : "";
     message.characterId =
       object.characterId !== undefined && object.characterId !== null
         ? String(object.characterId)
@@ -533,10 +618,6 @@ export const CharacterSummary = {
     message.homeChapter =
       object.homeChapter !== undefined && object.homeChapter !== null
         ? String(object.homeChapter)
-        : "";
-    message.playerName =
-      object.playerName !== undefined && object.playerName !== null
-        ? String(object.playerName)
         : "";
     message.specialty =
       object.specialty !== undefined && object.specialty !== null
@@ -559,13 +640,15 @@ export const CharacterSummary = {
 
   toJSON(message: CharacterSummary): unknown {
     const obj: any = {};
+    message.accountId !== undefined && (obj.accountId = message.accountId);
+    message.accountName !== undefined &&
+      (obj.accountName = message.accountName);
     message.characterId !== undefined &&
       (obj.characterId = message.characterId);
     message.characterName !== undefined &&
       (obj.characterName = message.characterName);
     message.homeChapter !== undefined &&
       (obj.homeChapter = message.homeChapter);
-    message.playerName !== undefined && (obj.playerName = message.playerName);
     message.specialty !== undefined && (obj.specialty = message.specialty);
     message.level !== undefined && (obj.level = message.level);
     message.isLive !== undefined && (obj.isLive = message.isLive);
@@ -577,10 +660,11 @@ export const CharacterSummary = {
     object: I
   ): CharacterSummary {
     const message = { ...baseCharacterSummary } as CharacterSummary;
+    message.accountId = object.accountId ?? 0;
+    message.accountName = object.accountName ?? "";
     message.characterId = object.characterId ?? "";
     message.characterName = object.characterName ?? "";
     message.homeChapter = object.homeChapter ?? "";
-    message.playerName = object.playerName ?? "";
     message.specialty = object.specialty ?? "";
     message.level = object.level ?? 0;
     message.isLive = object.isLive ?? false;
@@ -1694,6 +1778,594 @@ export const CharacterResponse = {
   },
 };
 
+const baseGetAccountRequest: object = { accountId: 0 };
+
+export const GetAccountRequest = {
+  encode(
+    message: GetAccountRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.accountId !== 0) {
+      writer.uint32(16).int32(message.accountId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetAccountRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGetAccountRequest } as GetAccountRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.accountId = reader.int32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetAccountRequest {
+    const message = { ...baseGetAccountRequest } as GetAccountRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.accountId =
+      object.accountId !== undefined && object.accountId !== null
+        ? Number(object.accountId)
+        : 0;
+    return message;
+  },
+
+  toJSON(message: GetAccountRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.accountId !== undefined && (obj.accountId = message.accountId);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetAccountRequest>, I>>(
+    object: I
+  ): GetAccountRequest {
+    const message = { ...baseGetAccountRequest } as GetAccountRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.accountId = object.accountId ?? 0;
+    return message;
+  },
+};
+
+const baseGetAccountResponse: object = {};
+
+export const GetAccountResponse = {
+  encode(
+    message: GetAccountResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.profile !== undefined) {
+      Profile.encode(message.profile, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetAccountResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseGetAccountResponse } as GetAccountResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.profile = Profile.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetAccountResponse {
+    const message = { ...baseGetAccountResponse } as GetAccountResponse;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Profile.fromJSON(object.profile)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: GetAccountResponse): unknown {
+    const obj: any = {};
+    message.profile !== undefined &&
+      (obj.profile = message.profile
+        ? Profile.toJSON(message.profile)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<GetAccountResponse>, I>>(
+    object: I
+  ): GetAccountResponse {
+    const message = { ...baseGetAccountResponse } as GetAccountResponse;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Profile.fromPartial(object.profile)
+        : undefined;
+    return message;
+  },
+};
+
+const baseSearchAccountsRequest: object = { query: "" };
+
+export const SearchAccountsRequest = {
+  encode(
+    message: SearchAccountsRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.query !== "") {
+      writer.uint32(18).string(message.query);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): SearchAccountsRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSearchAccountsRequest } as SearchAccountsRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.query = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SearchAccountsRequest {
+    const message = { ...baseSearchAccountsRequest } as SearchAccountsRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.query =
+      object.query !== undefined && object.query !== null
+        ? String(object.query)
+        : "";
+    return message;
+  },
+
+  toJSON(message: SearchAccountsRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.query !== undefined && (obj.query = message.query);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SearchAccountsRequest>, I>>(
+    object: I
+  ): SearchAccountsRequest {
+    const message = { ...baseSearchAccountsRequest } as SearchAccountsRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.query = object.query ?? "";
+    return message;
+  },
+};
+
+const baseSearchAccountsResponse: object = {};
+
+export const SearchAccountsResponse = {
+  encode(
+    message: SearchAccountsResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.profiles) {
+      Profile.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): SearchAccountsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSearchAccountsResponse } as SearchAccountsResponse;
+    message.profiles = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.profiles.push(Profile.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SearchAccountsResponse {
+    const message = { ...baseSearchAccountsResponse } as SearchAccountsResponse;
+    message.profiles = (object.profiles ?? []).map((e: any) =>
+      Profile.fromJSON(e)
+    );
+    return message;
+  },
+
+  toJSON(message: SearchAccountsResponse): unknown {
+    const obj: any = {};
+    if (message.profiles) {
+      obj.profiles = message.profiles.map((e) =>
+        e ? Profile.toJSON(e) : undefined
+      );
+    } else {
+      obj.profiles = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SearchAccountsResponse>, I>>(
+    object: I
+  ): SearchAccountsResponse {
+    const message = { ...baseSearchAccountsResponse } as SearchAccountsResponse;
+    message.profiles =
+      object.profiles?.map((e) => Profile.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+const baseSetAdminRequest: object = { accountId: 0, isAdmin: false };
+
+export const SetAdminRequest = {
+  encode(
+    message: SetAdminRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.accountId !== 0) {
+      writer.uint32(16).int32(message.accountId);
+    }
+    if (message.isAdmin === true) {
+      writer.uint32(24).bool(message.isAdmin);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SetAdminRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSetAdminRequest } as SetAdminRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.accountId = reader.int32();
+          break;
+        case 3:
+          message.isAdmin = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SetAdminRequest {
+    const message = { ...baseSetAdminRequest } as SetAdminRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.accountId =
+      object.accountId !== undefined && object.accountId !== null
+        ? Number(object.accountId)
+        : 0;
+    message.isAdmin =
+      object.isAdmin !== undefined && object.isAdmin !== null
+        ? Boolean(object.isAdmin)
+        : false;
+    return message;
+  },
+
+  toJSON(message: SetAdminRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.accountId !== undefined && (obj.accountId = message.accountId);
+    message.isAdmin !== undefined && (obj.isAdmin = message.isAdmin);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SetAdminRequest>, I>>(
+    object: I
+  ): SetAdminRequest {
+    const message = { ...baseSetAdminRequest } as SetAdminRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.accountId = object.accountId ?? 0;
+    message.isAdmin = object.isAdmin ?? false;
+    return message;
+  },
+};
+
+const baseSetAdminResponse: object = {};
+
+export const SetAdminResponse = {
+  encode(
+    message: SetAdminResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.profile !== undefined) {
+      Profile.encode(message.profile, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): SetAdminResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseSetAdminResponse } as SetAdminResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.profile = Profile.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SetAdminResponse {
+    const message = { ...baseSetAdminResponse } as SetAdminResponse;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Profile.fromJSON(object.profile)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: SetAdminResponse): unknown {
+    const obj: any = {};
+    message.profile !== undefined &&
+      (obj.profile = message.profile
+        ? Profile.toJSON(message.profile)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SetAdminResponse>, I>>(
+    object: I
+  ): SetAdminResponse {
+    const message = { ...baseSetAdminResponse } as SetAdminResponse;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Profile.fromPartial(object.profile)
+        : undefined;
+    return message;
+  },
+};
+
+const baseSearchCharactersRequest: object = { query: "" };
+
+export const SearchCharactersRequest = {
+  encode(
+    message: SearchCharactersRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.query !== "") {
+      writer.uint32(18).string(message.query);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): SearchCharactersRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseSearchCharactersRequest,
+    } as SearchCharactersRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.query = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SearchCharactersRequest {
+    const message = {
+      ...baseSearchCharactersRequest,
+    } as SearchCharactersRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.query =
+      object.query !== undefined && object.query !== null
+        ? String(object.query)
+        : "";
+    return message;
+  },
+
+  toJSON(message: SearchCharactersRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.query !== undefined && (obj.query = message.query);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SearchCharactersRequest>, I>>(
+    object: I
+  ): SearchCharactersRequest {
+    const message = {
+      ...baseSearchCharactersRequest,
+    } as SearchCharactersRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.query = object.query ?? "";
+    return message;
+  },
+};
+
+const baseSearchCharactersResponse: object = {};
+
+export const SearchCharactersResponse = {
+  encode(
+    message: SearchCharactersResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.characters) {
+      CharacterSummary.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): SearchCharactersResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseSearchCharactersResponse,
+    } as SearchCharactersResponse;
+    message.characters = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.characters.push(
+            CharacterSummary.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): SearchCharactersResponse {
+    const message = {
+      ...baseSearchCharactersResponse,
+    } as SearchCharactersResponse;
+    message.characters = (object.characters ?? []).map((e: any) =>
+      CharacterSummary.fromJSON(e)
+    );
+    return message;
+  },
+
+  toJSON(message: SearchCharactersResponse): unknown {
+    const obj: any = {};
+    if (message.characters) {
+      obj.characters = message.characters.map((e) =>
+        e ? CharacterSummary.toJSON(e) : undefined
+      );
+    } else {
+      obj.characters = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<SearchCharactersResponse>, I>>(
+    object: I
+  ): SearchCharactersResponse {
+    const message = {
+      ...baseSearchCharactersResponse,
+    } as SearchCharactersResponse;
+    message.characters =
+      object.characters?.map((e) => CharacterSummary.fromPartial(e)) || [];
+    return message;
+  },
+};
+
 export interface Larp {
   InitiateLogin(
     request: DeepPartial<InitiateLoginRequest>,
@@ -1743,6 +2415,22 @@ export interface Larp {
     request: DeepPartial<UpdateCharacterRequest>,
     metadata?: grpc.Metadata
   ): Promise<CharacterResponse>;
+  GetAccount(
+    request: DeepPartial<GetAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<GetAccountResponse>;
+  SearchAccounts(
+    request: DeepPartial<SearchAccountsRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchAccountsResponse>;
+  SetAdmin(
+    request: DeepPartial<SetAdminRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SetAdminResponse>;
+  SearchCharacters(
+    request: DeepPartial<SearchCharactersRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchCharactersResponse>;
 }
 
 export class LarpClientImpl implements Larp {
@@ -1762,6 +2450,10 @@ export class LarpClientImpl implements Larp {
     this.GetCharacter = this.GetCharacter.bind(this);
     this.CreateCharacterDraft = this.CreateCharacterDraft.bind(this);
     this.UpdateCharacterDraft = this.UpdateCharacterDraft.bind(this);
+    this.GetAccount = this.GetAccount.bind(this);
+    this.SearchAccounts = this.SearchAccounts.bind(this);
+    this.SetAdmin = this.SetAdmin.bind(this);
+    this.SearchCharacters = this.SearchCharacters.bind(this);
   }
 
   InitiateLogin(
@@ -1892,6 +2584,50 @@ export class LarpClientImpl implements Larp {
     return this.rpc.unary(
       LarpUpdateCharacterDraftDesc,
       UpdateCharacterRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetAccount(
+    request: DeepPartial<GetAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<GetAccountResponse> {
+    return this.rpc.unary(
+      LarpGetAccountDesc,
+      GetAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SearchAccounts(
+    request: DeepPartial<SearchAccountsRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchAccountsResponse> {
+    return this.rpc.unary(
+      LarpSearchAccountsDesc,
+      SearchAccountsRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SetAdmin(
+    request: DeepPartial<SetAdminRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SetAdminResponse> {
+    return this.rpc.unary(
+      LarpSetAdminDesc,
+      SetAdminRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SearchCharacters(
+    request: DeepPartial<SearchCharactersRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchCharactersResponse> {
+    return this.rpc.unary(
+      LarpSearchCharactersDesc,
+      SearchCharactersRequest.fromPartial(request),
       metadata
     );
   }
@@ -2157,6 +2893,94 @@ export const LarpUpdateCharacterDraftDesc: UnaryMethodDefinitionish = {
     deserializeBinary(data: Uint8Array) {
       return {
         ...CharacterResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpGetAccountDesc: UnaryMethodDefinitionish = {
+  methodName: "GetAccount",
+  service: LarpDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return GetAccountRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...GetAccountResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpSearchAccountsDesc: UnaryMethodDefinitionish = {
+  methodName: "SearchAccounts",
+  service: LarpDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return SearchAccountsRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...SearchAccountsResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpSetAdminDesc: UnaryMethodDefinitionish = {
+  methodName: "SetAdmin",
+  service: LarpDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return SetAdminRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...SetAdminResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpSearchCharactersDesc: UnaryMethodDefinitionish = {
+  methodName: "SearchCharacters",
+  service: LarpDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return SearchCharactersRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...SearchCharactersResponse.decode(data),
         toObject() {
           return this;
         },

@@ -1,32 +1,21 @@
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import {createTheme, ThemeProvider} from '@mui/material/styles';
 import logo from '../logo.webp';
 import sessionService, {LoginStatus} from "./SessionService";
 import {NavLink, useNavigate} from "react-router-dom";
-import {Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle} from "@mui/material";
+import {
+    Box,
+    Button,
+    Container,
+    CssBaseline,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle, Grid, TextField, Typography
+} from "@mui/material";
 import {BusyButton} from "../Common/BusyButton";
-
-function Copyright(props: any) {
-    return (
-        <Typography variant="body2" color="text.secondary" align="center" {...props}>
-            {'Copyright © '}
-            <Link color="inherit" href="https://mystwood.org/">
-                Mystwood Landing
-            </Link>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </Typography>
-    );
-}
-
+import {Copyright} from "../Common/Copyright";
 
 const theme = createTheme();
 
@@ -77,8 +66,7 @@ export default function LoginPage() {
         } catch (e: any) {
             setMessage("There was network or server error. Please try again.")
             setDetails(e.toString());
-        }
-        finally {
+        } finally {
             setBusy(false);
             setOpen(true);
         }
@@ -120,7 +108,7 @@ export default function LoginPage() {
                             autoComplete="email"
                             autoFocus
                         />
-                        <BusyButton label="Sign In or Register" busy={busy} />
+                        <BusyButton label="Sign In or Register" busy={busy}/>
                         <Grid container>
                             <Grid item xs>
                                 <NavLink to="/confirm">

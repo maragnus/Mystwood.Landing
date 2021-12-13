@@ -147,8 +147,6 @@ export default function CharacterView(params: { id?: string }) {
             item.title = item.name;
     });
 
-    console.log(sheet);
-
     return (
         <Container maxWidth="lg" style={{backgroundColor: "#f4f5f7"}}>
             <Grid container pt={2}>

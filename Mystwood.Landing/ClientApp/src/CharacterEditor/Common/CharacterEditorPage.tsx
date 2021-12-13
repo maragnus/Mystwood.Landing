@@ -57,7 +57,6 @@ export abstract class CharacterEditorPage extends React.Component<CharacterEdito
     };
 
     savePage(): void {
-        console.log("savePage");
         this.props.handleSheetChange(this.changes);
         this.changes = {}
     }

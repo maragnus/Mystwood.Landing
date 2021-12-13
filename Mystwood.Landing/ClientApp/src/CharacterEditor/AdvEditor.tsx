@@ -27,7 +27,7 @@ export default class AdvEditor extends CharacterEditorPage {
         const physicalSection: any = physicalVantages.length === 0 ? undefined :
             <Grid item xs={12} md={12}>
                 <Paper>
-                    <Typography variant="h6">Supernatural Heritage</Typography>
+                    <Typography variant="h6" sx={{m: 2}}>Supernatural Heritage</Typography>
                     <Box component="ul"
                          sx={{
                              display: 'flex', justifyContent: 'left', flexWrap: 'wrap',

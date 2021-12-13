@@ -15,6 +15,9 @@ public class Account
     public string? PhoneNumber { get; set; }
 
     [Required]
+    public bool? IsAdmin { get; set; }
+
+    [Required]
     public bool? IsValid { get; set; }
 
     [Required]

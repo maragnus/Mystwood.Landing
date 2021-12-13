@@ -91,6 +91,11 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         };
     }
 
+    async componentWillUnmount() {
+        // this.savePage();
+        // await sessionService.updateCharacter(this.props.characterId, this.state.sheet, false);
+    }
+
     async componentDidMount() {
         const character = await sessionService.getCharacter(this.props.characterId);
 
@@ -219,6 +224,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                 CharacterSheet.populate(newSheet);
                 state.sheet = newSheet;
             });
+
             await sessionService.updateCharacter(this.props.characterId, this.state.sheet, false);
         };
 

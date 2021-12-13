@@ -27,6 +27,7 @@ builder.Services.AddCors(cors =>
 builder.Services.AddSingleton<ISystemClock, SystemClock>();
 
 builder.Services.Configure<SmtpOptions>(builder.Configuration.GetSection(SmtpOptions.SectionName));
+builder.Services.Configure<MystwoodOptions>(builder.Configuration.GetSection(MystwoodOptions.SectionName));
 builder.Services.AddScoped<IEmailManager, EmailManager>();
 
 builder.Services.AddScoped<IUserManager, UserManager>();

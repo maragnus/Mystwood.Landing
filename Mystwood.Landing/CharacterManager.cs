@@ -73,7 +73,7 @@ public class CharacterManager : ICharacterManager
             {
                 CharacterId = ch.Key.Id!.Value.ToString(),
                 CharacterName = ch.Key.Name!,
-                PlayerName = "",
+                AccountName = "",
                 HomeChapter = TryGetStringProperty(json.RootElement, "homeChapter") ?? "Undefined",
                 Specialty = TryGetStringProperty(json.RootElement, "specialty") ?? "Undefined",
                 Level = TryGetInt32Property(json.RootElement, "currentLevel") ?? 0,
@@ -95,8 +95,8 @@ public class CharacterManager : ICharacterManager
     {
         var json = new
         {
-            characterName = characterName,
-            home = homeChapter
+            @characterName = characterName,
+            @homeChapter = homeChapter
         };
 
         var now = _clock.UtcNow;

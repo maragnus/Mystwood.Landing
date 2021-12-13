@@ -10,10 +10,12 @@ message ProfileEmail {
 }
 
 message Profile {
-    string name = 1;
-    string location = 2;
-    repeated ProfileEmail emails = 3;
-    string phone = 4;
+    int32 account_id = 1;
+    string name = 2;
+    string location = 3;
+    repeated ProfileEmail emails = 4;
+    string phone = 5;
+    bool is_admin = 6;
 }
 
 message Character {
@@ -26,14 +28,15 @@ message Character {
 }
 
 message CharacterSummary {
-    string character_id = 1;
-    string character_name = 2;
-    string home_chapter = 3;
-    string player_name = 4;
-    string specialty = 5;
-    int32 level = 6;
-    bool is_live = 7;
-    bool is_review = 8;
+    int32 account_id = 1;
+    string account_name = 2;
+    string character_id = 3;
+    string character_name = 4;
+    string home_chapter = 5;
+    string specialty = 6;
+    int32 level = 7;
+    bool is_live = 8;
+    bool is_review = 9;
 }
 
 enum ValidationResponseCode {
@@ -58,6 +61,11 @@ service Larp {
     rpc GetCharacter(GetCharacterRequest) returns (CharacterResponse) {}
     rpc CreateCharacterDraft(CreateCharacterRequest) returns (CharacterResponse) {}
     rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (CharacterResponse) {}
+
+    rpc GetAccount(GetAccountRequest) returns (GetAccountResponse) {}
+    rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse) {}
+    rpc SetAdmin(SetAdminRequest) returns (SetAdminResponse) {}
+    rpc SearchCharacters(SearchCharactersRequest) returns (SearchCharactersResponse) {} 
 }
 
 // Include this in any message that requires an authenticated session
@@ -134,4 +142,43 @@ message GetCharacterRequest {
 
 message CharacterResponse {
     Character character = 1;
+}
+
+// Admin functions
+
+message GetAccountRequest {
+    SessionIdentifier session = 1;
+    int32 account_id = 2;
+}
+
+message GetAccountResponse {
+    Profile profile = 1;
+}
+
+message SearchAccountsRequest {
+    SessionIdentifier session = 1;
+    string query = 2;
+}
+
+message SearchAccountsResponse {
+    repeated Profile profiles = 1;
+}
+
+message SetAdminRequest {
+    SessionIdentifier session = 1;
+    int32 account_id = 2;
+    bool is_admin = 3;
+}
+
+message SetAdminResponse {
+    Profile profile = 1;
+}
+
+message SearchCharactersRequest {
+    SessionIdentifier session = 1;
+    string query = 2;
+}
+
+message SearchCharactersResponse {
+    repeated CharacterSummary characters = 1;
 }
