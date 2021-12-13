@@ -190,7 +190,7 @@ export default function CharacterView(params: { id?: string }) {
                         <List title="Advantages" values={sheet.advantages.map(x => ({title: x.name}))}/>
                     </Grid>
                     <Grid item lg={12} md={4} sm={12} xs={12}>
-                        <List title="Disadvantages" values={sheet.advantages.map(x => ({title: x.name}))}/>
+                        <List title="Disadvantages" values={sheet.disadvantages.map(x => ({title: x.name}))}/>
                     </Grid>
                     <Grid item lg={12} md={4} sm={12} xs={12}>
                         <Block title="Unusual Features" text={sheet.unusualFeatures}/>
