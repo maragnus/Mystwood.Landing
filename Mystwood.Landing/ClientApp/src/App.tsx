@@ -33,7 +33,7 @@ function StartDemoMode() {
         await sessionService.confirm("demo", "demo");
         navigate("/characters");
     });
-    
+
     return (<AwesomeSpinner/>);
 }
 

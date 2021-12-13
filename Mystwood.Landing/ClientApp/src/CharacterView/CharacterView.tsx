@@ -118,8 +118,8 @@ export default function CharacterView(params: { id?: string }) {
 
     useMountEffect(async () => {
         const character = await sessionService.getCharacter(params.id!);
-        let sheet = (character.live.characterName === undefined)
-            ? character.live  as CharacterSheet: character.draft as CharacterSheet;
+        let sheet = (character.live.characterName !== undefined)
+            ? character.live  as CharacterSheet : character.draft as CharacterSheet;
         CharacterSheet.populate(sheet);
         setSheet(sheet);
         setBusy(false);

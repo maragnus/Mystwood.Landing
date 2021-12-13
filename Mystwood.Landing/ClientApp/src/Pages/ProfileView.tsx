@@ -80,7 +80,6 @@ function EditProfile() {
                 label="Full Name"
                 name="name"
                 autoComplete="name"
-                autoFocus
                 defaultValue={profile.name}
             />
             <TextField
@@ -91,7 +90,6 @@ function EditProfile() {
                 label="Location"
                 name="location"
                 autoComplete="street-address"
-                autoFocus
                 defaultValue={profile.location}
             />
             <TextField
@@ -102,7 +100,6 @@ function EditProfile() {
                 label="Phone Number"
                 name="phone"
                 autoComplete="tel"
-                autoFocus
                 defaultValue={profile.phone}
             />
 
@@ -175,7 +172,6 @@ function EditEmail() {
                     label="Add Email Address"
                     name="email"
                     autoComplete="email"
-                    autoFocus
                 />
                 <BusyButton label="Add" busy={busy} sx={{mt: 3, mb: 2}} />
             </Box>

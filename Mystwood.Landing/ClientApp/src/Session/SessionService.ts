@@ -7,6 +7,7 @@ import {
     ValidationResponseCode
 } from "../Protos/Larp";
 import CharacterSheet from "../Reference/CharacterSheet";
+import {HomeChaptersByName} from "../Reference/HomeChapter";
 
 export interface SessionCallback {
     callback: (() => void);
@@ -265,12 +266,13 @@ export class SessionService {
     }
 
     private static buildCharacter(x: LarpCharacterSummary): CharacterSummary {
+        const homeChapter = HomeChaptersByName(x.homeChapter);
         return {
             id: x.characterId,
             name: x.characterName ?? "Unnamed",
             player: x.playerName,
             status: CharacterStatus.New, // TODO
-            summary: `${x.homeChapter}, ${x.specialty}, Level ${x.level}`
+            summary: `${homeChapter.title}, ${x.specialty}, Level ${x.level}`
         } as CharacterSummary
     }
 }
