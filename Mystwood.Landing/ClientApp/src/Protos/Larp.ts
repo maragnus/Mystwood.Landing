@@ -60,6 +60,7 @@ export interface Profile {
   emails: ProfileEmail[];
   phone: string;
   isAdmin: boolean;
+  characters: CharacterSummary[];
 }
 
 export interface Character {
@@ -143,6 +144,11 @@ export interface UpdateCharacterRequest {
   session?: SessionIdentifier;
   characterId: string;
   draftJson: string;
+}
+
+export interface UpdateCharacterInReviewRequest {
+  session?: SessionIdentifier;
+  characterId: string;
   isReview: boolean;
 }
 
@@ -290,6 +296,9 @@ export const Profile = {
     if (message.isAdmin === true) {
       writer.uint32(48).bool(message.isAdmin);
     }
+    for (const v of message.characters) {
+      CharacterSummary.encode(v!, writer.uint32(58).fork()).ldelim();
+    }
     return writer;
   },
 
@@ -298,6 +307,7 @@ export const Profile = {
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = { ...baseProfile } as Profile;
     message.emails = [];
+    message.characters = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -318,6 +328,11 @@ export const Profile = {
           break;
         case 6:
           message.isAdmin = reader.bool();
+          break;
+        case 7:
+          message.characters.push(
+            CharacterSummary.decode(reader, reader.uint32())
+          );
           break;
         default:
           reader.skipType(tag & 7);
@@ -352,6 +367,9 @@ export const Profile = {
       object.isAdmin !== undefined && object.isAdmin !== null
         ? Boolean(object.isAdmin)
         : false;
+    message.characters = (object.characters ?? []).map((e: any) =>
+      CharacterSummary.fromJSON(e)
+    );
     return message;
   },
 
@@ -369,6 +387,13 @@ export const Profile = {
     }
     message.phone !== undefined && (obj.phone = message.phone);
     message.isAdmin !== undefined && (obj.isAdmin = message.isAdmin);
+    if (message.characters) {
+      obj.characters = message.characters.map((e) =>
+        e ? CharacterSummary.toJSON(e) : undefined
+      );
+    } else {
+      obj.characters = [];
+    }
     return obj;
   },
 
@@ -381,6 +406,8 @@ export const Profile = {
       object.emails?.map((e) => ProfileEmail.fromPartial(e)) || [];
     message.phone = object.phone ?? "";
     message.isAdmin = object.isAdmin ?? false;
+    message.characters =
+      object.characters?.map((e) => CharacterSummary.fromPartial(e)) || [];
     return message;
   },
 };
@@ -1532,11 +1559,7 @@ export const CreateCharacterRequest = {
   },
 };
 
-const baseUpdateCharacterRequest: object = {
-  characterId: "",
-  draftJson: "",
-  isReview: false,
-};
+const baseUpdateCharacterRequest: object = { characterId: "", draftJson: "" };
 
 export const UpdateCharacterRequest = {
   encode(
@@ -1554,9 +1577,6 @@ export const UpdateCharacterRequest = {
     }
     if (message.draftJson !== "") {
       writer.uint32(26).string(message.draftJson);
-    }
-    if (message.isReview === true) {
-      writer.uint32(32).bool(message.isReview);
     }
     return writer;
   },
@@ -1580,9 +1600,6 @@ export const UpdateCharacterRequest = {
         case 3:
           message.draftJson = reader.string();
           break;
-        case 4:
-          message.isReview = reader.bool();
-          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -1605,10 +1622,6 @@ export const UpdateCharacterRequest = {
       object.draftJson !== undefined && object.draftJson !== null
         ? String(object.draftJson)
         : "";
-    message.isReview =
-      object.isReview !== undefined && object.isReview !== null
-        ? Boolean(object.isReview)
-        : false;
     return message;
   },
 
@@ -1621,7 +1634,6 @@ export const UpdateCharacterRequest = {
     message.characterId !== undefined &&
       (obj.characterId = message.characterId);
     message.draftJson !== undefined && (obj.draftJson = message.draftJson);
-    message.isReview !== undefined && (obj.isReview = message.isReview);
     return obj;
   },
 
@@ -1635,6 +1647,106 @@ export const UpdateCharacterRequest = {
         : undefined;
     message.characterId = object.characterId ?? "";
     message.draftJson = object.draftJson ?? "";
+    return message;
+  },
+};
+
+const baseUpdateCharacterInReviewRequest: object = {
+  characterId: "",
+  isReview: false,
+};
+
+export const UpdateCharacterInReviewRequest = {
+  encode(
+    message: UpdateCharacterInReviewRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.characterId !== "") {
+      writer.uint32(18).string(message.characterId);
+    }
+    if (message.isReview === true) {
+      writer.uint32(24).bool(message.isReview);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): UpdateCharacterInReviewRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = {
+      ...baseUpdateCharacterInReviewRequest,
+    } as UpdateCharacterInReviewRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.characterId = reader.string();
+          break;
+        case 3:
+          message.isReview = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateCharacterInReviewRequest {
+    const message = {
+      ...baseUpdateCharacterInReviewRequest,
+    } as UpdateCharacterInReviewRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.characterId =
+      object.characterId !== undefined && object.characterId !== null
+        ? String(object.characterId)
+        : "";
+    message.isReview =
+      object.isReview !== undefined && object.isReview !== null
+        ? Boolean(object.isReview)
+        : false;
+    return message;
+  },
+
+  toJSON(message: UpdateCharacterInReviewRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.characterId !== undefined &&
+      (obj.characterId = message.characterId);
+    message.isReview !== undefined && (obj.isReview = message.isReview);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<UpdateCharacterInReviewRequest>, I>>(
+    object: I
+  ): UpdateCharacterInReviewRequest {
+    const message = {
+      ...baseUpdateCharacterInReviewRequest,
+    } as UpdateCharacterInReviewRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.characterId = object.characterId ?? "";
     message.isReview = object.isReview ?? false;
     return message;
   },
@@ -2415,6 +2527,10 @@ export interface Larp {
     request: DeepPartial<UpdateCharacterRequest>,
     metadata?: grpc.Metadata
   ): Promise<CharacterResponse>;
+  UpdateCharacterInReview(
+    request: DeepPartial<UpdateCharacterInReviewRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse>;
   GetAccount(
     request: DeepPartial<GetAccountRequest>,
     metadata?: grpc.Metadata
@@ -2450,6 +2566,7 @@ export class LarpClientImpl implements Larp {
     this.GetCharacter = this.GetCharacter.bind(this);
     this.CreateCharacterDraft = this.CreateCharacterDraft.bind(this);
     this.UpdateCharacterDraft = this.UpdateCharacterDraft.bind(this);
+    this.UpdateCharacterInReview = this.UpdateCharacterInReview.bind(this);
     this.GetAccount = this.GetAccount.bind(this);
     this.SearchAccounts = this.SearchAccounts.bind(this);
     this.SetAdmin = this.SetAdmin.bind(this);
@@ -2584,6 +2701,17 @@ export class LarpClientImpl implements Larp {
     return this.rpc.unary(
       LarpUpdateCharacterDraftDesc,
       UpdateCharacterRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  UpdateCharacterInReview(
+    request: DeepPartial<UpdateCharacterInReviewRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse> {
+    return this.rpc.unary(
+      LarpUpdateCharacterInReviewDesc,
+      UpdateCharacterInReviewRequest.fromPartial(request),
       metadata
     );
   }
@@ -2887,6 +3015,28 @@ export const LarpUpdateCharacterDraftDesc: UnaryMethodDefinitionish = {
   requestType: {
     serializeBinary() {
       return UpdateCharacterRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...CharacterResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpUpdateCharacterInReviewDesc: UnaryMethodDefinitionish = {
+  methodName: "UpdateCharacterInReview",
+  service: LarpDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return UpdateCharacterInReviewRequest.encode(this).finish();
     },
   } as any,
   responseType: {

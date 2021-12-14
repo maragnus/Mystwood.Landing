@@ -34,7 +34,7 @@ partial class LarpService
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
-        var character = await _characterManager.UpdateCharacterDraft(accountId, request.CharacterId, request.DraftJson, request.IsReview);
+        var character = await _characterManager.UpdateCharacterDraft(accountId, request.CharacterId, request.DraftJson);
 
         return new CharacterResponse() { Character = character };
     }
@@ -45,6 +45,17 @@ partial class LarpService
             throw new Exception("Unauthorized");
 
         var character = await _characterManager.CreateCharacter(accountId, request.CharacterName, request.HomeChapter);
+
+        return new CharacterResponse() { Character = character };
+    }
+
+    public override async Task<CharacterResponse> UpdateCharacterInReview(UpdateCharacterInReviewRequest request, ServerCallContext context)
+    {
+
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
+            throw new Exception("Unauthorized");
+
+        var character = await _characterManager.UpdateCharacterInReview(accountId, request.CharacterId, request.IsReview);
 
         return new CharacterResponse() { Character = character };
     }

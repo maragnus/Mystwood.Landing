@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Options;
 using Mystwood.Landing.Data;
+using Mystwood.Landing.GrpcLarp;
 
 namespace Mystwood.Landing
 {
@@ -17,9 +18,11 @@ namespace Mystwood.Landing
     public interface IUserManager
     {
         Task<string> CreateSessionId(string email, string peer);
+        Task<Profile> GetAccount(int accountId);
         Task<int?> VerifySessionId(string sessionId);
         Task<int?> VerifyAdminSessionId(string sessionId);
         Task<UserProfile> GetProfile(int accountId);
+        Task<IEnumerable<Profile>> QueryAccounts(string query);
         Task<bool> ValidateAccount(string email, string peer);
 
         Task SetName(int accountId, string newValue);
@@ -27,6 +30,7 @@ namespace Mystwood.Landing
         Task SetPhone(int accountId, string newValue);
         Task AddEmail(int accountId, string email);
         Task RemoveEmail(int accountId, string email);
+        Task SetAdmin(int accountId, bool isAdmin);
     }
 
     public class UserManager : IUserManager
@@ -140,7 +144,6 @@ namespace Mystwood.Landing
                 .FirstOrDefaultAsync(x => x.Id == accountId)
                 ?? throw new UserManagerException("Account ID not found");
 
-
             return new UserProfile(
                 account.Name,
                 account.EmailAddresses.Select(x => x.Email).ToArray(),
@@ -206,6 +209,81 @@ namespace Mystwood.Landing
             }
 
             return session.AccountId;
+        }
+
+        public async Task SetAdmin(int accountId, bool isAdmin)
+        {
+            var account = await _db.Accounts.SingleAsync(x => x.Id == accountId);
+            if (account.IsAdmin == isAdmin)
+                return;
+
+            account.IsAdmin = isAdmin;
+            await _db.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Profile>> QueryAccounts(string query)
+        {
+            query = query.ToUpper();
+
+            // Match on Player Name, Email Address, Character Name
+            var accounts =
+                await _db.Accounts
+                .AsNoTrackingWithIdentityResolution()
+                .Include(x => x.EmailAddresses)
+                .Where(x => x.IsValid == true)
+                .Where(x =>
+                    EF.Functions.Like(x.Name!.ToUpper(), $"%{query}%")
+                    || x.EmailAddresses.Any(e => EF.Functions.Like(e.EmailNormalized, $"%{query}%"))
+                    || x.Characters.Any(c => EF.Functions.Like(c.Name!.ToUpper(), $"%{query}%")))
+                .ToListAsync();
+
+            return await BuildProfile(accounts);
+        }
+
+        private async Task<IEnumerable<Profile>> BuildProfile(List<Account> accounts)
+        {
+            var liveCharacters =
+                await _db.CharacterRevisions
+                .Include(x => x.Character)
+                .AsNoTrackingWithIdentityResolution()
+                .Where(x => x.State == RevisionState.Live || x.State == RevisionState.Review)
+                .ToListAsync();
+            var characters =
+                CharacterManager.ToCharacterData(liveCharacters)
+                .ToLookup(x => x.AccountId);
+
+            return accounts.Select(account =>
+            {
+                var profile = new Profile
+                {
+                    AccountId = account.Id!.Value,
+                    IsAdmin = account.IsAdmin == true,
+                    Location = account.Location ?? "",
+                    Name = account.Name ?? "",
+                    Phone = account.PhoneNumber ?? ""
+                };
+                profile.Emails.AddRange(account.EmailAddresses
+                    .Select(ea => new ProfileEmail
+                    {
+                        Email = ea.Email,
+                        Verified = false
+                    }));
+                profile.Characters.AddRange(characters[account.Id!.Value]);
+                return profile;
+            });
+        }
+
+        public async Task<Profile> GetAccount(int accountId)
+        {
+            // Match on Player Name, Email Address, Character Name
+            var accounts =
+                await _db.Accounts
+                .AsNoTrackingWithIdentityResolution()
+                .Include(x => x.EmailAddresses)
+                .Where(x => x.Id == accountId)
+                .ToListAsync();
+
+            return (await BuildProfile(accounts)).Single();
         }
     }
 }

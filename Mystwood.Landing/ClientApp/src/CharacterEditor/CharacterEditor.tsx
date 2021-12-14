@@ -221,7 +221,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         };
 
         const handleSubmit = async () => {
-            await sessionService.updateCharacter(this.state.character?.id!, this.state.sheet, true);
+            await sessionService.updateInReview(this.state.character?.id!, true);
             this.props.navigate("/characters");
         };
 
@@ -234,8 +234,8 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                 CharacterSheet.populate(newSheet);
                 state.sheet = newSheet;
             });
-            
-            await sessionService.updateCharacter(this.props.characterId, this.state.sheet, false);
+
+            await sessionService.updateCharacter(this.props.characterId, this.state.sheet);
         };
 
         const activeStep = this.state.activeStep;

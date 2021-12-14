@@ -9,7 +9,6 @@ import {
     TableContainer,
     TableHead,
     TableRow,
-    Typography
 } from "@mui/material";
 import {CharacterEditorPage} from "./Common/CharacterEditorPage";
 

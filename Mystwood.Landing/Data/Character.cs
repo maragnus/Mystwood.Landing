@@ -2,7 +2,7 @@
 
 namespace Mystwood.Landing.Data;
 
-public enum CharacterState
+public enum RevisionState
 {
     Unknown,    // This is an invalid state
     Live,       // One revision will have this state, unless this is a New character
@@ -43,7 +43,7 @@ public class CharacterRevision
     public Guid? CharacterId { get; set; }
 
     public DateTimeOffset? CreatedOn { get; set; }
-    public CharacterState State { get; set; }
+    public RevisionState State { get; set; }
     public string? Json { get; set; }
 
     public virtual Character? Character { get; set; }
@@ -57,7 +57,7 @@ public class CharacterRevisionEvent
 
     [Required]
     public Guid? CharacterRevisionId { get; set; }
-    public CharacterState State { get; set; }
+    public RevisionState State { get; set; }
     public DateTimeOffset? ChangedOn { get; set; }
 
     public virtual CharacterRevision? CharacterRevision { get; set; }

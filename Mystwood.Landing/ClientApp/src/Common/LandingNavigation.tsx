@@ -8,7 +8,6 @@ import {
     BookOutlined,
     PersonOutline,
     AccountBoxOutlined,
-    PersonSearchOutlined
 } from "@mui/icons-material";
 import {NavLink} from 'react-router-dom';
 import sessionService from "../Session/SessionService";
@@ -40,19 +39,19 @@ export default class LandingNavigation extends React.Component<any, any> {
     }
 
     render() {
-        const isAuth: boolean = this.state.isAuthenticated;
-        let items = isAuth
-            ? [
-                <BottomNavigationAction key={0} label="Profile" icon={<AccountBoxOutlined/>} to="/profile" component={NavLink}/>,
-                <BottomNavigationAction key={1} label="Characters" icon={<GroupsOutlined/>} to="/characters"
-                                        component={NavLink}/>
-            ]: [
-                <BottomNavigationAction key={0} label="Login" icon={<LockOpenOutlined/>} to="/login" component={NavLink}/>
-            ];
+        let items: JSX.Element[] = [];
+
+        if (this.state.isAuthenticated) {
+            items.push(<BottomNavigationAction key={0} label="Profile" icon={<AccountBoxOutlined/>} to="/profile" component={NavLink}/>);
+            items.push(<BottomNavigationAction key={1} label="Characters" icon={<GroupsOutlined/>} to="/characters" component={NavLink}/>);
+        } else {
+            items.push(<BottomNavigationAction key={3} label="Login" icon={<LockOpenOutlined/>} to="/login" component={NavLink}/>);
+        }
 
         if (this.state.isAdmin) {
-            items.push(<BottomNavigationAction key={2} label="Players" icon={<PersonOutline/>} to="/players" component={NavLink}/>);
-            items.push(<BottomNavigationAction key={1} label="Search Characters" icon={<PersonSearchOutlined/>} to="/characters/search" component={NavLink}/>);
+            items.push(<BottomNavigationAction key={4} label="Players" icon={<PersonOutline/>} to="/players/search" component={NavLink}/>);
+        } else {
+            items.push(<BottomNavigationAction key={5} label="Skills" icon={<BookOutlined/>} to="/skills" component={NavLink}/>);
         }
 
         return (
@@ -64,7 +63,6 @@ export default class LandingNavigation extends React.Component<any, any> {
                 }}
             >
                 {items}
-                <BottomNavigationAction key={11} label="Skills" icon={<BookOutlined/>} to="/skills" component={NavLink}/>
                 <BottomNavigationAction key={12} label="Events" icon={<CalendarToday/>} to="/events" component={NavLink}/>
             </BottomNavigation>
         );

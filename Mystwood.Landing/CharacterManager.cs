@@ -13,7 +13,8 @@ public interface ICharacterManager
     Task<IEnumerable<CharacterSummary>> GetCharacters(int accountId);
     Task<Character> GetCharacter(string characterId);
     Task<Character> CreateCharacter(int accountId, string characterName, string homeChapter);
-    Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson, bool isReview);
+    Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson);
+    Task<Character> UpdateCharacterInReview(int accountId, string characterId, bool inReview);
     Task<Character> ApproveCharacter(string characterId);
     Task<IEnumerable<CharacterSummary>> QueryCharacters(string query);
 }
@@ -37,7 +38,7 @@ public class CharacterManager : ICharacterManager
             .AsNoTrackingWithIdentityResolution()
             .Include(x => x.Character)
             .Where(x => x.Character!.Id == id)
-            .Where(x => x.State != CharacterState.Archived)
+            .Where(x => x.State != RevisionState.Archived)
             .ToListAsync();
 
 
@@ -50,19 +51,19 @@ public class CharacterManager : ICharacterManager
             .AsNoTrackingWithIdentityResolution()
             .Include(x => x.Character)
             .Where(x => x.Character!.AccountId == accountId)
-            .Where(x => x.State != CharacterState.Archived)
+            .Where(x => x.State != RevisionState.Archived)
             .ToListAsync();
         return ToCharacterData(revisions);
     }
 
-    private static IEnumerable<CharacterSummary> ToCharacterData(IEnumerable<CharacterRevision> revisions) =>
+    public static IEnumerable<CharacterSummary> ToCharacterData(IEnumerable<CharacterRevision> revisions) =>
         revisions
         .GroupBy(x => x.Character!)
         .Select(ch =>
         {
-            var live = ch.FirstOrDefault(y => y.State == CharacterState.Live);
-            var draft = ch.FirstOrDefault(y => y.State == CharacterState.Draft);
-            var review = ch.FirstOrDefault(y => y.State == CharacterState.Review);
+            var live = ch.FirstOrDefault(y => y.State == RevisionState.Live);
+            var draft = ch.FirstOrDefault(y => y.State == RevisionState.Draft);
+            var review = ch.FirstOrDefault(y => y.State == RevisionState.Review);
 
             var current = (live ?? draft ?? review);
             if (current == null)
@@ -115,10 +116,10 @@ public class CharacterManager : ICharacterManager
                     CharacterRevisionEvents = {
                         new CharacterRevisionEvent {
                             ChangedOn = now,
-                            State = CharacterState.Draft
+                            State = RevisionState.Draft
                         }
                     },
-                    State = CharacterState.Draft,
+                    State = RevisionState.Draft,
                     Json = JsonSerializer.Serialize(json)
                 }
             }
@@ -134,14 +135,14 @@ public class CharacterManager : ICharacterManager
         {
             AccountId = ch.AccountId!.Value,
             CharacterId = ch.Id.ToString(),
-            LiveJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == CharacterState.Live)?.Json ?? "{}",
-            DraftJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == CharacterState.Draft || x.State == CharacterState.Review)?.Json ?? "{}",
-            IsLive = ch.CharacterRevisions.Any(x => x.State == CharacterState.Live),
-            IsReview = ch.CharacterRevisions.Any(x => x.State == CharacterState.Review),
+            LiveJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == RevisionState.Live)?.Json ?? "{}",
+            DraftJson = ch.CharacterRevisions.FirstOrDefault(x => x.State == RevisionState.Draft || x.State == RevisionState.Review)?.Json ?? "{}",
+            IsLive = ch.CharacterRevisions.Any(x => x.State == RevisionState.Live),
+            IsReview = ch.CharacterRevisions.Any(x => x.State == RevisionState.Review),
             Metadata = ch.Metadata ?? "{}"
         };
 
-    public async Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson, bool isReview)
+    public async Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson)
     {
         var id = Guid.Parse(characterId);
         var now = _clock.UtcNow;
@@ -150,12 +151,10 @@ public class CharacterManager : ICharacterManager
             .Include(x => x.Character)
             .Where(x => x.Character!.AccountId == accountId)
             .Where(x => x.Character!.Id == id)
-            .Where(x => x.State != CharacterState.Archived)
+            .Where(x => x.State != RevisionState.Archived)
             .ToListAsync();
 
-        var targetState = isReview ? CharacterState.Review : CharacterState.Draft;
-
-        var draft = revisions.FirstOrDefault(x => x.State != CharacterState.Live);
+        var draft = revisions.FirstOrDefault(x => x.State != RevisionState.Live);
         if (draft == null)
         {
             // Create a new draft
@@ -163,12 +162,12 @@ public class CharacterManager : ICharacterManager
             {
                 CharacterId = id,
                 CreatedOn = now,
-                State = targetState,
+                State = RevisionState.Draft,
                 CharacterRevisionEvents = {
                     new CharacterRevisionEvent
                     {
                         ChangedOn = now,
-                        State = targetState
+                        State = RevisionState.Draft
                     }
                 },
                 Json = draftJson
@@ -178,18 +177,39 @@ public class CharacterManager : ICharacterManager
         }
         else
         {
-            // Update the existing draft
-            if (draft.State != targetState)
-            {
-                draft.State = targetState;
-                draft.CharacterRevisionEvents.Add(new CharacterRevisionEvent
-                {
-                    ChangedOn = now,
-                    State = targetState
-                });
-            }
             draft.Json = draftJson;
         }
+
+        await _db.SaveChangesAsync();
+        return await GetCharacter(characterId);
+    }
+
+
+    public async Task<Character> UpdateCharacterInReview(int accountId, string characterId, bool isReview)
+    {
+        var id = Guid.Parse(characterId);
+        var now = _clock.UtcNow;
+
+        var revisions = await _db.CharacterRevisions
+            .Include(x => x.Character)
+            .Where(x => x.Character!.AccountId == accountId)
+            .Where(x => x.Character!.Id == id)
+            .Where(x => x.State != RevisionState.Archived)
+            .ToListAsync();
+
+        var targetState = isReview ? RevisionState.Review : RevisionState.Draft;
+
+        var draft = revisions.FirstOrDefault(x => x.State != RevisionState.Live);
+        if (draft == null || draft.State == targetState)
+            return await GetCharacter(characterId);
+
+        // Update the existing draft
+        draft.State = targetState;
+        draft.CharacterRevisionEvents.Add(new CharacterRevisionEvent
+        {
+            ChangedOn = now,
+            State = targetState
+        });
 
         await _db.SaveChangesAsync();
         return await GetCharacter(characterId);
@@ -203,28 +223,28 @@ public class CharacterManager : ICharacterManager
         var revisions = await _db.CharacterRevisions
             .Include(x => x.Character)
             .Where(x => x.Character!.Id == id)
-            .Where(x => x.State != CharacterState.Archived)
+            .Where(x => x.State != RevisionState.Archived)
             .ToListAsync();
 
         // Archive the Live revision
-        var live = revisions.FirstOrDefault(x => x.State == CharacterState.Live);
+        var live = revisions.FirstOrDefault(x => x.State == RevisionState.Live);
         if (live != null)
         {
-            live.State = CharacterState.Archived;
+            live.State = RevisionState.Archived;
             live.CharacterRevisionEvents.Add(new CharacterRevisionEvent
             {
                 ChangedOn = now,
-                State = CharacterState.Archived
+                State = RevisionState.Archived
             });
         }
 
         // Promote the Draft/Review revision
-        var draft = revisions.First(x => x.State != CharacterState.Live);
-        draft.State = CharacterState.Live;
+        var draft = revisions.First(x => x.State != RevisionState.Live);
+        draft.State = RevisionState.Live;
         draft.CharacterRevisionEvents.Add(new CharacterRevisionEvent
         {
             ChangedOn = now,
-            State = CharacterState.Live
+            State = RevisionState.Live
         });
 
         await _db.SaveChangesAsync();
@@ -238,11 +258,12 @@ public class CharacterManager : ICharacterManager
         var revisions = await _db.CharacterRevisions
             .AsNoTrackingWithIdentityResolution()
             .Include(x => x.Character)
-            .Include(x => x.Character.Account)
+            .Include(x => x.Character!.Account)
             .OrderBy(x => x.Character!.Name)
             .ThenBy(x => x.Character!.Id)
-            .Where(x => x.State != CharacterState.Archived)
-            .Where(x => EF.Functions.Like(x.Character!.Name!.ToUpper(), $"%{query}%") || EF.Functions.Like(x.Character!.Account!.Name!.ToUpper(), $"%{query}%"))
+            .Where(x => x.State != RevisionState.Archived)
+            .Where(x => EF.Functions.Like(x.Character!.Name!.ToUpper(), $"%{query}%")
+            || EF.Functions.Like(x.Character!.Account!.Name!.ToUpper(), $"%{query}%"))
             .ToListAsync();
         return ToCharacterData(revisions);
     }

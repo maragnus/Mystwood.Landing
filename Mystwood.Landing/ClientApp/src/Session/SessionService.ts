@@ -229,14 +229,23 @@ export class SessionService {
         return SessionService.toCharacter(result);
     }
 
-    async updateCharacter(id: string, draft: CharacterSheet, isReview: boolean): Promise<Character> {
+    async updateCharacter(id: string, draft: CharacterSheet): Promise<Character> {
         const sheet = {...draft};
         CharacterSheet.unpopulate(sheet);
 
         const result = await larpClient.UpdateCharacterDraft({
             session: {sessionId: this._sessionId},
             characterId: id,
-            draftJson: JSON.stringify(sheet),
+            draftJson: JSON.stringify(sheet)
+        });
+
+        return SessionService.toCharacter(result);
+    }
+
+    async updateInReview(id: string, isReview: boolean): Promise<Character> {
+        const result = await larpClient.UpdateCharacterInReview({
+            session: {sessionId: this._sessionId},
+            characterId: id,
             isReview: isReview
         });
 
@@ -246,11 +255,19 @@ export class SessionService {
     private static toCharacter(result: CharacterResponse) {
         const emptySheet = new CharacterSheet();
 
+        let state: CharacterStatus;
+        if (result.character!.isReview)
+            state = CharacterStatus.Review;
+        else if (result.character!.isLive)
+            state = CharacterStatus.New;
+        else
+            state = CharacterStatus.Live;
+
         return {
             id: result.character?.characterId,
             draft: {...emptySheet, ...JSON.parse(result.character?.draftJson ?? "{}")},
             live:  {...emptySheet, ...JSON.parse(result.character?.liveJson ?? "{}")},
-            status: CharacterStatus.New // TODO
+            status: state
         } as Character;
     }
 
@@ -285,6 +302,16 @@ export class SessionService {
     async searchCharacters(query: string): Promise<CharacterSummary[]> {
         const result = await larpClient.SearchCharacters({session: {sessionId: this._sessionId}, query: query});
         return result.characters.map(x => SessionService.buildCharacter(x));
+    }
+
+    async searchAccounts(query: string): Promise<Profile[]> {
+        const result = await larpClient.SearchAccounts({session: {sessionId: this._sessionId}, query: query});
+        return result.profiles;
+    }
+
+    async getAccount(accountId: number): Promise<Profile> {
+        const result = await larpClient.GetAccount({session: {sessionId: this._sessionId}, accountId: accountId});
+        return result.profile!;
     }
 }
 

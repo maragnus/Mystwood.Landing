@@ -1,15 +1,15 @@
 import * as React from "react";
 import sessionService, {CharacterSummary} from "../Session/SessionService";
-import {useMountEffect} from "./UseMountEffect";
+import {useMountEffect} from "../Pages/UseMountEffect";
 import {
     Alert,
     Avatar, Box,
-    Button, Checkbox, Chip,
-    Container, FormControlLabel, Grid, IconButton, InputBase, List,
+    Checkbox, Chip,
+    Container, FormControlLabel, IconButton, InputBase, List,
     ListItem,
     ListItemAvatar,
     ListItemButton,
-    ListItemText, Paper, TextField,
+    ListItemText, Paper,
     Typography
 } from "@mui/material";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
@@ -43,7 +43,7 @@ function CharacterItems(props: { characters: CharacterSummary[] }): any {
     </List>;
 }
 
-export default function CharacterSearch(params: { query?: string }) {
+export default function CharacterSearch() {
     const navigate = useNavigate();
     const [busy, setBusy] = React.useState(true);
     const [characters, setCharacters] = React.useState<CharacterSummary[]>([]);

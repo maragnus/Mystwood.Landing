@@ -26,4 +26,6 @@ public class Account
     public ICollection<EmailAddress> EmailAddresses { get; set; } = new HashSet<EmailAddress>();
 
     public ICollection<Session> Sessions { get; set; } = new HashSet<Session>();
+
+    public ICollection<Character> Characters { get; set; } = new HashSet<Character>();
 }

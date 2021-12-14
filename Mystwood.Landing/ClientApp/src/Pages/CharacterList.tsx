@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import PersonIcon from '@mui/icons-material/Person';
 import CreateIcon from '@mui/icons-material/Create';
-import {Link, useNavigate} from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import sessionService, {CharacterSummary} from "../Session/SessionService";
 import {useMountEffect} from "./UseMountEffect";
@@ -58,6 +58,19 @@ function CharacterItems(props: { characters: CharacterSummary[] }): any {
                 onClick={handleNew}
             >
                 Create New Character
+            </Button>
+        </ListItem>
+        <ListItem key={10000}>
+            <Button
+                type="button"
+                fullWidth
+                variant="contained"
+                color="secondary"
+                sx={{mb: 2}}
+                component={NavLink}
+                to="/characters/search"
+            >
+                Manage Characters
             </Button>
         </ListItem>
     </List>;
