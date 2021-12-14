@@ -1,10 +1,14 @@
+/* eslint-disable no-restricted-globals */
 import {GrpcWebImpl, LarpClientImpl} from "../Protos/Larp";
 import {grpc} from "@improbable-eng/grpc-web";
 
-const rpc = new GrpcWebImpl('https://localhost:44330', {
-//const rpc = new GrpcWebImpl('https://mystwoodlanding.azurewebsites.net', {
+const host = location.hostname === 'localhost'
+    ? 'https://localhost:44330'
+    : 'https://mystwoodlanding.azurewebsites.net';
+
+const rpc = new GrpcWebImpl(host, {
     debug: true,
-    transport: grpc.CrossBrowserHttpTransport({ withCredentials: false })
+    transport: grpc.CrossBrowserHttpTransport({withCredentials: false})
 });
 
 export const larpClient = new LarpClientImpl(rpc);

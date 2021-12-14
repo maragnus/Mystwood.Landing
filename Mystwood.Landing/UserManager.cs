@@ -10,7 +10,8 @@ namespace Mystwood.Landing
         string? Name,
         string[] Emails,
         string? Phone,
-        string? Location
+        string? Location,
+        bool? IsAdmin
     );
 
     public interface IUserManager
@@ -61,10 +62,10 @@ namespace Mystwood.Landing
             await UpdateProfile(accountId, account =>
             {
                 var normalized = email.Trim().ToUpper();
-                if (account.EmailAddresses!.Any(s => s.EmailNormalized == normalized))
+                if (account.EmailAddresses.Any(s => s.EmailNormalized == normalized))
                     return;
 
-                account.EmailAddresses!.Add(new EmailAddress
+                account.EmailAddresses.Add(new EmailAddress
                 {
                     Email = email,
                     EmailNormalized = email.ToUpper()
@@ -75,13 +76,13 @@ namespace Mystwood.Landing
         {
             await UpdateProfile(accountId, account =>
             {
-                if (account.EmailAddresses!.Count == 1)
+                if (account.EmailAddresses.Count == 1)
                     throw new UserManagerException("Cannot delete last email address");
 
                 var normalized = email.Trim().ToUpper();
-                var item = account.EmailAddresses!.FirstOrDefault(s => s.EmailNormalized == normalized);
+                var item = account.EmailAddresses.FirstOrDefault(s => s.EmailNormalized == normalized);
                 if (item != null)
-                    account.EmailAddresses!.Remove(item);
+                    account.EmailAddresses.Remove(item);
             });
         }
 
@@ -90,7 +91,7 @@ namespace Mystwood.Landing
             email = email.Trim();
 
             var account = await _db.Accounts
-                .FirstOrDefaultAsync(x => x.EmailAddresses!.Any(ea => ea.EmailNormalized == email.ToUpper()));
+                .FirstOrDefaultAsync(x => x.EmailAddresses.Any(ea => ea.EmailNormalized == email.ToUpper()));
 
             if (account?.IsValid == false)
                 throw new UserManagerException("Account is not valid");
@@ -133,11 +134,14 @@ namespace Mystwood.Landing
                 .FirstOrDefaultAsync(x => x.Id == accountId)
                 ?? throw new UserManagerException("Account ID not found");
 
+            var isAdmin = options.Admins.Select(x => x.ToUpper()).Intersect(account.EmailAddresses.Select(x => x.EmailNormalized)).Any();
+
             return new UserProfile(
                 account.Name,
-                account.EmailAddresses!.Select(x => x.Email).ToArray(),
+                account.EmailAddresses.Select(x => x.Email).ToArray(),
                 account.PhoneNumber ?? "",
-                account.Location ?? ""
+                account.Location ?? "",
+                isAdmin || (account.IsAdmin ?? false)
             );
         }
 
@@ -167,7 +171,7 @@ namespace Mystwood.Landing
 
         public async Task<bool> ValidateAccount(string email, string peer)
         {
-            var account = await _db.Accounts.FirstOrDefaultAsync(x => x.EmailAddresses!.Any(ea => ea.EmailNormalized == email.ToUpper()));
+            var account = await _db.Accounts.FirstOrDefaultAsync(x => x.EmailAddresses.Any(ea => ea.EmailNormalized == email.ToUpper()));
 
             return account?.IsValid ?? true;
         }

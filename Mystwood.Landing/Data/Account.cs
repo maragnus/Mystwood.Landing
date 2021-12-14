@@ -23,7 +23,7 @@ public class Account
     [Required]
     public DateTimeOffset? Created { get; set; }
 
-    public ICollection<EmailAddress>? EmailAddresses { get; set; }
+    public ICollection<EmailAddress> EmailAddresses { get; set; } = new HashSet<EmailAddress>();
 
-    public ICollection<Session>? Sessions { get; set; }
+    public ICollection<Session> Sessions { get; set; } = new HashSet<Session>();
 }

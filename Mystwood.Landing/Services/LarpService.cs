@@ -74,6 +74,8 @@ public class LarpService : Larp.LarpBase
         var userProfile = await _userManager.GetProfile(accountId);
         var profile = new Profile
         {
+            AccountId = 0,
+            IsAdmin = userProfile.IsAdmin ?? false,
             Name = userProfile.Name ?? "",
             Phone = userProfile.Phone ?? "",
             Location = userProfile.Location ?? ""

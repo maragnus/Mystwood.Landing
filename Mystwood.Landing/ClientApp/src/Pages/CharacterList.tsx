@@ -42,7 +42,7 @@ function CharacterItems(props: { characters: CharacterSummary[] }): any {
                 </ListItemAvatar>
                 <ListItemText
                     primary={c.name}
-                    secondary={(<Box>{c.summary} <Chip label={c.status}/></Box>)}
+                    secondary={(<Box component="span">{c.summary} <Chip component="span" label={c.status}/></Box>)}
                 />
             </ListItemButton>
         </ListItem>);
