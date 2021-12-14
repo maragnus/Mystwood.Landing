@@ -121,22 +121,16 @@ export class SessionService {
         }
     }
 
-    getProfile(): AccountProfile {
+    getProfile(): Profile {
         const profileJson = localStorage.getItem(SessionService.ProfileKey) ?? "{}";
-        return JSON.parse(profileJson);
+        return JSON.parse(profileJson) as Profile;
     }
 
     private static parseProfile(profile?: Profile) {
-        const p = {
-            name: profile?.name ?? "Undefined",
-            location: profile?.location,
-            phone: profile?.phone,
-            email: profile?.emails.map(x => x.email) ?? []
-        };
-        localStorage.setItem(SessionService.ProfileKey, JSON.stringify(p));
+        localStorage.setItem(SessionService.ProfileKey, JSON.stringify(profile));
     }
 
-    async fetchProfile(): Promise<AccountProfile> {
+    async fetchProfile(): Promise<Profile> {
         if (this._sessionId === undefined) {
             return this.getProfile();
         }
@@ -266,14 +260,31 @@ export class SessionService {
     }
 
     private static buildCharacter(x: LarpCharacterSummary): CharacterSummary {
+        let state: CharacterStatus;
+        if (x.isReview)
+            state = CharacterStatus.Review;
+        else if (!x.isLive)
+            state = CharacterStatus.New;
+        else
+            state = CharacterStatus.Live;
+
         const homeChapter = HomeChaptersByName(x.homeChapter);
         return {
             id: x.characterId,
             name: x.characterName ?? "Unnamed",
             player: x.accountName,
-            status: CharacterStatus.New, // TODO
+            status: state,
             summary: `${homeChapter.title}, ${x.specialty}, Level ${x.level}`
         } as CharacterSummary
+    }
+
+    isAdmin(): boolean {
+        return this.getProfile().isAdmin;
+    }
+
+    async searchCharacters(query: string): Promise<CharacterSummary[]> {
+        const result = await larpClient.SearchCharacters({session: {sessionId: this._sessionId}, query: query});
+        return result.characters.map(x => SessionService.buildCharacter(x));
     }
 }
 

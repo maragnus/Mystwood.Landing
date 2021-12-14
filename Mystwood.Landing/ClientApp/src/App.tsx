@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Routes, Route, useParams, useNavigate} from 'react-router-dom';
+import {Routes, Route, useParams, useNavigate, useLocation} from 'react-router-dom';
 import {Paper, Container} from "@mui/material";
 import CharacterEditor from "./CharacterEditor/CharacterEditor";
 import LandingNavigation from "./Common/LandingNavigation";
@@ -15,6 +15,7 @@ import CharacterNew from "./CharacterEditor/CharacterNew";
 import AwesomeSpinner from "./Common/AwesomeSpinner";
 import {useMountEffect} from "./Pages/UseMountEffect";
 import sessionService from "./Session/SessionService";
+import CharacterSearch from "./Pages/CharacterSearch";
 
 function ViewCharacter() {
     const { characterId } = useParams();
@@ -48,9 +49,12 @@ function App() {
                 <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/confirm" element={<ConfirmPage/>}/>
                 <Route path="/profile" element={<ProfileView/>}/>
+                <Route path="/players" element={<ProfileView/>}/>
                 <Route path="/characters" element={<CharacterList/>} />
+                <Route path="/characters/search" element={<CharacterSearch />} />
                 <Route path="/characters/new" element={<CharacterNew />} />
                 <Route path="/characters/:characterId" element={<ViewCharacter />} />
+                <Route path="/characters/:characterId/manage" element={<NotImplemented title="Manage Character"/>} />
                 <Route path="/characters/:characterId/delete" element={<NotImplemented title="Character Deletion"/>} />
                 <Route path="/characters/:characterId/draft" element={<EditCharacter />} />
             </Routes>

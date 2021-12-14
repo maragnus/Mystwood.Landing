@@ -2,9 +2,9 @@ import CharacterSheet from "../Reference/CharacterSheet";
 
 export enum CharacterStatus {
     New = "New",
-    Current = "Current",
     Draft = "Draft",
-    Submitted = "Submitted"
+    Review = "Review",
+    Live = "Live"
 }
 
 export interface Character {

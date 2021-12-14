@@ -18,17 +18,21 @@ import {Character} from "../Session/Session";
 import sessionService from "../Session/SessionService";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import CharacterEditorModal from "./CharacterEditorModal";
+import {useNavigate} from 'react-router-dom';
+import {NavigateFunction} from "react-router";
 
 enum EditorState {
     Loading = 0,
     ConfirmDraft, // Start drafting new changes?
     ConfirmContinue, // Continue your draft or start over?
     ConfirmStartOver, // Are you sure you want to start over?
-    Editing
+    Editing,
+    Submitting
 }
 
 interface CharacterEditorProps {
     characterId: string;
+    navigate: NavigateFunction;
 }
 
 interface CharacterEditorState {
@@ -157,6 +161,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
         const characterName = this.state.characterName;
 
         switch (this.state.state) {
+            case EditorState.Submitting:
             case EditorState.Loading:
                 return (<AwesomeSpinner />);
             case EditorState.ConfirmDraft:
@@ -215,6 +220,11 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
             this.setState(({activeStep: 0}));
         };
 
+        const handleSubmit = async () => {
+            await sessionService.updateCharacter(this.state.character?.id!, this.state.sheet, true);
+            this.props.navigate("/characters");
+        };
+
         const sheetChange = async (changes: object) => {
             this.setState((state: CharacterEditorState, props: CharacterEditorProps) => {
                 const newSheet = {
@@ -224,7 +234,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                 CharacterSheet.populate(newSheet);
                 state.sheet = newSheet;
             });
-
+            
             await sessionService.updateCharacter(this.props.characterId, this.state.sheet, false);
         };
 
@@ -263,7 +273,7 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
                                 Start Over
                             </Button>
                             <Box sx={{flex: '1 1 auto'}}/>
-                            <Button onClick={handleReset}>Submit Changes</Button>
+                            <Button onClick={handleSubmit}>Submit Changes</Button>
                         </Box>
                     </React.Fragment>
                 ) : (
@@ -299,4 +309,9 @@ class CharacterEditor extends React.Component<CharacterEditorProps, CharacterEdi
     }
 }
 
-export default CharacterEditor;
+const WrappedComponent = (props: any) => {
+    const navigate = useNavigate()
+
+    return <CharacterEditor navigate={navigate} {...props} />
+}
+export default WrappedComponent;

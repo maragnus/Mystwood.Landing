@@ -18,6 +18,7 @@ namespace Mystwood.Landing
     {
         Task<string> CreateSessionId(string email, string peer);
         Task<int?> VerifySessionId(string sessionId);
+        Task<int?> VerifyAdminSessionId(string sessionId);
         Task<UserProfile> GetProfile(int accountId);
         Task<bool> ValidateAccount(string email, string peer);
 
@@ -91,6 +92,7 @@ namespace Mystwood.Landing
             email = email.Trim();
 
             var account = await _db.Accounts
+                .Include(x => x.EmailAddresses)
                 .FirstOrDefaultAsync(x => x.EmailAddresses.Any(ea => ea.EmailNormalized == email.ToUpper()));
 
             if (account?.IsValid == false)
@@ -115,6 +117,10 @@ namespace Mystwood.Landing
             var code = Guid.NewGuid().ToString("N");
             var now = _clock.UtcNow;
 
+            var isAdmin = options.Admins.Select(x => x.ToUpper()).Intersect(account.EmailAddresses.Select(x => x.EmailNormalized)).Any();
+            if (account.IsAdmin != isAdmin)
+                account.IsAdmin = isAdmin;
+
             _db.Sessions.Add(new Data.Session
             {
                 Id = code,
@@ -134,14 +140,13 @@ namespace Mystwood.Landing
                 .FirstOrDefaultAsync(x => x.Id == accountId)
                 ?? throw new UserManagerException("Account ID not found");
 
-            var isAdmin = options.Admins.Select(x => x.ToUpper()).Intersect(account.EmailAddresses.Select(x => x.EmailNormalized)).Any();
 
             return new UserProfile(
                 account.Name,
                 account.EmailAddresses.Select(x => x.Email).ToArray(),
                 account.PhoneNumber ?? "",
                 account.Location ?? "",
-                isAdmin || (account.IsAdmin ?? false)
+                account.IsAdmin ?? false
             );
         }
 
@@ -176,10 +181,17 @@ namespace Mystwood.Landing
             return account?.IsValid ?? true;
         }
 
-        public async Task<int?> VerifySessionId(string sessionId)
+        public async Task<int?> VerifySessionId(string sessionId) =>
+            await VerifySessionId(sessionId, false);
+
+        public async Task<int?> VerifyAdminSessionId(string sessionId) =>
+            await VerifySessionId(sessionId, true);
+
+        private async Task<int?> VerifySessionId(string sessionId, bool requireAdmin)
+
         {
             var session = await _db.Sessions
-                .FirstOrDefaultAsync(x => x.Id == sessionId && x.Account.IsValid == true);
+                .FirstOrDefaultAsync(x => x.Id == sessionId && x.Account.IsValid == true && (!requireAdmin || x.Account.IsAdmin == true));
 
             if (session == null)
                 return null;

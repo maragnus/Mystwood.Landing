@@ -8,6 +8,7 @@ import CharacterSheet from "../Reference/CharacterSheet";
 import {useMountEffect} from "../Pages/UseMountEffect";
 import sessionService from "../Session/SessionService";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
+import {useNavigate} from "react-router-dom";
 
 function Gift(params: { title: string, value: number }) {
     let i: number;
@@ -113,15 +114,23 @@ function Block(params: { title?: string, text: string }) {
 }
 
 export default function CharacterView(params: { id?: string }) {
+    const navigate = useNavigate();
     const [busy, setBusy] = React.useState(true);
     const [sheet, setSheet] = React.useState<CharacterSheet>({} as CharacterSheet);
 
     useMountEffect(async () => {
+        try
+        {
         const character = await sessionService.getCharacter(params.id!);
         let sheet = (character.live.characterName !== undefined)
             ? character.live  as CharacterSheet : character.draft as CharacterSheet;
         CharacterSheet.populate(sheet);
         setSheet(sheet);
+        }
+        catch (e) {
+            alert(e);
+            navigate("/login");
+        }
         setBusy(false);
     });
 

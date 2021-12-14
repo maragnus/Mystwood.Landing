@@ -15,6 +15,7 @@ public interface ICharacterManager
     Task<Character> CreateCharacter(int accountId, string characterName, string homeChapter);
     Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson, bool isReview);
     Task<Character> ApproveCharacter(string characterId);
+    Task<IEnumerable<CharacterSummary>> QueryCharacters(string query);
 }
 
 public class CharacterManager : ICharacterManager
@@ -72,8 +73,9 @@ public class CharacterManager : ICharacterManager
             return new CharacterSummary
             {
                 CharacterId = ch.Key.Id!.Value.ToString(),
-                CharacterName = ch.Key.Name!,
-                AccountName = "",
+                CharacterName = ch.Key.Name ?? "Unnamed",
+                AccountId = ch.Key.AccountId ?? 0,
+                AccountName = ch.Key.Account?.Name ?? "Unnamed",
                 HomeChapter = TryGetStringProperty(json.RootElement, "homeChapter") ?? "Undefined",
                 Specialty = TryGetStringProperty(json.RootElement, "specialty") ?? "Undefined",
                 Level = TryGetInt32Property(json.RootElement, "currentLevel") ?? 0,
@@ -227,5 +229,21 @@ public class CharacterManager : ICharacterManager
 
         await _db.SaveChangesAsync();
         return await GetCharacter(characterId);
+    }
+
+    public async Task<IEnumerable<CharacterSummary>> QueryCharacters(string query)
+    {
+        query = query.ToUpper();
+
+        var revisions = await _db.CharacterRevisions
+            .AsNoTrackingWithIdentityResolution()
+            .Include(x => x.Character)
+            .Include(x => x.Character.Account)
+            .OrderBy(x => x.Character!.Name)
+            .ThenBy(x => x.Character!.Id)
+            .Where(x => x.State != CharacterState.Archived)
+            .Where(x => EF.Functions.Like(x.Character!.Name!.ToUpper(), $"%{query}%") || EF.Functions.Like(x.Character!.Account!.Name!.ToUpper(), $"%{query}%"))
+            .ToListAsync();
+        return ToCharacterData(revisions);
     }
 }

@@ -64,12 +64,19 @@ function CharacterItems(props: { characters: CharacterSummary[] }): any {
 }
 
 export default function CharacterList() {
+    const navigate = useNavigate();
     const [busy, setBusy] = React.useState(true);
     const [characters, setCharacters] = React.useState<CharacterSummary[]>([]);
 
     useMountEffect(async () => {
-        const characters = await sessionService.getCharacters();
-        setCharacters(characters);
+        try {
+            const characters = await sessionService.getCharacters();
+            setCharacters(characters);
+        }
+        catch (e) {
+            alert(e);
+            navigate("/login");
+        }
         setBusy(false);
     });
 

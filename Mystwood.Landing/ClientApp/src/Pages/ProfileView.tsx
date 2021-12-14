@@ -17,6 +17,8 @@ import {useNavigate} from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import DeleteIcon from '@mui/icons-material/Delete';
 import {BusyButton} from "../Common/BusyButton";
+import {useMountEffect} from "./UseMountEffect";
+import AwesomeSpinner from "../Common/AwesomeSpinner";
 
 function TabPanel(props: any) {
     const {children, value, index, ...other} = props;
@@ -145,15 +147,15 @@ function EditEmail() {
         }
     }
 
-    const addresses = profile.email.map(email => (
+    const addresses = profile.emails.map(email => (
         <ListItem
             secondaryAction={
-                <IconButton edge="end" aria-label="delete" onClick={() => remove(email)} disabled={busy}>
+                <IconButton edge="end" aria-label="delete" onClick={() => remove(email.email)} disabled={busy}>
                     <DeleteIcon/>
                 </IconButton>
             }
         >
-            <ListItemText primary={email} secondary="Unverified"/>
+            <ListItemText primary={email.email} secondary="Unverified"/>
         </ListItem>
     ));
 
@@ -181,6 +183,7 @@ function EditEmail() {
 
 export default function ProfileView() {
     let navigate = useNavigate();
+    const [busy, setBusy] = React.useState(true);
     const [value, setValue] = React.useState(0);
 
     const handleChange = (event: any, newValue: number) => {
@@ -190,6 +193,18 @@ export default function ProfileView() {
     async function logout() {
         await sessionService.logout();
         navigate("/");
+    }
+
+    useMountEffect(async () => {
+        await sessionService.fetchProfile();
+        setBusy(false);
+    });
+
+    if (busy) {
+        return <Container maxWidth="md">
+            <Typography variant="h4" sx={{mt: 2}} align="center">Your Profile</Typography>
+            <AwesomeSpinner/>
+        </Container>
     }
 
     return (

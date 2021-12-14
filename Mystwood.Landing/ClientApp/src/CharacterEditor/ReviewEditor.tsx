@@ -1,7 +1,17 @@
 import * as React from 'react';
-import {Box, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography} from "@mui/material";
+import {
+    Alert,
+    Box,
+    Paper,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography
+} from "@mui/material";
 import {CharacterEditorPage} from "./Common/CharacterEditorPage";
-//import humanizeString from "humanize-string";
 
 const fields: { name: string, title: string }[] = [
     "characterName",
@@ -46,24 +56,27 @@ const fields: { name: string, title: string }[] = [
 
 export default class ReviewEditor extends CharacterEditorPage {
     render() {
-        const oldSheet: any = this.state.sheet;
-        const newSheet: any = this.state.sheet;
+        const oldSheet: any = this.props.originalSheet;
+        const newSheet: any = this.props.sheet;
 
         function diff(props: { name: string, title: string }): ({ name: string, old: string, new: string, diff: string }) {
+            const ov = oldSheet[props.name];
+            const nv = newSheet[props.name];
+
             return {
                 name: props.title,
-                old: `${oldSheet[props.name]}`,
-                new: `${newSheet[props.name]}`,
-                diff: "none"
+                old: ov,
+                new: nv,
+                diff: ov === nv ? "none" : "diff"
             };
         }
 
         const rows = fields.map(f => diff(f));
 
         return <Box component="form">
-            <Typography sx={{mt: 2, mb: 1}}>
-                Please carefully review your changes before submitting.
-            </Typography>
+            <Alert sx={{my: 4}} severity="info">
+                Please carefully review your changes. Once you submit your draft for review, an administrator will review your changes.
+            </Alert>
 
             <TableContainer component={Paper}>
                 <Table sx={{minWidth: 650}} aria-label="simple table">
@@ -76,7 +89,9 @@ export default class ReviewEditor extends CharacterEditorPage {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map((row) => (
+                        {rows
+                            .filter(row=>row.diff !== "none")
+                            .map((row) => (
                             <TableRow
                                 key={row.name}
                                 sx={{'&:last-child td, &:last-child th': {border: 0}}}
