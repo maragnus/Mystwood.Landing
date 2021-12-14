@@ -60,7 +60,7 @@ function CharacterItems(props: { characters: CharacterSummary[] }): any {
                 Create New Character
             </Button>
         </ListItem>
-        <ListItem key={10000}>
+        {sessionService.isAdmin() && <ListItem key={10000}>
             <Button
                 type="button"
                 fullWidth
@@ -72,7 +72,7 @@ function CharacterItems(props: { characters: CharacterSummary[] }): any {
             >
                 Manage Characters
             </Button>
-        </ListItem>
+        </ListItem>}
     </List>;
 }
 
