@@ -1,8 +1,8 @@
 ﻿namespace Mystwood.Landing.GrpcLarp;
 
-partial class UpdateProfileRequest
+partial class UpdateAccountRequest
 {
-    public UpdateProfileRequest(SessionIdentifier session, string newValue)
+    public UpdateAccountRequest(SessionIdentifier session, string newValue)
     {
         this.Session = session;
         this.Value = newValue;
@@ -15,9 +15,4 @@ partial class SessionIdentifier
     {
         SessionId = sessionId;
     }
-}
-
-partial class Character
-{
-    public int AccountId { get; set; }
 }

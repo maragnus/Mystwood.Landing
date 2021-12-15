@@ -14,9 +14,9 @@ import {
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import {Link, useNavigate} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
-import {Profile} from "../Protos/Larp";
+import {Account} from "../Protos/Larp";
 
-function PlayerItems(props: { items: Profile[] }): any {
+function PlayerItems(props: { items: Account[] }): any {
     const items = props.items.map((c, index) =>
         <ListItem key={index}>
             <Tooltip title={`${c.emails.map(x => x.email).join(", ")}, ${c.phone}, ${c.location}`}>
@@ -46,7 +46,7 @@ function PlayerItems(props: { items: Profile[] }): any {
 export default function PlayerSearch() {
     const navigate = useNavigate();
     const [busy, setBusy] = React.useState(true);
-    const [players, setPlayers] = React.useState<Profile[]>([]);
+    const [players, setPlayers] = React.useState<Account[]>([]);
     const [query, setQuery] = React.useState<string>("");
 
     useMountEffect(async () => {

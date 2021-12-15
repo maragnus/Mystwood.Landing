@@ -285,7 +285,7 @@ const methodDescriptor_Larp_GetProfile = new grpc.web.MethodDescriptor(
  * @return {!grpc.web.ClientReadableStream<!proto.larp.GetProfileResponse>|undefined}
  *     The XHR Node Readable Stream
  */
-proto.larp.LarpClient.prototype.getProfile =
+proto.larp.LarpClient.prototype.getMyProfile =
     function(request, metadata, callback) {
   return this.client_.rpcCall(this.hostname_ +
       '/larp.Larp/GetProfile',
@@ -304,7 +304,7 @@ proto.larp.LarpClient.prototype.getProfile =
  * @return {!Promise<!proto.larp.GetProfileResponse>}
  *     Promise that resolves to the response
  */
-proto.larp.LarpPromiseClient.prototype.getProfile =
+proto.larp.LarpPromiseClient.prototype.getMyProfile =
     function(request, metadata) {
   return this.client_.unaryCall(this.hostname_ +
       '/larp.Larp/GetProfile',

@@ -1,5 +1,10 @@
 /* eslint-disable no-restricted-globals */
-import {GrpcWebImpl, LarpClientImpl} from "../Protos/Larp";
+import {
+    GrpcWebImpl,
+    LarpAuthenticationClientImpl,
+    LarpAccountClientImpl,
+    LarpManageClientImpl
+} from "../Protos/Larp";
 import {grpc} from "@improbable-eng/grpc-web";
 
 const host = location.hostname === 'localhost'
@@ -11,5 +16,7 @@ const rpc = new GrpcWebImpl(host, {
     transport: grpc.CrossBrowserHttpTransport({withCredentials: false})
 });
 
-export const larpClient = new LarpClientImpl(rpc);
+export const larpAuthClient = new LarpAuthenticationClientImpl(rpc);
+export const larpAccountClient = new LarpAccountClientImpl(rpc);
+export const larpManageClient = new LarpManageClientImpl(rpc);
 

@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Internal;
 using Mystwood.Landing;
 using Mystwood.Landing.Data;
-using Mystwood.Landing.Services;
+using Mystwood.Landing.LarpServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +33,7 @@ builder.Services.AddScoped<IEmailManager, EmailManager>();
 builder.Services.AddScoped<IUserManager, UserManager>();
 builder.Services.AddScoped<ITokenManager, TokenManager>();
 builder.Services.AddScoped<ICharacterManager, CharacterManager>();
+builder.Services.AddScoped<IEventManager, EventManager>();
 
 builder.Services.AddDbContext<ApplicationDbContext>(o => o
     .UseSqlServer(builder.Configuration["ConnectionStrings:ApplicationDb"]));
@@ -52,7 +53,15 @@ app.UseCors();
 app.UseGrpcWeb();
 
 app.MapFallbackToFile("index.html"); ;
-app.MapGrpcService<LarpService>()
+app.MapGrpcService<LarpAccountService>()
+    .EnableGrpcWeb()
+    .RequireCors("GrpcCors")
+    .AllowAnonymous();
+app.MapGrpcService<LarpAuthenticationService>()
+    .EnableGrpcWeb()
+    .RequireCors("GrpcCors")
+    .AllowAnonymous();
+app.MapGrpcService<LarpManageService>()
     .EnableGrpcWeb()
     .RequireCors("GrpcCors")
     .AllowAnonymous();

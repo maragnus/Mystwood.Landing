@@ -1,19 +1,47 @@
 ﻿syntax = "proto3";
 
+import "google/protobuf/timestamp.proto";
+
 option csharp_namespace = "Mystwood.Landing.GrpcLarp";
 
 package larp;
 
-message ProfileEmail {
+enum EventRsvp {
+    NoAnswer = 0;
+    No = 1;
+    Maybe = 2; 
+    Yes = 3;
+    Confirmed = 4;
+    Approved = 5;
+}
+
+message Event {
+    int32 event_id = 1;
+    string title = 2;
+    string location = 3;
+    string date = 4;
+    string event_type = 5;
+    repeated AccountAttendance attendees = 6;
+}
+
+message AccountAttendance {
+    int32 account_id = 1;
+    string name = 2;
+    int32 moonstone = 3;
+    EventRsvp rsvp = 4;
+    repeated CharacterSummary characters = 5;
+}
+
+message AccountEmail {
     string email = 1;
     bool verified = 2;
 }
 
-message Profile {
+message Account {
     int32 account_id = 1;
     string name = 2;
     string location = 3;
-    repeated ProfileEmail emails = 4;
+    repeated AccountEmail emails = 4;
     string phone = 5;
     bool is_admin = 6;
     repeated CharacterSummary characters = 7;
@@ -26,6 +54,7 @@ message Character {
     string draft_json = 4;
     bool is_review = 5;
     string metadata = 6;
+    int32 account_id = 7;
 }
 
 message CharacterSummary {
@@ -46,34 +75,50 @@ enum ValidationResponseCode {
     INVALID = 2;
 }
 
-service Larp {
+service LarpAuthentication {
     rpc InitiateLogin(InitiateLoginRequest) returns (InitiateLoginResponse) {}
     rpc ConfirmLogin(ConfirmLoginRequest) returns (ConfirmLoginResponse) {}
+}
 
-    rpc GetProfile(GetProfileRequest) returns (GetProfileResponse) {}
+service LarpAccount {
+    rpc GetAccount(BasicRequest) returns (AccountResponse) {}
     
-    rpc SetProfileName(UpdateProfileRequest) returns (UpdateProfileResponse) {}
-    rpc SetProfileLocation(UpdateProfileRequest) returns (UpdateProfileResponse) {}
-    rpc SetProfilePhone(UpdateProfileRequest) returns (UpdateProfileResponse) {}
-    rpc AddProfileEmail(UpdateProfileRequest) returns (UpdateProfileResponse) {}
-    rpc RemoveProfileEmail(UpdateProfileRequest) returns (UpdateProfileResponse) {}
+    rpc SetAccountName(UpdateAccountRequest) returns (AccountResponse) {}
+    rpc SetAccountLocation(UpdateAccountRequest) returns (AccountResponse) {}
+    rpc SetAccountPhone(UpdateAccountRequest) returns (AccountResponse) {}
+    rpc AddAccountEmail(UpdateAccountRequest) returns (AccountResponse) {}
+    rpc RemoveAccountEmail(UpdateAccountRequest) returns (AccountResponse) {}
 
-    rpc GetCharacters(GetCharactersRequest) returns (GetCharactersResponse) {}
+    rpc GetCharacters(BasicRequest) returns (CharactersResponse) {}
     rpc GetCharacter(GetCharacterRequest) returns (CharacterResponse) {}
     rpc CreateCharacterDraft(CreateCharacterRequest) returns (CharacterResponse) {}
     rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (CharacterResponse) {}
     rpc UpdateCharacterInReview(UpdateCharacterInReviewRequest) returns (CharacterResponse) {}
 
-    rpc GetAccount(GetAccountRequest) returns (GetAccountResponse) {}
+    rpc GetEvents(BasicRequest) returns (EventsResponse) {}
+}
+
+service LarpManage {
+    rpc GetAccount(GetAccountRequest) returns (AccountResponse) {}
     rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse) {}
-    rpc SetAdmin(SetAdminRequest) returns (SetAdminResponse) {}
+    rpc SetAdmin(SetAdminRequest) returns (AccountResponse) {}
     rpc SearchCharacters(SearchCharactersRequest) returns (SearchCharactersResponse) {} 
+    rpc AddEvent(AddEventRequest) returns (EventResponse) {}
+    rpc UpdateEvent(UpdateEventRequest) returns (EventResponse) {}
 }
 
 // Include this in any message that requires an authenticated session
 
 message SessionIdentifier {
     string session_id = 1;
+}
+
+message BasicRequest {
+    SessionIdentifier session = 1;
+}
+
+message AccountResponse {
+    Account profile = 1;
 }
 
 // Requests and Responses
@@ -96,31 +141,15 @@ message ConfirmLoginResponse {
     SessionIdentifier session = 1;
     ValidationResponseCode status_code = 2;
     string message = 3;
-    Profile profile = 4;
+    Account profile = 4;
 }
 
-message UpdateProfileRequest {
+message UpdateAccountRequest {
     SessionIdentifier session = 1;
     string value = 2;
 }
 
-message UpdateProfileResponse {
-    Profile profile = 1;
-}
-
-message GetProfileRequest {
-    SessionIdentifier session = 1;
-}
-
-message GetProfileResponse {
-    Profile profile = 1;
-}
-
-message GetCharactersRequest {
-    SessionIdentifier session = 1;
-}
-
-message GetCharactersResponse {
+message CharactersResponse {
     repeated CharacterSummary characters = 1;
 }
 
@@ -158,27 +187,19 @@ message GetAccountRequest {
     int32 account_id = 2;
 }
 
-message GetAccountResponse {
-    Profile profile = 1;
-}
-
 message SearchAccountsRequest {
     SessionIdentifier session = 1;
     string query = 2;
 }
 
 message SearchAccountsResponse {
-    repeated Profile profiles = 1;
+    repeated Account profiles = 1;
 }
 
 message SetAdminRequest {
     SessionIdentifier session = 1;
     int32 account_id = 2;
     bool is_admin = 3;
-}
-
-message SetAdminResponse {
-    Profile profile = 1;
 }
 
 message SearchCharactersRequest {
@@ -188,4 +209,25 @@ message SearchCharactersRequest {
 
 message SearchCharactersResponse {
     repeated CharacterSummary characters = 1;
+}
+
+// Events
+
+message AddEventRequest {
+    SessionIdentifier session = 1;
+    Event event = 2;
+}
+
+message UpdateEventRequest {
+    SessionIdentifier session = 1;
+    int32 event_id = 2;
+    Event event = 3;
+}
+
+message EventResponse {
+    Event event = 1;
+}
+
+message EventsResponse {
+    repeated Event events = 1;
 }
