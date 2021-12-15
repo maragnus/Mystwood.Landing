@@ -3,6 +3,8 @@ using Microsoft.Extensions.Internal;
 using Microsoft.Extensions.Options;
 using Mystwood.Landing.Data;
 using Mystwood.Landing.GrpcLarp;
+using Account = Mystwood.Landing.GrpcLarp.Account;
+using DbAccount = Mystwood.Landing.Data.Account;
 
 namespace Mystwood.Landing
 {
@@ -18,11 +20,11 @@ namespace Mystwood.Landing
     public interface IUserManager
     {
         Task<string> CreateSessionId(string email, string peer);
-        Task<Profile> GetAccount(int accountId);
+        Task<Account> GetAccount(int accountId);
         Task<int?> VerifySessionId(string sessionId);
         Task<int?> VerifyAdminSessionId(string sessionId);
         Task<UserProfile> GetProfile(int accountId);
-        Task<IEnumerable<Profile>> QueryAccounts(string query);
+        Task<IEnumerable<Account>> QueryAccounts(string query);
         Task<bool> ValidateAccount(string email, string peer);
 
         Task SetName(int accountId, string newValue);
@@ -37,16 +39,16 @@ namespace Mystwood.Landing
     {
         private readonly ApplicationDbContext _db;
         private readonly ISystemClock _clock;
-        private readonly MystwoodOptions options;
+        private readonly MystwoodOptions _options;
 
         public UserManager(ApplicationDbContext db, ISystemClock systemClock, IOptions<MystwoodOptions> options)
         {
             _db = db;
             _clock = systemClock;
-            this.options = options.Value;
+            _options = options.Value;
         }
 
-        private async Task UpdateProfile(int accountId, Action<Account> updateAction)
+        private async Task UpdateProfile(int accountId, Action<DbAccount> updateAction)
         {
             var account = await _db.Accounts
               .Include(x => x.EmailAddresses)
@@ -105,14 +107,14 @@ namespace Mystwood.Landing
             // Create a new account, as needed
             if (account == null)
             {
-                account = new Account
+                account = new DbAccount
                 {
                     IsValid = true,
                     Name = "Unnamed",
                     EmailAddresses = new List<EmailAddress>() {
                         new EmailAddress { EmailNormalized = email.ToUpper(), Email = email }
                     },
-                    IsAdmin = options.Admins.Contains(email),
+                    IsAdmin = _options.Admins.Contains(email),
                     Created = _clock.UtcNow
                 };
                 _db.Accounts.Add(account);
@@ -121,7 +123,7 @@ namespace Mystwood.Landing
             var code = Guid.NewGuid().ToString("N");
             var now = _clock.UtcNow;
 
-            var isAdmin = options.Admins.Select(x => x.ToUpper()).Intersect(account.EmailAddresses.Select(x => x.EmailNormalized)).Any();
+            var isAdmin = _options.Admins.Select(x => x.ToUpper()).Intersect(account.EmailAddresses.Select(x => x.EmailNormalized)).Any();
             if (account.IsAdmin != isAdmin)
                 account.IsAdmin = isAdmin;
 
@@ -221,7 +223,7 @@ namespace Mystwood.Landing
             await _db.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Profile>> QueryAccounts(string query)
+        public async Task<IEnumerable<Account>> QueryAccounts(string query)
         {
             query = query.ToUpper();
 
@@ -240,7 +242,7 @@ namespace Mystwood.Landing
             return await BuildProfile(accounts);
         }
 
-        private async Task<IEnumerable<Profile>> BuildProfile(List<Account> accounts)
+        private async Task<IEnumerable<Account>> BuildProfile(List<DbAccount> accounts)
         {
             var liveCharacters =
                 await _db.CharacterRevisions
@@ -254,7 +256,7 @@ namespace Mystwood.Landing
 
             return accounts.Select(account =>
             {
-                var profile = new Profile
+                var profile = new Account
                 {
                     AccountId = account.Id!.Value,
                     IsAdmin = account.IsAdmin == true,
@@ -263,7 +265,7 @@ namespace Mystwood.Landing
                     Phone = account.PhoneNumber ?? ""
                 };
                 profile.Emails.AddRange(account.EmailAddresses
-                    .Select(ea => new ProfileEmail
+                    .Select(ea => new AccountEmail
                     {
                         Email = ea.Email,
                         Verified = false
@@ -273,7 +275,7 @@ namespace Mystwood.Landing
             });
         }
 
-        public async Task<Profile> GetAccount(int accountId)
+        public async Task<Account> GetAccount(int accountId)
         {
             // Match on Player Name, Email Address, Character Name
             var accounts =

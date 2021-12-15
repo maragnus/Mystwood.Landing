@@ -50,7 +50,7 @@ function tabProps(index: number) {
 function EditProfile() {
     const [busy, setBusy] = React.useState(false);
 
-    let profile = sessionService.getProfile();
+    let profile = sessionService.getMyProfile();
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -68,7 +68,7 @@ function EditProfile() {
             alert(e);
         } finally {
             setBusy(false);
-            profile = sessionService.getProfile();
+            profile = sessionService.getMyProfile();
         }
     }
 
@@ -114,7 +114,7 @@ function EditProfile() {
 function EditEmail() {
     const [busy, setBusy] = React.useState(false);
 
-    const [profile, setProfile] = React.useState(sessionService.getProfile());
+    const [profile, setProfile] = React.useState(sessionService.getMyProfile());
 
     async function remove(email: string) {
         setBusy(true);
@@ -125,7 +125,7 @@ function EditEmail() {
         }
         finally {
             setBusy(false);
-            setProfile(sessionService.getProfile());
+            setProfile(sessionService.getMyProfile());
         }
     }
 
@@ -143,7 +143,7 @@ function EditEmail() {
         }
         finally {
             setBusy(false);
-            setProfile(sessionService.getProfile());
+            setProfile(sessionService.getMyProfile());
         }
     }
 
@@ -196,7 +196,7 @@ export default function ProfileView() {
     }
 
     useMountEffect(async () => {
-        await sessionService.fetchProfile();
+        await sessionService.fetchAccount();
         setBusy(false);
     });
 

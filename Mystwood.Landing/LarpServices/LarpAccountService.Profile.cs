@@ -1,67 +1,65 @@
 ﻿using Grpc.Core;
 using Mystwood.Landing.GrpcLarp;
 
-namespace Mystwood.Landing.Services;
+namespace Mystwood.Landing.LarpServices;
 
-partial class LarpService
+partial class LarpAccountService
 {
-    public override async Task<UpdateProfileResponse> AddProfileEmail(UpdateProfileRequest request, ServerCallContext context)
+    public override async Task<AccountResponse> AddAccountEmail(UpdateAccountRequest request, ServerCallContext context)
     {
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         await _userManager.AddEmail(accountId, request.Value);
 
-        return await CreateProfileResponse(accountId);
+        return await LarpUtilities.CreateAccountResponse(_userManager, accountId);
     }
 
-    public override async Task<UpdateProfileResponse> RemoveProfileEmail(UpdateProfileRequest request, ServerCallContext context)
+    public override async Task<AccountResponse> RemoveAccountEmail(UpdateAccountRequest request, ServerCallContext context)
     {
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         await _userManager.RemoveEmail(accountId, request.Value);
 
-        return await CreateProfileResponse(accountId);
+        return await LarpUtilities.CreateAccountResponse(_userManager, accountId);
     }
 
-    public override async Task<UpdateProfileResponse> SetProfileName(UpdateProfileRequest request, ServerCallContext context)
+    public override async Task<AccountResponse> SetAccountName(UpdateAccountRequest request, ServerCallContext context)
     {
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         await _userManager.SetName(accountId, request.Value);
 
-        return await CreateProfileResponse(accountId);
+        return await LarpUtilities.CreateAccountResponse(_userManager, accountId);
     }
 
-    public override async Task<UpdateProfileResponse> SetProfileLocation(UpdateProfileRequest request, ServerCallContext context)
+    public override async Task<AccountResponse> SetAccountLocation(UpdateAccountRequest request, ServerCallContext context)
     {
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         await _userManager.SetLocation(accountId, request.Value);
 
-        return await CreateProfileResponse(accountId);
+        return await LarpUtilities.CreateAccountResponse(_userManager, accountId);
     }
 
-    public override async Task<UpdateProfileResponse> SetProfilePhone(UpdateProfileRequest request, ServerCallContext context)
+    public override async Task<AccountResponse> SetAccountPhone(UpdateAccountRequest request, ServerCallContext context)
     {
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         await _userManager.SetPhone(accountId, request.Value);
 
-        return await CreateProfileResponse(accountId);
+        return await LarpUtilities.CreateAccountResponse(_userManager, accountId);
     }
 
-    public override async Task<GetProfileResponse> GetProfile(GetProfileRequest request, ServerCallContext context)
+    public override async Task<AccountResponse> GetAccount(BasicRequest request, ServerCallContext context)
     {
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
-        return new GetProfileResponse()
-        {
-            Profile = await BuildProfile(accountId)
-        };
+
+        return await LarpUtilities.CreateAccountResponse(_userManager, accountId);
     }
 }

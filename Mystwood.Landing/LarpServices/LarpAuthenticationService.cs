@@ -1,10 +1,26 @@
 ﻿using Grpc.Core;
+using Microsoft.Extensions.Options;
 using Mystwood.Landing.GrpcLarp;
 
-namespace Mystwood.Landing.Services;
+namespace Mystwood.Landing.LarpServices;
 
-partial class LarpService
+public class LarpAuthenticationService : LarpAuthentication.LarpAuthenticationBase
 {
+    private readonly ILogger<LarpAuthenticationService> _logger;
+    private readonly AccountOptions _options;
+    private readonly ITokenManager _tokenManager;
+    private readonly IEmailManager _emailManager;
+    private readonly IUserManager _userManager;
+
+    public LarpAuthenticationService(ILogger<LarpAuthenticationService> logger, IEmailManager emailManager, ITokenManager tokenManager, IOptions<AccountOptions> options, IUserManager userManager)
+    {
+        _logger = logger;
+        _emailManager = emailManager;
+        _tokenManager = tokenManager;
+        _options = options.Value;
+        _userManager = userManager;
+    }
+
     public override async Task<InitiateLoginResponse> InitiateLogin(InitiateLoginRequest request, ServerCallContext context)
     {
         _logger.LogInformation("Initiating login for {Email} from {Source}", request.Email, context.Peer);
@@ -41,7 +57,7 @@ partial class LarpService
         var accountId = await _userManager.VerifySessionId(sessionId) ??
             throw new Exception("Unauthorized");
 
-        var profile = await BuildProfile(accountId);
+        var profile = await LarpUtilities.BuildProfile(_userManager, accountId);
 
         return new ConfirmLoginResponse()
         {

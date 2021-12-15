@@ -1,3 +1,6 @@
+﻿using System.Buffers;
+using System.Collections.Concurrent;
+using System.Net;
 using Grpc.Core;
 using Grpc.Net.Client;
 using Microsoft.AspNetCore.Builder;
@@ -10,14 +13,12 @@ using MimeKit;
 using Mystwood.Landing;
 using Mystwood.Landing.Data;
 using Mystwood.Landing.GrpcLarp;
-using Mystwood.Landing.Services;
+using Mystwood.Landing.LarpServices;
 using NUnit.Framework;
 using SmtpServer.Net;
 using SmtpServer.Protocol;
 using SmtpServer.Storage;
-using System.Buffers;
-using System.Collections.Concurrent;
-using System.Net;
+using Account = Mystwood.Landing.GrpcLarp.Account;
 
 namespace Tests.Mystwood.Landing;
 
@@ -86,7 +87,8 @@ public class Tests
         });
         var app = builder.Build();
         app.UseDeveloperExceptionPage();
-        app.MapGrpcService<LarpService>();
+        app.MapGrpcService<LarpAuthenticationService>();
+        app.MapGrpcService<LarpAccountService>();
         app.MapGet("/", () => "gRPC only");
         await app.StartAsync();
 
@@ -140,8 +142,9 @@ public class Tests
     [Test]
     public async Task LoginFlowWithEmail_Works()
     {
-        var client = new Larp.LarpClient(_channel);
-        var initiateResponse = await client.InitiateLoginAsync(new InitiateLoginRequest { Email = "foo@bar.com" });
+        var authClient = new LarpAuthentication.LarpAuthenticationClient(_channel);
+
+        var initiateResponse = await authClient.InitiateLoginAsync(new InitiateLoginRequest { Email = "foo@bar.com" });
         Assert.AreEqual(ValidationResponseCode.Success, initiateResponse.StatusCode);
 
         var message = _messageStore.DequeueMessage()!;
@@ -150,48 +153,51 @@ public class Tests
 
         var code = body.Substring(body.IndexOf(':') + 2, 6); // from email
 
-        var confirmResponse = await client.ConfirmLoginAsync(new ConfirmLoginRequest { Code = code, Email = "foo@bar.com" });
+        var confirmResponse = await authClient.ConfirmLoginAsync(new ConfirmLoginRequest { Code = code, Email = "foo@bar.com" });
         Assert.AreEqual(ValidationResponseCode.Success, confirmResponse.StatusCode);
 
         var sessionId = confirmResponse.Session.SessionId;
 
-        var profile = new Profile
+        var profile = new Account
         {
             Name = "Bob Dylan",
             Phone = "+1 000-555-1234",
             Location = "Albion"
         };
-        profile.Emails.Add(new ProfileEmail { Email = "foo1@bar.com" });
-        profile.Emails.Add(new ProfileEmail { Email = "foo2@bar.com" });
+        profile.Emails.Add(new AccountEmail { Email = "foo1@bar.com" });
+        profile.Emails.Add(new AccountEmail { Email = "foo2@bar.com" });
 
-        await client.SetProfileNameAsync(new UpdateProfileRequest(new SessionIdentifier(sessionId), profile.Name));
-        await client.SetProfilePhoneAsync(new UpdateProfileRequest(new SessionIdentifier(sessionId), profile.Phone));
-        await client.SetProfileLocationAsync(new UpdateProfileRequest(new SessionIdentifier(sessionId), profile.Location));
-        await client.AddProfileEmailAsync(new UpdateProfileRequest(new SessionIdentifier(sessionId), "foo1@bar.com"));
-        await client.AddProfileEmailAsync(new UpdateProfileRequest(new SessionIdentifier(sessionId), "foo2@bar.com"));
-        var profileResponse = await client.RemoveProfileEmailAsync(new UpdateProfileRequest(new SessionIdentifier(sessionId), "foo@bar.com"));
+        var client = new LarpAccount.LarpAccountClient(_channel);
+
+        await client.SetAccountNameAsync(new UpdateAccountRequest(new SessionIdentifier(sessionId), profile.Name));
+        await client.SetAccountPhoneAsync(new UpdateAccountRequest(new SessionIdentifier(sessionId), profile.Phone));
+        await client.SetAccountLocationAsync(new UpdateAccountRequest(new SessionIdentifier(sessionId), profile.Location));
+        await client.AddAccountEmailAsync(new UpdateAccountRequest(new SessionIdentifier(sessionId), "foo1@bar.com"));
+        await client.AddAccountEmailAsync(new UpdateAccountRequest(new SessionIdentifier(sessionId), "foo2@bar.com"));
+        var profileResponse = await client.RemoveAccountEmailAsync(new UpdateAccountRequest(new SessionIdentifier(sessionId), "foo@bar.com"));
 
         Assert.AreEqual(profile.Name, profileResponse.Profile.Name);
         Assert.AreEqual(profile.Phone, profileResponse.Profile.Phone);
         Assert.AreEqual(profile.Emails[0], profileResponse.Profile.Emails[0]);
         Assert.AreEqual(profile.Emails[1], profileResponse.Profile.Emails[1]);
 
-        var getProfileResponse = await client.GetProfileAsync(new GetProfileRequest
+        var getAccountResponse = await client.GetAccountAsync(new BasicRequest
         {
             Session = new SessionIdentifier(sessionId)
         });
 
-        Assert.AreEqual(profile.Name, getProfileResponse.Profile.Name);
-        Assert.AreEqual(profile.Phone, getProfileResponse.Profile.Phone);
-        Assert.AreEqual(profile.Emails[0], getProfileResponse.Profile.Emails[0]);
-        Assert.AreEqual(profile.Emails[1], getProfileResponse.Profile.Emails[1]);
+        Assert.AreEqual(profile.Name, getAccountResponse.Profile.Name);
+        Assert.AreEqual(profile.Phone, getAccountResponse.Profile.Phone);
+        Assert.AreEqual(profile.Emails[0], getAccountResponse.Profile.Emails[0]);
+        Assert.AreEqual(profile.Emails[1], getAccountResponse.Profile.Emails[1]);
     }
 
     [Test]
     public async Task LoginFlowWithBadCode_DoesntWork()
     {
-        var client = new Larp.LarpClient(_channel);
-        var initiateResponse = await client.InitiateLoginAsync(new InitiateLoginRequest { Email = "foo@bar.com" });
+        var authClient = new LarpAuthentication.LarpAuthenticationClient(_channel);
+
+        var initiateResponse = await authClient.InitiateLoginAsync(new InitiateLoginRequest { Email = "foo@bar.com" });
         Assert.AreEqual(ValidationResponseCode.Success, initiateResponse.StatusCode);
 
         var message = _messageStore.DequeueMessage()!;
@@ -199,7 +205,7 @@ public class Tests
 
         var code = "Invalid Code";
 
-        var confirmResponse = await client.ConfirmLoginAsync(new ConfirmLoginRequest { Code = code, Email = "foo@bar.com" });
+        var confirmResponse = await authClient.ConfirmLoginAsync(new ConfirmLoginRequest { Code = code, Email = "foo@bar.com" });
         Assert.AreNotEqual(ValidationResponseCode.Success, confirmResponse.StatusCode);
     }
 
@@ -207,8 +213,9 @@ public class Tests
     [Test]
     public async Task LoginFlowWithBadSession_DoesntWork()
     {
-        var client = new Larp.LarpClient(_channel);
-        var initiateResponse = await client.InitiateLoginAsync(new InitiateLoginRequest { Email = "foo@bar.com" });
+        var authClient = new LarpAuthentication.LarpAuthenticationClient(_channel);
+
+        var initiateResponse = await authClient.InitiateLoginAsync(new InitiateLoginRequest { Email = "foo@bar.com" });
         Assert.AreEqual(ValidationResponseCode.Success, initiateResponse.StatusCode);
 
         var message = _messageStore.DequeueMessage()!;
@@ -217,14 +224,16 @@ public class Tests
 
         var code = body.Substring(body.IndexOf(':') + 2, 6); // from email
 
-        var confirmResponse = await client.ConfirmLoginAsync(new ConfirmLoginRequest { Code = code, Email = "foo@bar.com" });
+        var confirmResponse = await authClient.ConfirmLoginAsync(new ConfirmLoginRequest { Code = code, Email = "foo@bar.com" });
         Assert.AreEqual(ValidationResponseCode.Success, confirmResponse.StatusCode);
 
         var sessionId = "Bad Session Id";
 
+        var client = new LarpAccount.LarpAccountClient(_channel);
+
         var ex = Assert.ThrowsAsync<RpcException>(async () =>
         {
-            await client.GetProfileAsync(new GetProfileRequest
+            await client.GetAccountAsync(new BasicRequest
             {
                 Session = new SessionIdentifier(sessionId)
             });

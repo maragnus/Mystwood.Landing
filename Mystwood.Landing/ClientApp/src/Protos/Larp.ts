@@ -6,6 +6,62 @@ import { BrowserHeaders } from "browser-headers";
 
 export const protobufPackage = "larp";
 
+export enum EventRsvp {
+  NoAnswer = 0,
+  No = 1,
+  Maybe = 2,
+  Yes = 3,
+  Confirmed = 4,
+  Approved = 5,
+  UNRECOGNIZED = -1,
+}
+
+export function eventRsvpFromJSON(object: any): EventRsvp {
+  switch (object) {
+    case 0:
+    case "NoAnswer":
+      return EventRsvp.NoAnswer;
+    case 1:
+    case "No":
+      return EventRsvp.No;
+    case 2:
+    case "Maybe":
+      return EventRsvp.Maybe;
+    case 3:
+    case "Yes":
+      return EventRsvp.Yes;
+    case 4:
+    case "Confirmed":
+      return EventRsvp.Confirmed;
+    case 5:
+    case "Approved":
+      return EventRsvp.Approved;
+    case -1:
+    case "UNRECOGNIZED":
+    default:
+      return EventRsvp.UNRECOGNIZED;
+  }
+}
+
+export function eventRsvpToJSON(object: EventRsvp): string {
+  switch (object) {
+    case EventRsvp.NoAnswer:
+      return "NoAnswer";
+    case EventRsvp.No:
+      return "No";
+    case EventRsvp.Maybe:
+      return "Maybe";
+    case EventRsvp.Yes:
+      return "Yes";
+    case EventRsvp.Confirmed:
+      return "Confirmed";
+    case EventRsvp.Approved:
+      return "Approved";
+    default:
+      return "UNKNOWN";
+  }
+}
+
 export enum ValidationResponseCode {
   SUCCESS = 0,
   EXPIRED = 1,
@@ -48,16 +104,33 @@ export function validationResponseCodeToJSON(
   }
 }
 
-export interface ProfileEmail {
+export interface Event {
+  eventId: number;
+  title: string;
+  location: string;
+  date: string;
+  eventType: string;
+  attendees: AccountAttendance[];
+}
+
+export interface AccountAttendance {
+  accountId: number;
+  name: string;
+  moonstone: number;
+  rsvp: EventRsvp;
+  characters: CharacterSummary[];
+}
+
+export interface AccountEmail {
   email: string;
   verified: boolean;
 }
 
-export interface Profile {
+export interface Account {
   accountId: number;
   name: string;
   location: string;
-  emails: ProfileEmail[];
+  emails: AccountEmail[];
   phone: string;
   isAdmin: boolean;
   characters: CharacterSummary[];
@@ -70,6 +143,7 @@ export interface Character {
   draftJson: string;
   isReview: boolean;
   metadata: string;
+  accountId: number;
 }
 
 export interface CharacterSummary {
@@ -86,6 +160,14 @@ export interface CharacterSummary {
 
 export interface SessionIdentifier {
   sessionId: string;
+}
+
+export interface BasicRequest {
+  session?: SessionIdentifier;
+}
+
+export interface AccountResponse {
+  profile?: Account;
 }
 
 export interface InitiateLoginRequest {
@@ -106,31 +188,15 @@ export interface ConfirmLoginResponse {
   session?: SessionIdentifier;
   statusCode: ValidationResponseCode;
   message: string;
-  profile?: Profile;
+  profile?: Account;
 }
 
-export interface UpdateProfileRequest {
+export interface UpdateAccountRequest {
   session?: SessionIdentifier;
   value: string;
 }
 
-export interface UpdateProfileResponse {
-  profile?: Profile;
-}
-
-export interface GetProfileRequest {
-  session?: SessionIdentifier;
-}
-
-export interface GetProfileResponse {
-  profile?: Profile;
-}
-
-export interface GetCharactersRequest {
-  session?: SessionIdentifier;
-}
-
-export interface GetCharactersResponse {
+export interface CharactersResponse {
   characters: CharacterSummary[];
 }
 
@@ -166,27 +232,19 @@ export interface GetAccountRequest {
   accountId: number;
 }
 
-export interface GetAccountResponse {
-  profile?: Profile;
-}
-
 export interface SearchAccountsRequest {
   session?: SessionIdentifier;
   query: string;
 }
 
 export interface SearchAccountsResponse {
-  profiles: Profile[];
+  profiles: Account[];
 }
 
 export interface SetAdminRequest {
   session?: SessionIdentifier;
   accountId: number;
   isAdmin: boolean;
-}
-
-export interface SetAdminResponse {
-  profile?: Profile;
 }
 
 export interface SearchCharactersRequest {
@@ -198,11 +256,272 @@ export interface SearchCharactersResponse {
   characters: CharacterSummary[];
 }
 
-const baseProfileEmail: object = { email: "", verified: false };
+export interface AddEventRequest {
+  session?: SessionIdentifier;
+  event?: Event;
+}
 
-export const ProfileEmail = {
+export interface UpdateEventRequest {
+  session?: SessionIdentifier;
+  eventId: number;
+  event?: Event;
+}
+
+export interface EventResponse {
+  event?: Event;
+}
+
+export interface EventsResponse {
+  events: Event[];
+}
+
+const baseEvent: object = {
+  eventId: 0,
+  title: "",
+  location: "",
+  date: "",
+  eventType: "",
+};
+
+export const Event = {
+  encode(message: Event, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.eventId !== 0) {
+      writer.uint32(8).int32(message.eventId);
+    }
+    if (message.title !== "") {
+      writer.uint32(18).string(message.title);
+    }
+    if (message.location !== "") {
+      writer.uint32(26).string(message.location);
+    }
+    if (message.date !== "") {
+      writer.uint32(34).string(message.date);
+    }
+    if (message.eventType !== "") {
+      writer.uint32(42).string(message.eventType);
+    }
+    for (const v of message.attendees) {
+      AccountAttendance.encode(v!, writer.uint32(50).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): Event {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseEvent } as Event;
+    message.attendees = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.eventId = reader.int32();
+          break;
+        case 2:
+          message.title = reader.string();
+          break;
+        case 3:
+          message.location = reader.string();
+          break;
+        case 4:
+          message.date = reader.string();
+          break;
+        case 5:
+          message.eventType = reader.string();
+          break;
+        case 6:
+          message.attendees.push(
+            AccountAttendance.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): Event {
+    const message = { ...baseEvent } as Event;
+    message.eventId =
+      object.eventId !== undefined && object.eventId !== null
+        ? Number(object.eventId)
+        : 0;
+    message.title =
+      object.title !== undefined && object.title !== null
+        ? String(object.title)
+        : "";
+    message.location =
+      object.location !== undefined && object.location !== null
+        ? String(object.location)
+        : "";
+    message.date =
+      object.date !== undefined && object.date !== null
+        ? String(object.date)
+        : "";
+    message.eventType =
+      object.eventType !== undefined && object.eventType !== null
+        ? String(object.eventType)
+        : "";
+    message.attendees = (object.attendees ?? []).map((e: any) =>
+      AccountAttendance.fromJSON(e)
+    );
+    return message;
+  },
+
+  toJSON(message: Event): unknown {
+    const obj: any = {};
+    message.eventId !== undefined && (obj.eventId = message.eventId);
+    message.title !== undefined && (obj.title = message.title);
+    message.location !== undefined && (obj.location = message.location);
+    message.date !== undefined && (obj.date = message.date);
+    message.eventType !== undefined && (obj.eventType = message.eventType);
+    if (message.attendees) {
+      obj.attendees = message.attendees.map((e) =>
+        e ? AccountAttendance.toJSON(e) : undefined
+      );
+    } else {
+      obj.attendees = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<Event>, I>>(object: I): Event {
+    const message = { ...baseEvent } as Event;
+    message.eventId = object.eventId ?? 0;
+    message.title = object.title ?? "";
+    message.location = object.location ?? "";
+    message.date = object.date ?? "";
+    message.eventType = object.eventType ?? "";
+    message.attendees =
+      object.attendees?.map((e) => AccountAttendance.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+const baseAccountAttendance: object = {
+  accountId: 0,
+  name: "",
+  moonstone: 0,
+  rsvp: 0,
+};
+
+export const AccountAttendance = {
   encode(
-    message: ProfileEmail,
+    message: AccountAttendance,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.accountId !== 0) {
+      writer.uint32(8).int32(message.accountId);
+    }
+    if (message.name !== "") {
+      writer.uint32(18).string(message.name);
+    }
+    if (message.moonstone !== 0) {
+      writer.uint32(24).int32(message.moonstone);
+    }
+    if (message.rsvp !== 0) {
+      writer.uint32(32).int32(message.rsvp);
+    }
+    for (const v of message.characters) {
+      CharacterSummary.encode(v!, writer.uint32(42).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AccountAttendance {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAccountAttendance } as AccountAttendance;
+    message.characters = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.accountId = reader.int32();
+          break;
+        case 2:
+          message.name = reader.string();
+          break;
+        case 3:
+          message.moonstone = reader.int32();
+          break;
+        case 4:
+          message.rsvp = reader.int32() as any;
+          break;
+        case 5:
+          message.characters.push(
+            CharacterSummary.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AccountAttendance {
+    const message = { ...baseAccountAttendance } as AccountAttendance;
+    message.accountId =
+      object.accountId !== undefined && object.accountId !== null
+        ? Number(object.accountId)
+        : 0;
+    message.name =
+      object.name !== undefined && object.name !== null
+        ? String(object.name)
+        : "";
+    message.moonstone =
+      object.moonstone !== undefined && object.moonstone !== null
+        ? Number(object.moonstone)
+        : 0;
+    message.rsvp =
+      object.rsvp !== undefined && object.rsvp !== null
+        ? eventRsvpFromJSON(object.rsvp)
+        : 0;
+    message.characters = (object.characters ?? []).map((e: any) =>
+      CharacterSummary.fromJSON(e)
+    );
+    return message;
+  },
+
+  toJSON(message: AccountAttendance): unknown {
+    const obj: any = {};
+    message.accountId !== undefined && (obj.accountId = message.accountId);
+    message.name !== undefined && (obj.name = message.name);
+    message.moonstone !== undefined && (obj.moonstone = message.moonstone);
+    message.rsvp !== undefined && (obj.rsvp = eventRsvpToJSON(message.rsvp));
+    if (message.characters) {
+      obj.characters = message.characters.map((e) =>
+        e ? CharacterSummary.toJSON(e) : undefined
+      );
+    } else {
+      obj.characters = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AccountAttendance>, I>>(
+    object: I
+  ): AccountAttendance {
+    const message = { ...baseAccountAttendance } as AccountAttendance;
+    message.accountId = object.accountId ?? 0;
+    message.name = object.name ?? "";
+    message.moonstone = object.moonstone ?? 0;
+    message.rsvp = object.rsvp ?? 0;
+    message.characters =
+      object.characters?.map((e) => CharacterSummary.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+const baseAccountEmail: object = { email: "", verified: false };
+
+export const AccountEmail = {
+  encode(
+    message: AccountEmail,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.email !== "") {
@@ -214,10 +533,10 @@ export const ProfileEmail = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ProfileEmail {
+  decode(input: _m0.Reader | Uint8Array, length?: number): AccountEmail {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseProfileEmail } as ProfileEmail;
+    const message = { ...baseAccountEmail } as AccountEmail;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -235,8 +554,8 @@ export const ProfileEmail = {
     return message;
   },
 
-  fromJSON(object: any): ProfileEmail {
-    const message = { ...baseProfileEmail } as ProfileEmail;
+  fromJSON(object: any): AccountEmail {
+    const message = { ...baseAccountEmail } as AccountEmail;
     message.email =
       object.email !== undefined && object.email !== null
         ? String(object.email)
@@ -248,24 +567,24 @@ export const ProfileEmail = {
     return message;
   },
 
-  toJSON(message: ProfileEmail): unknown {
+  toJSON(message: AccountEmail): unknown {
     const obj: any = {};
     message.email !== undefined && (obj.email = message.email);
     message.verified !== undefined && (obj.verified = message.verified);
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<ProfileEmail>, I>>(
+  fromPartial<I extends Exact<DeepPartial<AccountEmail>, I>>(
     object: I
-  ): ProfileEmail {
-    const message = { ...baseProfileEmail } as ProfileEmail;
+  ): AccountEmail {
+    const message = { ...baseAccountEmail } as AccountEmail;
     message.email = object.email ?? "";
     message.verified = object.verified ?? false;
     return message;
   },
 };
 
-const baseProfile: object = {
+const baseAccount: object = {
   accountId: 0,
   name: "",
   location: "",
@@ -273,9 +592,9 @@ const baseProfile: object = {
   isAdmin: false,
 };
 
-export const Profile = {
+export const Account = {
   encode(
-    message: Profile,
+    message: Account,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.accountId !== 0) {
@@ -288,7 +607,7 @@ export const Profile = {
       writer.uint32(26).string(message.location);
     }
     for (const v of message.emails) {
-      ProfileEmail.encode(v!, writer.uint32(34).fork()).ldelim();
+      AccountEmail.encode(v!, writer.uint32(34).fork()).ldelim();
     }
     if (message.phone !== "") {
       writer.uint32(42).string(message.phone);
@@ -302,10 +621,10 @@ export const Profile = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): Profile {
+  decode(input: _m0.Reader | Uint8Array, length?: number): Account {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseProfile } as Profile;
+    const message = { ...baseAccount } as Account;
     message.emails = [];
     message.characters = [];
     while (reader.pos < end) {
@@ -321,7 +640,7 @@ export const Profile = {
           message.location = reader.string();
           break;
         case 4:
-          message.emails.push(ProfileEmail.decode(reader, reader.uint32()));
+          message.emails.push(AccountEmail.decode(reader, reader.uint32()));
           break;
         case 5:
           message.phone = reader.string();
@@ -342,8 +661,8 @@ export const Profile = {
     return message;
   },
 
-  fromJSON(object: any): Profile {
-    const message = { ...baseProfile } as Profile;
+  fromJSON(object: any): Account {
+    const message = { ...baseAccount } as Account;
     message.accountId =
       object.accountId !== undefined && object.accountId !== null
         ? Number(object.accountId)
@@ -357,7 +676,7 @@ export const Profile = {
         ? String(object.location)
         : "";
     message.emails = (object.emails ?? []).map((e: any) =>
-      ProfileEmail.fromJSON(e)
+      AccountEmail.fromJSON(e)
     );
     message.phone =
       object.phone !== undefined && object.phone !== null
@@ -373,14 +692,14 @@ export const Profile = {
     return message;
   },
 
-  toJSON(message: Profile): unknown {
+  toJSON(message: Account): unknown {
     const obj: any = {};
     message.accountId !== undefined && (obj.accountId = message.accountId);
     message.name !== undefined && (obj.name = message.name);
     message.location !== undefined && (obj.location = message.location);
     if (message.emails) {
       obj.emails = message.emails.map((e) =>
-        e ? ProfileEmail.toJSON(e) : undefined
+        e ? AccountEmail.toJSON(e) : undefined
       );
     } else {
       obj.emails = [];
@@ -397,13 +716,13 @@ export const Profile = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<Profile>, I>>(object: I): Profile {
-    const message = { ...baseProfile } as Profile;
+  fromPartial<I extends Exact<DeepPartial<Account>, I>>(object: I): Account {
+    const message = { ...baseAccount } as Account;
     message.accountId = object.accountId ?? 0;
     message.name = object.name ?? "";
     message.location = object.location ?? "";
     message.emails =
-      object.emails?.map((e) => ProfileEmail.fromPartial(e)) || [];
+      object.emails?.map((e) => AccountEmail.fromPartial(e)) || [];
     message.phone = object.phone ?? "";
     message.isAdmin = object.isAdmin ?? false;
     message.characters =
@@ -419,6 +738,7 @@ const baseCharacter: object = {
   draftJson: "",
   isReview: false,
   metadata: "",
+  accountId: 0,
 };
 
 export const Character = {
@@ -443,6 +763,9 @@ export const Character = {
     }
     if (message.metadata !== "") {
       writer.uint32(50).string(message.metadata);
+    }
+    if (message.accountId !== 0) {
+      writer.uint32(56).int32(message.accountId);
     }
     return writer;
   },
@@ -471,6 +794,9 @@ export const Character = {
           break;
         case 6:
           message.metadata = reader.string();
+          break;
+        case 7:
+          message.accountId = reader.int32();
           break;
         default:
           reader.skipType(tag & 7);
@@ -506,6 +832,10 @@ export const Character = {
       object.metadata !== undefined && object.metadata !== null
         ? String(object.metadata)
         : "";
+    message.accountId =
+      object.accountId !== undefined && object.accountId !== null
+        ? Number(object.accountId)
+        : 0;
     return message;
   },
 
@@ -518,6 +848,7 @@ export const Character = {
     message.draftJson !== undefined && (obj.draftJson = message.draftJson);
     message.isReview !== undefined && (obj.isReview = message.isReview);
     message.metadata !== undefined && (obj.metadata = message.metadata);
+    message.accountId !== undefined && (obj.accountId = message.accountId);
     return obj;
   },
 
@@ -531,6 +862,7 @@ export const Character = {
     message.draftJson = object.draftJson ?? "";
     message.isReview = object.isReview ?? false;
     message.metadata = object.metadata ?? "";
+    message.accountId = object.accountId ?? 0;
     return message;
   },
 };
@@ -755,6 +1087,131 @@ export const SessionIdentifier = {
   },
 };
 
+const baseBasicRequest: object = {};
+
+export const BasicRequest = {
+  encode(
+    message: BasicRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): BasicRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseBasicRequest } as BasicRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): BasicRequest {
+    const message = { ...baseBasicRequest } as BasicRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: BasicRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<BasicRequest>, I>>(
+    object: I
+  ): BasicRequest {
+    const message = { ...baseBasicRequest } as BasicRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    return message;
+  },
+};
+
+const baseAccountResponse: object = {};
+
+export const AccountResponse = {
+  encode(
+    message: AccountResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.profile !== undefined) {
+      Account.encode(message.profile, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AccountResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAccountResponse } as AccountResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.profile = Account.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AccountResponse {
+    const message = { ...baseAccountResponse } as AccountResponse;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Account.fromJSON(object.profile)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: AccountResponse): unknown {
+    const obj: any = {};
+    message.profile !== undefined &&
+      (obj.profile = message.profile
+        ? Account.toJSON(message.profile)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AccountResponse>, I>>(
+    object: I
+  ): AccountResponse {
+    const message = { ...baseAccountResponse } as AccountResponse;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Account.fromPartial(object.profile)
+        : undefined;
+    return message;
+  },
+};
+
 const baseInitiateLoginRequest: object = { email: "" };
 
 export const InitiateLoginRequest = {
@@ -971,7 +1428,7 @@ export const ConfirmLoginResponse = {
       writer.uint32(26).string(message.message);
     }
     if (message.profile !== undefined) {
-      Profile.encode(message.profile, writer.uint32(34).fork()).ldelim();
+      Account.encode(message.profile, writer.uint32(34).fork()).ldelim();
     }
     return writer;
   },
@@ -996,7 +1453,7 @@ export const ConfirmLoginResponse = {
           message.message = reader.string();
           break;
         case 4:
-          message.profile = Profile.decode(reader, reader.uint32());
+          message.profile = Account.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -1022,7 +1479,7 @@ export const ConfirmLoginResponse = {
         : "";
     message.profile =
       object.profile !== undefined && object.profile !== null
-        ? Profile.fromJSON(object.profile)
+        ? Account.fromJSON(object.profile)
         : undefined;
     return message;
   },
@@ -1038,7 +1495,7 @@ export const ConfirmLoginResponse = {
     message.message !== undefined && (obj.message = message.message);
     message.profile !== undefined &&
       (obj.profile = message.profile
-        ? Profile.toJSON(message.profile)
+        ? Account.toJSON(message.profile)
         : undefined);
     return obj;
   },
@@ -1055,17 +1512,17 @@ export const ConfirmLoginResponse = {
     message.message = object.message ?? "";
     message.profile =
       object.profile !== undefined && object.profile !== null
-        ? Profile.fromPartial(object.profile)
+        ? Account.fromPartial(object.profile)
         : undefined;
     return message;
   },
 };
 
-const baseUpdateProfileRequest: object = { value: "" };
+const baseUpdateAccountRequest: object = { value: "" };
 
-export const UpdateProfileRequest = {
+export const UpdateAccountRequest = {
   encode(
-    message: UpdateProfileRequest,
+    message: UpdateAccountRequest,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     if (message.session !== undefined) {
@@ -1083,10 +1540,10 @@ export const UpdateProfileRequest = {
   decode(
     input: _m0.Reader | Uint8Array,
     length?: number
-  ): UpdateProfileRequest {
+  ): UpdateAccountRequest {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseUpdateProfileRequest } as UpdateProfileRequest;
+    const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -1104,8 +1561,8 @@ export const UpdateProfileRequest = {
     return message;
   },
 
-  fromJSON(object: any): UpdateProfileRequest {
-    const message = { ...baseUpdateProfileRequest } as UpdateProfileRequest;
+  fromJSON(object: any): UpdateAccountRequest {
+    const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     message.session =
       object.session !== undefined && object.session !== null
         ? SessionIdentifier.fromJSON(object.session)
@@ -1117,7 +1574,7 @@ export const UpdateProfileRequest = {
     return message;
   },
 
-  toJSON(message: UpdateProfileRequest): unknown {
+  toJSON(message: UpdateAccountRequest): unknown {
     const obj: any = {};
     message.session !== undefined &&
       (obj.session = message.session
@@ -1127,10 +1584,10 @@ export const UpdateProfileRequest = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<UpdateProfileRequest>, I>>(
+  fromPartial<I extends Exact<DeepPartial<UpdateAccountRequest>, I>>(
     object: I
-  ): UpdateProfileRequest {
-    const message = { ...baseUpdateProfileRequest } as UpdateProfileRequest;
+  ): UpdateAccountRequest {
+    const message = { ...baseUpdateAccountRequest } as UpdateAccountRequest;
     message.session =
       object.session !== undefined && object.session !== null
         ? SessionIdentifier.fromPartial(object.session)
@@ -1140,267 +1597,11 @@ export const UpdateProfileRequest = {
   },
 };
 
-const baseUpdateProfileResponse: object = {};
+const baseCharactersResponse: object = {};
 
-export const UpdateProfileResponse = {
+export const CharactersResponse = {
   encode(
-    message: UpdateProfileResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.profile !== undefined) {
-      Profile.encode(message.profile, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): UpdateProfileResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseUpdateProfileResponse } as UpdateProfileResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.profile = Profile.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): UpdateProfileResponse {
-    const message = { ...baseUpdateProfileResponse } as UpdateProfileResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromJSON(object.profile)
-        : undefined;
-    return message;
-  },
-
-  toJSON(message: UpdateProfileResponse): unknown {
-    const obj: any = {};
-    message.profile !== undefined &&
-      (obj.profile = message.profile
-        ? Profile.toJSON(message.profile)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<UpdateProfileResponse>, I>>(
-    object: I
-  ): UpdateProfileResponse {
-    const message = { ...baseUpdateProfileResponse } as UpdateProfileResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromPartial(object.profile)
-        : undefined;
-    return message;
-  },
-};
-
-const baseGetProfileRequest: object = {};
-
-export const GetProfileRequest = {
-  encode(
-    message: GetProfileRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.session !== undefined) {
-      SessionIdentifier.encode(
-        message.session,
-        writer.uint32(10).fork()
-      ).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetProfileRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGetProfileRequest } as GetProfileRequest;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.session = SessionIdentifier.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GetProfileRequest {
-    const message = { ...baseGetProfileRequest } as GetProfileRequest;
-    message.session =
-      object.session !== undefined && object.session !== null
-        ? SessionIdentifier.fromJSON(object.session)
-        : undefined;
-    return message;
-  },
-
-  toJSON(message: GetProfileRequest): unknown {
-    const obj: any = {};
-    message.session !== undefined &&
-      (obj.session = message.session
-        ? SessionIdentifier.toJSON(message.session)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<GetProfileRequest>, I>>(
-    object: I
-  ): GetProfileRequest {
-    const message = { ...baseGetProfileRequest } as GetProfileRequest;
-    message.session =
-      object.session !== undefined && object.session !== null
-        ? SessionIdentifier.fromPartial(object.session)
-        : undefined;
-    return message;
-  },
-};
-
-const baseGetProfileResponse: object = {};
-
-export const GetProfileResponse = {
-  encode(
-    message: GetProfileResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.profile !== undefined) {
-      Profile.encode(message.profile, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetProfileResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGetProfileResponse } as GetProfileResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.profile = Profile.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GetProfileResponse {
-    const message = { ...baseGetProfileResponse } as GetProfileResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromJSON(object.profile)
-        : undefined;
-    return message;
-  },
-
-  toJSON(message: GetProfileResponse): unknown {
-    const obj: any = {};
-    message.profile !== undefined &&
-      (obj.profile = message.profile
-        ? Profile.toJSON(message.profile)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<GetProfileResponse>, I>>(
-    object: I
-  ): GetProfileResponse {
-    const message = { ...baseGetProfileResponse } as GetProfileResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromPartial(object.profile)
-        : undefined;
-    return message;
-  },
-};
-
-const baseGetCharactersRequest: object = {};
-
-export const GetCharactersRequest = {
-  encode(
-    message: GetCharactersRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.session !== undefined) {
-      SessionIdentifier.encode(
-        message.session,
-        writer.uint32(10).fork()
-      ).ldelim();
-    }
-    return writer;
-  },
-
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetCharactersRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGetCharactersRequest } as GetCharactersRequest;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.session = SessionIdentifier.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GetCharactersRequest {
-    const message = { ...baseGetCharactersRequest } as GetCharactersRequest;
-    message.session =
-      object.session !== undefined && object.session !== null
-        ? SessionIdentifier.fromJSON(object.session)
-        : undefined;
-    return message;
-  },
-
-  toJSON(message: GetCharactersRequest): unknown {
-    const obj: any = {};
-    message.session !== undefined &&
-      (obj.session = message.session
-        ? SessionIdentifier.toJSON(message.session)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<GetCharactersRequest>, I>>(
-    object: I
-  ): GetCharactersRequest {
-    const message = { ...baseGetCharactersRequest } as GetCharactersRequest;
-    message.session =
-      object.session !== undefined && object.session !== null
-        ? SessionIdentifier.fromPartial(object.session)
-        : undefined;
-    return message;
-  },
-};
-
-const baseGetCharactersResponse: object = {};
-
-export const GetCharactersResponse = {
-  encode(
-    message: GetCharactersResponse,
+    message: CharactersResponse,
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     for (const v of message.characters) {
@@ -1409,13 +1610,10 @@ export const GetCharactersResponse = {
     return writer;
   },
 
-  decode(
-    input: _m0.Reader | Uint8Array,
-    length?: number
-  ): GetCharactersResponse {
+  decode(input: _m0.Reader | Uint8Array, length?: number): CharactersResponse {
     const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGetCharactersResponse } as GetCharactersResponse;
+    const message = { ...baseCharactersResponse } as CharactersResponse;
     message.characters = [];
     while (reader.pos < end) {
       const tag = reader.uint32();
@@ -1433,15 +1631,15 @@ export const GetCharactersResponse = {
     return message;
   },
 
-  fromJSON(object: any): GetCharactersResponse {
-    const message = { ...baseGetCharactersResponse } as GetCharactersResponse;
+  fromJSON(object: any): CharactersResponse {
+    const message = { ...baseCharactersResponse } as CharactersResponse;
     message.characters = (object.characters ?? []).map((e: any) =>
       CharacterSummary.fromJSON(e)
     );
     return message;
   },
 
-  toJSON(message: GetCharactersResponse): unknown {
+  toJSON(message: CharactersResponse): unknown {
     const obj: any = {};
     if (message.characters) {
       obj.characters = message.characters.map((e) =>
@@ -1453,10 +1651,10 @@ export const GetCharactersResponse = {
     return obj;
   },
 
-  fromPartial<I extends Exact<DeepPartial<GetCharactersResponse>, I>>(
+  fromPartial<I extends Exact<DeepPartial<CharactersResponse>, I>>(
     object: I
-  ): GetCharactersResponse {
-    const message = { ...baseGetCharactersResponse } as GetCharactersResponse;
+  ): CharactersResponse {
+    const message = { ...baseCharactersResponse } as CharactersResponse;
     message.characters =
       object.characters?.map((e) => CharacterSummary.fromPartial(e)) || [];
     return message;
@@ -1966,67 +2164,6 @@ export const GetAccountRequest = {
   },
 };
 
-const baseGetAccountResponse: object = {};
-
-export const GetAccountResponse = {
-  encode(
-    message: GetAccountResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.profile !== undefined) {
-      Profile.encode(message.profile, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetAccountResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseGetAccountResponse } as GetAccountResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.profile = Profile.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): GetAccountResponse {
-    const message = { ...baseGetAccountResponse } as GetAccountResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromJSON(object.profile)
-        : undefined;
-    return message;
-  },
-
-  toJSON(message: GetAccountResponse): unknown {
-    const obj: any = {};
-    message.profile !== undefined &&
-      (obj.profile = message.profile
-        ? Profile.toJSON(message.profile)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<GetAccountResponse>, I>>(
-    object: I
-  ): GetAccountResponse {
-    const message = { ...baseGetAccountResponse } as GetAccountResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromPartial(object.profile)
-        : undefined;
-    return message;
-  },
-};
-
 const baseSearchAccountsRequest: object = { query: "" };
 
 export const SearchAccountsRequest = {
@@ -2114,7 +2251,7 @@ export const SearchAccountsResponse = {
     writer: _m0.Writer = _m0.Writer.create()
   ): _m0.Writer {
     for (const v of message.profiles) {
-      Profile.encode(v!, writer.uint32(10).fork()).ldelim();
+      Account.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
@@ -2131,7 +2268,7 @@ export const SearchAccountsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.profiles.push(Profile.decode(reader, reader.uint32()));
+          message.profiles.push(Account.decode(reader, reader.uint32()));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2144,7 +2281,7 @@ export const SearchAccountsResponse = {
   fromJSON(object: any): SearchAccountsResponse {
     const message = { ...baseSearchAccountsResponse } as SearchAccountsResponse;
     message.profiles = (object.profiles ?? []).map((e: any) =>
-      Profile.fromJSON(e)
+      Account.fromJSON(e)
     );
     return message;
   },
@@ -2153,7 +2290,7 @@ export const SearchAccountsResponse = {
     const obj: any = {};
     if (message.profiles) {
       obj.profiles = message.profiles.map((e) =>
-        e ? Profile.toJSON(e) : undefined
+        e ? Account.toJSON(e) : undefined
       );
     } else {
       obj.profiles = [];
@@ -2166,7 +2303,7 @@ export const SearchAccountsResponse = {
   ): SearchAccountsResponse {
     const message = { ...baseSearchAccountsResponse } as SearchAccountsResponse;
     message.profiles =
-      object.profiles?.map((e) => Profile.fromPartial(e)) || [];
+      object.profiles?.map((e) => Account.fromPartial(e)) || [];
     return message;
   },
 };
@@ -2255,67 +2392,6 @@ export const SetAdminRequest = {
         : undefined;
     message.accountId = object.accountId ?? 0;
     message.isAdmin = object.isAdmin ?? false;
-    return message;
-  },
-};
-
-const baseSetAdminResponse: object = {};
-
-export const SetAdminResponse = {
-  encode(
-    message: SetAdminResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (message.profile !== undefined) {
-      Profile.encode(message.profile, writer.uint32(10).fork()).ldelim();
-    }
-    return writer;
-  },
-
-  decode(input: _m0.Reader | Uint8Array, length?: number): SetAdminResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-    let end = length === undefined ? reader.len : reader.pos + length;
-    const message = { ...baseSetAdminResponse } as SetAdminResponse;
-    while (reader.pos < end) {
-      const tag = reader.uint32();
-      switch (tag >>> 3) {
-        case 1:
-          message.profile = Profile.decode(reader, reader.uint32());
-          break;
-        default:
-          reader.skipType(tag & 7);
-          break;
-      }
-    }
-    return message;
-  },
-
-  fromJSON(object: any): SetAdminResponse {
-    const message = { ...baseSetAdminResponse } as SetAdminResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromJSON(object.profile)
-        : undefined;
-    return message;
-  },
-
-  toJSON(message: SetAdminResponse): unknown {
-    const obj: any = {};
-    message.profile !== undefined &&
-      (obj.profile = message.profile
-        ? Profile.toJSON(message.profile)
-        : undefined);
-    return obj;
-  },
-
-  fromPartial<I extends Exact<DeepPartial<SetAdminResponse>, I>>(
-    object: I
-  ): SetAdminResponse {
-    const message = { ...baseSetAdminResponse } as SetAdminResponse;
-    message.profile =
-      object.profile !== undefined && object.profile !== null
-        ? Profile.fromPartial(object.profile)
-        : undefined;
     return message;
   },
 };
@@ -2478,7 +2554,295 @@ export const SearchCharactersResponse = {
   },
 };
 
-export interface Larp {
+const baseAddEventRequest: object = {};
+
+export const AddEventRequest = {
+  encode(
+    message: AddEventRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.event !== undefined) {
+      Event.encode(message.event, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AddEventRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAddEventRequest } as AddEventRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.event = Event.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AddEventRequest {
+    const message = { ...baseAddEventRequest } as AddEventRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.event =
+      object.event !== undefined && object.event !== null
+        ? Event.fromJSON(object.event)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: AddEventRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.event !== undefined &&
+      (obj.event = message.event ? Event.toJSON(message.event) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AddEventRequest>, I>>(
+    object: I
+  ): AddEventRequest {
+    const message = { ...baseAddEventRequest } as AddEventRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.event =
+      object.event !== undefined && object.event !== null
+        ? Event.fromPartial(object.event)
+        : undefined;
+    return message;
+  },
+};
+
+const baseUpdateEventRequest: object = { eventId: 0 };
+
+export const UpdateEventRequest = {
+  encode(
+    message: UpdateEventRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.eventId !== 0) {
+      writer.uint32(16).int32(message.eventId);
+    }
+    if (message.event !== undefined) {
+      Event.encode(message.event, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateEventRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseUpdateEventRequest } as UpdateEventRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.eventId = reader.int32();
+          break;
+        case 3:
+          message.event = Event.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UpdateEventRequest {
+    const message = { ...baseUpdateEventRequest } as UpdateEventRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.eventId =
+      object.eventId !== undefined && object.eventId !== null
+        ? Number(object.eventId)
+        : 0;
+    message.event =
+      object.event !== undefined && object.event !== null
+        ? Event.fromJSON(object.event)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: UpdateEventRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.eventId !== undefined && (obj.eventId = message.eventId);
+    message.event !== undefined &&
+      (obj.event = message.event ? Event.toJSON(message.event) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<UpdateEventRequest>, I>>(
+    object: I
+  ): UpdateEventRequest {
+    const message = { ...baseUpdateEventRequest } as UpdateEventRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.eventId = object.eventId ?? 0;
+    message.event =
+      object.event !== undefined && object.event !== null
+        ? Event.fromPartial(object.event)
+        : undefined;
+    return message;
+  },
+};
+
+const baseEventResponse: object = {};
+
+export const EventResponse = {
+  encode(
+    message: EventResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.event !== undefined) {
+      Event.encode(message.event, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseEventResponse } as EventResponse;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.event = Event.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EventResponse {
+    const message = { ...baseEventResponse } as EventResponse;
+    message.event =
+      object.event !== undefined && object.event !== null
+        ? Event.fromJSON(object.event)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: EventResponse): unknown {
+    const obj: any = {};
+    message.event !== undefined &&
+      (obj.event = message.event ? Event.toJSON(message.event) : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<EventResponse>, I>>(
+    object: I
+  ): EventResponse {
+    const message = { ...baseEventResponse } as EventResponse;
+    message.event =
+      object.event !== undefined && object.event !== null
+        ? Event.fromPartial(object.event)
+        : undefined;
+    return message;
+  },
+};
+
+const baseEventsResponse: object = {};
+
+export const EventsResponse = {
+  encode(
+    message: EventsResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.events) {
+      Event.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventsResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseEventsResponse } as EventsResponse;
+    message.events = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.events.push(Event.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EventsResponse {
+    const message = { ...baseEventsResponse } as EventsResponse;
+    message.events = (object.events ?? []).map((e: any) => Event.fromJSON(e));
+    return message;
+  },
+
+  toJSON(message: EventsResponse): unknown {
+    const obj: any = {};
+    if (message.events) {
+      obj.events = message.events.map((e) => (e ? Event.toJSON(e) : undefined));
+    } else {
+      obj.events = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<EventsResponse>, I>>(
+    object: I
+  ): EventsResponse {
+    const message = { ...baseEventsResponse } as EventsResponse;
+    message.events = object.events?.map((e) => Event.fromPartial(e)) || [];
+    return message;
+  },
+};
+
+export interface LarpAuthentication {
   InitiateLogin(
     request: DeepPartial<InitiateLoginRequest>,
     metadata?: grpc.Metadata
@@ -2487,90 +2851,15 @@ export interface Larp {
     request: DeepPartial<ConfirmLoginRequest>,
     metadata?: grpc.Metadata
   ): Promise<ConfirmLoginResponse>;
-  GetProfile(
-    request: DeepPartial<GetProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<GetProfileResponse>;
-  SetProfileName(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse>;
-  SetProfileLocation(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse>;
-  SetProfilePhone(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse>;
-  AddProfileEmail(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse>;
-  RemoveProfileEmail(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse>;
-  GetCharacters(
-    request: DeepPartial<GetCharactersRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<GetCharactersResponse>;
-  GetCharacter(
-    request: DeepPartial<GetCharacterRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse>;
-  CreateCharacterDraft(
-    request: DeepPartial<CreateCharacterRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse>;
-  UpdateCharacterDraft(
-    request: DeepPartial<UpdateCharacterRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse>;
-  UpdateCharacterInReview(
-    request: DeepPartial<UpdateCharacterInReviewRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse>;
-  GetAccount(
-    request: DeepPartial<GetAccountRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<GetAccountResponse>;
-  SearchAccounts(
-    request: DeepPartial<SearchAccountsRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<SearchAccountsResponse>;
-  SetAdmin(
-    request: DeepPartial<SetAdminRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<SetAdminResponse>;
-  SearchCharacters(
-    request: DeepPartial<SearchCharactersRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<SearchCharactersResponse>;
 }
 
-export class LarpClientImpl implements Larp {
+export class LarpAuthenticationClientImpl implements LarpAuthentication {
   private readonly rpc: Rpc;
 
   constructor(rpc: Rpc) {
     this.rpc = rpc;
     this.InitiateLogin = this.InitiateLogin.bind(this);
     this.ConfirmLogin = this.ConfirmLogin.bind(this);
-    this.GetProfile = this.GetProfile.bind(this);
-    this.SetProfileName = this.SetProfileName.bind(this);
-    this.SetProfileLocation = this.SetProfileLocation.bind(this);
-    this.SetProfilePhone = this.SetProfilePhone.bind(this);
-    this.AddProfileEmail = this.AddProfileEmail.bind(this);
-    this.RemoveProfileEmail = this.RemoveProfileEmail.bind(this);
-    this.GetCharacters = this.GetCharacters.bind(this);
-    this.GetCharacter = this.GetCharacter.bind(this);
-    this.CreateCharacterDraft = this.CreateCharacterDraft.bind(this);
-    this.UpdateCharacterDraft = this.UpdateCharacterDraft.bind(this);
-    this.UpdateCharacterInReview = this.UpdateCharacterInReview.bind(this);
-    this.GetAccount = this.GetAccount.bind(this);
-    this.SearchAccounts = this.SearchAccounts.bind(this);
-    this.SetAdmin = this.SetAdmin.bind(this);
-    this.SearchCharacters = this.SearchCharacters.bind(this);
   }
 
   InitiateLogin(
@@ -2578,7 +2867,7 @@ export class LarpClientImpl implements Larp {
     metadata?: grpc.Metadata
   ): Promise<InitiateLoginResponse> {
     return this.rpc.unary(
-      LarpInitiateLoginDesc,
+      LarpAuthenticationInitiateLoginDesc,
       InitiateLoginRequest.fromPartial(request),
       metadata
     );
@@ -2589,185 +2878,20 @@ export class LarpClientImpl implements Larp {
     metadata?: grpc.Metadata
   ): Promise<ConfirmLoginResponse> {
     return this.rpc.unary(
-      LarpConfirmLoginDesc,
+      LarpAuthenticationConfirmLoginDesc,
       ConfirmLoginRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  GetProfile(
-    request: DeepPartial<GetProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<GetProfileResponse> {
-    return this.rpc.unary(
-      LarpGetProfileDesc,
-      GetProfileRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  SetProfileName(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse> {
-    return this.rpc.unary(
-      LarpSetProfileNameDesc,
-      UpdateProfileRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  SetProfileLocation(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse> {
-    return this.rpc.unary(
-      LarpSetProfileLocationDesc,
-      UpdateProfileRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  SetProfilePhone(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse> {
-    return this.rpc.unary(
-      LarpSetProfilePhoneDesc,
-      UpdateProfileRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  AddProfileEmail(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse> {
-    return this.rpc.unary(
-      LarpAddProfileEmailDesc,
-      UpdateProfileRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  RemoveProfileEmail(
-    request: DeepPartial<UpdateProfileRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<UpdateProfileResponse> {
-    return this.rpc.unary(
-      LarpRemoveProfileEmailDesc,
-      UpdateProfileRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  GetCharacters(
-    request: DeepPartial<GetCharactersRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<GetCharactersResponse> {
-    return this.rpc.unary(
-      LarpGetCharactersDesc,
-      GetCharactersRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  GetCharacter(
-    request: DeepPartial<GetCharacterRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse> {
-    return this.rpc.unary(
-      LarpGetCharacterDesc,
-      GetCharacterRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  CreateCharacterDraft(
-    request: DeepPartial<CreateCharacterRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse> {
-    return this.rpc.unary(
-      LarpCreateCharacterDraftDesc,
-      CreateCharacterRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  UpdateCharacterDraft(
-    request: DeepPartial<UpdateCharacterRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse> {
-    return this.rpc.unary(
-      LarpUpdateCharacterDraftDesc,
-      UpdateCharacterRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  UpdateCharacterInReview(
-    request: DeepPartial<UpdateCharacterInReviewRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<CharacterResponse> {
-    return this.rpc.unary(
-      LarpUpdateCharacterInReviewDesc,
-      UpdateCharacterInReviewRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  GetAccount(
-    request: DeepPartial<GetAccountRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<GetAccountResponse> {
-    return this.rpc.unary(
-      LarpGetAccountDesc,
-      GetAccountRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  SearchAccounts(
-    request: DeepPartial<SearchAccountsRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<SearchAccountsResponse> {
-    return this.rpc.unary(
-      LarpSearchAccountsDesc,
-      SearchAccountsRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  SetAdmin(
-    request: DeepPartial<SetAdminRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<SetAdminResponse> {
-    return this.rpc.unary(
-      LarpSetAdminDesc,
-      SetAdminRequest.fromPartial(request),
-      metadata
-    );
-  }
-
-  SearchCharacters(
-    request: DeepPartial<SearchCharactersRequest>,
-    metadata?: grpc.Metadata
-  ): Promise<SearchCharactersResponse> {
-    return this.rpc.unary(
-      LarpSearchCharactersDesc,
-      SearchCharactersRequest.fromPartial(request),
       metadata
     );
   }
 }
 
-export const LarpDesc = {
-  serviceName: "larp.Larp",
+export const LarpAuthenticationDesc = {
+  serviceName: "larp.LarpAuthentication",
 };
 
-export const LarpInitiateLoginDesc: UnaryMethodDefinitionish = {
+export const LarpAuthenticationInitiateLoginDesc: UnaryMethodDefinitionish = {
   methodName: "InitiateLogin",
-  service: LarpDesc,
+  service: LarpAuthenticationDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -2787,9 +2911,9 @@ export const LarpInitiateLoginDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpConfirmLoginDesc: UnaryMethodDefinitionish = {
+export const LarpAuthenticationConfirmLoginDesc: UnaryMethodDefinitionish = {
   methodName: "ConfirmLogin",
-  service: LarpDesc,
+  service: LarpAuthenticationDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -2809,20 +2933,227 @@ export const LarpConfirmLoginDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpGetProfileDesc: UnaryMethodDefinitionish = {
-  methodName: "GetProfile",
-  service: LarpDesc,
+export interface LarpAccount {
+  GetAccount(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  SetAccountName(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  SetAccountLocation(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  SetAccountPhone(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  AddAccountEmail(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  RemoveAccountEmail(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  GetCharacters(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharactersResponse>;
+  GetCharacter(
+    request: DeepPartial<GetCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse>;
+  CreateCharacterDraft(
+    request: DeepPartial<CreateCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse>;
+  UpdateCharacterDraft(
+    request: DeepPartial<UpdateCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse>;
+  UpdateCharacterInReview(
+    request: DeepPartial<UpdateCharacterInReviewRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse>;
+  GetEvents(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventsResponse>;
+}
+
+export class LarpAccountClientImpl implements LarpAccount {
+  private readonly rpc: Rpc;
+
+  constructor(rpc: Rpc) {
+    this.rpc = rpc;
+    this.GetAccount = this.GetAccount.bind(this);
+    this.SetAccountName = this.SetAccountName.bind(this);
+    this.SetAccountLocation = this.SetAccountLocation.bind(this);
+    this.SetAccountPhone = this.SetAccountPhone.bind(this);
+    this.AddAccountEmail = this.AddAccountEmail.bind(this);
+    this.RemoveAccountEmail = this.RemoveAccountEmail.bind(this);
+    this.GetCharacters = this.GetCharacters.bind(this);
+    this.GetCharacter = this.GetCharacter.bind(this);
+    this.CreateCharacterDraft = this.CreateCharacterDraft.bind(this);
+    this.UpdateCharacterDraft = this.UpdateCharacterDraft.bind(this);
+    this.UpdateCharacterInReview = this.UpdateCharacterInReview.bind(this);
+    this.GetEvents = this.GetEvents.bind(this);
+  }
+
+  GetAccount(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpAccountGetAccountDesc,
+      BasicRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SetAccountName(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpAccountSetAccountNameDesc,
+      UpdateAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SetAccountLocation(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpAccountSetAccountLocationDesc,
+      UpdateAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SetAccountPhone(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpAccountSetAccountPhoneDesc,
+      UpdateAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  AddAccountEmail(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpAccountAddAccountEmailDesc,
+      UpdateAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  RemoveAccountEmail(
+    request: DeepPartial<UpdateAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpAccountRemoveAccountEmailDesc,
+      UpdateAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetCharacters(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharactersResponse> {
+    return this.rpc.unary(
+      LarpAccountGetCharactersDesc,
+      BasicRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetCharacter(
+    request: DeepPartial<GetCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse> {
+    return this.rpc.unary(
+      LarpAccountGetCharacterDesc,
+      GetCharacterRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  CreateCharacterDraft(
+    request: DeepPartial<CreateCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse> {
+    return this.rpc.unary(
+      LarpAccountCreateCharacterDraftDesc,
+      CreateCharacterRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  UpdateCharacterDraft(
+    request: DeepPartial<UpdateCharacterRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse> {
+    return this.rpc.unary(
+      LarpAccountUpdateCharacterDraftDesc,
+      UpdateCharacterRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  UpdateCharacterInReview(
+    request: DeepPartial<UpdateCharacterInReviewRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<CharacterResponse> {
+    return this.rpc.unary(
+      LarpAccountUpdateCharacterInReviewDesc,
+      UpdateCharacterInReviewRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetEvents(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventsResponse> {
+    return this.rpc.unary(
+      LarpAccountGetEventsDesc,
+      BasicRequest.fromPartial(request),
+      metadata
+    );
+  }
+}
+
+export const LarpAccountDesc = {
+  serviceName: "larp.LarpAccount",
+};
+
+export const LarpAccountGetAccountDesc: UnaryMethodDefinitionish = {
+  methodName: "GetAccount",
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return GetProfileRequest.encode(this).finish();
+      return BasicRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...GetProfileResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -2831,20 +3162,20 @@ export const LarpGetProfileDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpSetProfileNameDesc: UnaryMethodDefinitionish = {
-  methodName: "SetProfileName",
-  service: LarpDesc,
+export const LarpAccountSetAccountNameDesc: UnaryMethodDefinitionish = {
+  methodName: "SetAccountName",
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return UpdateProfileRequest.encode(this).finish();
+      return UpdateAccountRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...UpdateProfileResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -2853,20 +3184,20 @@ export const LarpSetProfileNameDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpSetProfileLocationDesc: UnaryMethodDefinitionish = {
-  methodName: "SetProfileLocation",
-  service: LarpDesc,
+export const LarpAccountSetAccountLocationDesc: UnaryMethodDefinitionish = {
+  methodName: "SetAccountLocation",
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return UpdateProfileRequest.encode(this).finish();
+      return UpdateAccountRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...UpdateProfileResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -2875,20 +3206,20 @@ export const LarpSetProfileLocationDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpSetProfilePhoneDesc: UnaryMethodDefinitionish = {
-  methodName: "SetProfilePhone",
-  service: LarpDesc,
+export const LarpAccountSetAccountPhoneDesc: UnaryMethodDefinitionish = {
+  methodName: "SetAccountPhone",
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return UpdateProfileRequest.encode(this).finish();
+      return UpdateAccountRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...UpdateProfileResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -2897,20 +3228,20 @@ export const LarpSetProfilePhoneDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpAddProfileEmailDesc: UnaryMethodDefinitionish = {
-  methodName: "AddProfileEmail",
-  service: LarpDesc,
+export const LarpAccountAddAccountEmailDesc: UnaryMethodDefinitionish = {
+  methodName: "AddAccountEmail",
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return UpdateProfileRequest.encode(this).finish();
+      return UpdateAccountRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...UpdateProfileResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -2919,20 +3250,20 @@ export const LarpAddProfileEmailDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpRemoveProfileEmailDesc: UnaryMethodDefinitionish = {
-  methodName: "RemoveProfileEmail",
-  service: LarpDesc,
+export const LarpAccountRemoveAccountEmailDesc: UnaryMethodDefinitionish = {
+  methodName: "RemoveAccountEmail",
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return UpdateProfileRequest.encode(this).finish();
+      return UpdateAccountRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...UpdateProfileResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -2941,20 +3272,20 @@ export const LarpRemoveProfileEmailDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpGetCharactersDesc: UnaryMethodDefinitionish = {
+export const LarpAccountGetCharactersDesc: UnaryMethodDefinitionish = {
   methodName: "GetCharacters",
-  service: LarpDesc,
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return GetCharactersRequest.encode(this).finish();
+      return BasicRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...GetCharactersResponse.decode(data),
+        ...CharactersResponse.decode(data),
         toObject() {
           return this;
         },
@@ -2963,9 +3294,9 @@ export const LarpGetCharactersDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpGetCharacterDesc: UnaryMethodDefinitionish = {
+export const LarpAccountGetCharacterDesc: UnaryMethodDefinitionish = {
   methodName: "GetCharacter",
-  service: LarpDesc,
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -2985,9 +3316,9 @@ export const LarpGetCharacterDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpCreateCharacterDraftDesc: UnaryMethodDefinitionish = {
+export const LarpAccountCreateCharacterDraftDesc: UnaryMethodDefinitionish = {
   methodName: "CreateCharacterDraft",
-  service: LarpDesc,
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -3007,9 +3338,9 @@ export const LarpCreateCharacterDraftDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpUpdateCharacterDraftDesc: UnaryMethodDefinitionish = {
+export const LarpAccountUpdateCharacterDraftDesc: UnaryMethodDefinitionish = {
   methodName: "UpdateCharacterDraft",
-  service: LarpDesc,
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -3029,20 +3360,43 @@ export const LarpUpdateCharacterDraftDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpUpdateCharacterInReviewDesc: UnaryMethodDefinitionish = {
-  methodName: "UpdateCharacterInReview",
-  service: LarpDesc,
+export const LarpAccountUpdateCharacterInReviewDesc: UnaryMethodDefinitionish =
+  {
+    methodName: "UpdateCharacterInReview",
+    service: LarpAccountDesc,
+    requestStream: false,
+    responseStream: false,
+    requestType: {
+      serializeBinary() {
+        return UpdateCharacterInReviewRequest.encode(this).finish();
+      },
+    } as any,
+    responseType: {
+      deserializeBinary(data: Uint8Array) {
+        return {
+          ...CharacterResponse.decode(data),
+          toObject() {
+            return this;
+          },
+        };
+      },
+    } as any,
+  };
+
+export const LarpAccountGetEventsDesc: UnaryMethodDefinitionish = {
+  methodName: "GetEvents",
+  service: LarpAccountDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
     serializeBinary() {
-      return UpdateCharacterInReviewRequest.encode(this).finish();
+      return BasicRequest.encode(this).finish();
     },
   } as any,
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...CharacterResponse.decode(data),
+        ...EventsResponse.decode(data),
         toObject() {
           return this;
         },
@@ -3051,9 +3405,120 @@ export const LarpUpdateCharacterInReviewDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpGetAccountDesc: UnaryMethodDefinitionish = {
+export interface LarpManage {
+  GetAccount(
+    request: DeepPartial<GetAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  SearchAccounts(
+    request: DeepPartial<SearchAccountsRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchAccountsResponse>;
+  SetAdmin(
+    request: DeepPartial<SetAdminRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  SearchCharacters(
+    request: DeepPartial<SearchCharactersRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchCharactersResponse>;
+  AddEvent(
+    request: DeepPartial<AddEventRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventResponse>;
+  UpdateEvent(
+    request: DeepPartial<UpdateEventRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventResponse>;
+}
+
+export class LarpManageClientImpl implements LarpManage {
+  private readonly rpc: Rpc;
+
+  constructor(rpc: Rpc) {
+    this.rpc = rpc;
+    this.GetAccount = this.GetAccount.bind(this);
+    this.SearchAccounts = this.SearchAccounts.bind(this);
+    this.SetAdmin = this.SetAdmin.bind(this);
+    this.SearchCharacters = this.SearchCharacters.bind(this);
+    this.AddEvent = this.AddEvent.bind(this);
+    this.UpdateEvent = this.UpdateEvent.bind(this);
+  }
+
+  GetAccount(
+    request: DeepPartial<GetAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpManageGetAccountDesc,
+      GetAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SearchAccounts(
+    request: DeepPartial<SearchAccountsRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchAccountsResponse> {
+    return this.rpc.unary(
+      LarpManageSearchAccountsDesc,
+      SearchAccountsRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SetAdmin(
+    request: DeepPartial<SetAdminRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpManageSetAdminDesc,
+      SetAdminRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  SearchCharacters(
+    request: DeepPartial<SearchCharactersRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<SearchCharactersResponse> {
+    return this.rpc.unary(
+      LarpManageSearchCharactersDesc,
+      SearchCharactersRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  AddEvent(
+    request: DeepPartial<AddEventRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventResponse> {
+    return this.rpc.unary(
+      LarpManageAddEventDesc,
+      AddEventRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  UpdateEvent(
+    request: DeepPartial<UpdateEventRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventResponse> {
+    return this.rpc.unary(
+      LarpManageUpdateEventDesc,
+      UpdateEventRequest.fromPartial(request),
+      metadata
+    );
+  }
+}
+
+export const LarpManageDesc = {
+  serviceName: "larp.LarpManage",
+};
+
+export const LarpManageGetAccountDesc: UnaryMethodDefinitionish = {
   methodName: "GetAccount",
-  service: LarpDesc,
+  service: LarpManageDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -3064,7 +3529,7 @@ export const LarpGetAccountDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...GetAccountResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -3073,9 +3538,9 @@ export const LarpGetAccountDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpSearchAccountsDesc: UnaryMethodDefinitionish = {
+export const LarpManageSearchAccountsDesc: UnaryMethodDefinitionish = {
   methodName: "SearchAccounts",
-  service: LarpDesc,
+  service: LarpManageDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -3095,9 +3560,9 @@ export const LarpSearchAccountsDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpSetAdminDesc: UnaryMethodDefinitionish = {
+export const LarpManageSetAdminDesc: UnaryMethodDefinitionish = {
   methodName: "SetAdmin",
-  service: LarpDesc,
+  service: LarpManageDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -3108,7 +3573,7 @@ export const LarpSetAdminDesc: UnaryMethodDefinitionish = {
   responseType: {
     deserializeBinary(data: Uint8Array) {
       return {
-        ...SetAdminResponse.decode(data),
+        ...AccountResponse.decode(data),
         toObject() {
           return this;
         },
@@ -3117,9 +3582,9 @@ export const LarpSetAdminDesc: UnaryMethodDefinitionish = {
   } as any,
 };
 
-export const LarpSearchCharactersDesc: UnaryMethodDefinitionish = {
+export const LarpManageSearchCharactersDesc: UnaryMethodDefinitionish = {
   methodName: "SearchCharacters",
-  service: LarpDesc,
+  service: LarpManageDesc,
   requestStream: false,
   responseStream: false,
   requestType: {
@@ -3131,6 +3596,50 @@ export const LarpSearchCharactersDesc: UnaryMethodDefinitionish = {
     deserializeBinary(data: Uint8Array) {
       return {
         ...SearchCharactersResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpManageAddEventDesc: UnaryMethodDefinitionish = {
+  methodName: "AddEvent",
+  service: LarpManageDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return AddEventRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...EventResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpManageUpdateEventDesc: UnaryMethodDefinitionish = {
+  methodName: "UpdateEvent",
+  service: LarpManageDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return UpdateEventRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...EventResponse.decode(data),
         toObject() {
           return this;
         },

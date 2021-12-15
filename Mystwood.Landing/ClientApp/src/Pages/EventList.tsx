@@ -12,55 +12,45 @@ import {
     ListItemText,
     Typography,
 } from "@mui/material";
-import PersonIcon from '@mui/icons-material/Person';
+import {  Event } from "../Protos/Larp";
+import EventIcon from '@mui/icons-material/Event';
 import CreateIcon from '@mui/icons-material/Create';
 import {Link, NavLink, useNavigate} from "react-router-dom";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
-import sessionService, {CharacterSummary} from "../Session/SessionService";
+import sessionService from "../Session/SessionService";
 import {useMountEffect} from "./UseMountEffect";
 
-function CharacterItems(props: { characters: CharacterSummary[] }): any {
+function EventItems(props: { events: Event[] }): any {
     const navigate = useNavigate();
 
     const handleNew = async (event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
-        navigate("/characters/new");
+        navigate("/events/new");
         return;
     }
 
-    const items = props.characters.map((c, index) =>
+    const items = props.events.map((c, index) =>
         <ListItem key={index} secondaryAction={
-            <Button startIcon={<CreateIcon/>} component={Link} to={`/characters/${c.id}/draft`}>
+            <Button startIcon={<CreateIcon/>} component={Link} to={`/events/${c.eventId}/manage`}>
                 Edit
             </Button>
         }>
-            <ListItemButton component={Link} to={`/characters/${c.id}`}>
+            <ListItemButton component={Link} to={`/events/${c.eventId}`}>
                 <ListItemAvatar>
                     <Avatar>
-                        <PersonIcon/>
+                        <EventIcon/>
                     </Avatar>
                 </ListItemAvatar>
                 <ListItemText
-                    primary={c.name}
-                    secondary={(<Box component="span">{c.summary} <Chip component="span" label={c.status}/></Box>)}
+                    primary={c.title}
+                    secondary={(<Box component="span">{c.location} <Chip component="span" label={c.eventType}/></Box>)}
                 />
             </ListItemButton>
         </ListItem>);
 
     return <List>
         {items}
-        <ListItem key={1000}>
-            <Button
-                type="button"
-                fullWidth
-                variant="contained"
-                sx={{mt: 3, mb: 2}}
-                onClick={handleNew}
-            >
-                Create New Character
-            </Button>
-        </ListItem>
-        {sessionService.isAdmin() && <ListItem key={1001}>
+        {sessionService.isAdmin() && <ListItem key={1000}>
             <Button
                 type="button"
                 fullWidth
@@ -68,23 +58,23 @@ function CharacterItems(props: { characters: CharacterSummary[] }): any {
                 color="secondary"
                 sx={{mb: 2}}
                 component={NavLink}
-                to="/characters/search"
+                to="/events/new"
             >
-                Manage Characters
+                Add Event
             </Button>
         </ListItem>}
     </List>;
 }
 
-export default function CharacterList() {
+export default function EventList() {
     const navigate = useNavigate();
     const [busy, setBusy] = React.useState(true);
-    const [characters, setCharacters] = React.useState<CharacterSummary[]>([]);
+    const [events, setEvents] = React.useState<Event[]>([]);
 
     useMountEffect(async () => {
         try {
-            const characters = await sessionService.getCharacters();
-            setCharacters(characters);
+            const events = await sessionService.getEvents();
+            setEvents(events);
         }
         catch (e) {
             alert(e);
@@ -95,9 +85,9 @@ export default function CharacterList() {
 
     return (
         <Container maxWidth="sm">
-            <Typography variant="h4" sx={{mt: 2}} align="center">Your Characters</Typography>
+            <Typography variant="h4" sx={{mt: 2}} align="center">Events</Typography>
             {busy && <AwesomeSpinner/>}
-            {!busy && <CharacterItems characters={characters}/>}
+            {!busy && <EventItems events={events}/>}
         </Container>
     );
 }

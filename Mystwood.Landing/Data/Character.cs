@@ -32,6 +32,8 @@ public class Character
     public virtual Account? Account { get; set; }
 
     public virtual ICollection<CharacterRevision> CharacterRevisions { get; set; } = new List<CharacterRevision>();
+
+    public virtual ICollection<CharacterAttendance> CharacterAttendances { get; set; } = new HashSet<CharacterAttendance>();
 }
 
 public class CharacterRevision

@@ -2,7 +2,7 @@ import {useMountEffect} from "../Pages/UseMountEffect";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import * as React from "react";
 import sessionService from "../Session/SessionService";
-import {Profile} from "../Protos/Larp";
+import {Account} from "../Protos/Larp";
 import {
     Avatar,
     Card,
@@ -18,7 +18,7 @@ import {NavLink} from "react-router-dom";
 
 export function PlayerManager(props: { playerId: number }) {
     const [busy, setBusy] = React.useState(true);
-    const [profile, setProfile] = React.useState({} as Profile);
+    const [profile, setProfile] = React.useState({} as Account);
 
     useMountEffect(async () => {
         const pl = await sessionService.getAccount(props.playerId);

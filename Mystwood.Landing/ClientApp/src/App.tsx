@@ -19,6 +19,7 @@ import CharacterSearch from "./Manage/CharacterSearch";
 import PlayerSearch from "./Manage/PlayerSearch";
 import {PlayerManager} from "./Manage/PlayerManager";
 import {CharacterManager} from "./Manage/CharacterManager";
+import EventList from "./Pages/EventList";
 
 function ViewCharacter() {
     const {characterId} = useParams();
@@ -68,7 +69,10 @@ function App() {
                 <Route path="/" element={<Landing/>}/>
                 <Route path="/demo" element={<StartDemoMode/>}/>
                 <Route path="/skills" element={<NotImplemented title="Skills Directory"/>}/>
-                <Route path="/events" element={<NotImplemented title="Events Calendar"/>}/>
+                <Route path="/events" element={<EventList/>}/>
+                <Route path="/events/new" element={<NotImplemented title="Event New"/>}/>
+                <Route path="/events/:eventId" element={<NotImplemented title="Event View"/>}/>
+                <Route path="/events/:eventId/manage" element={<NotImplemented title="Event Editor"/>}/>
                 <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/confirm" element={<ConfirmPage/>}/>
                 <Route path="/profile" element={<ProfileView/>}/>

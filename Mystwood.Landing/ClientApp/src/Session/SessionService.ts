@@ -1,10 +1,15 @@
 import {Character, CharacterStatus} from "./Session";
-import {larpClient} from "./LarpService";
+import {
+    larpAccountClient,
+    larpAuthClient,
+    larpManageClient
+} from "./LarpService";
 import {
     CharacterResponse,
     CharacterSummary as LarpCharacterSummary,
-    Profile,
-    ValidationResponseCode
+    Account,
+    ValidationResponseCode,
+    Event
 } from "../Protos/Larp";
 import CharacterSheet from "../Reference/CharacterSheet";
 import {HomeChaptersByName} from "../Reference/HomeChapter";
@@ -49,7 +54,7 @@ export class SessionService {
     private _sessionId?: string;
 
     private static readonly SessionIdKey = "MWL_SESSION_ID";
-    private static readonly ProfileKey = "MWL_PROFILE";
+    private static readonly AccountKey = "MWL_PROFILE";
 
     constructor() {
         const sessionId = localStorage.getItem(SessionService.SessionIdKey) ?? "";
@@ -121,62 +126,62 @@ export class SessionService {
         }
     }
 
-    getProfile(): Profile {
-        const profileJson = localStorage.getItem(SessionService.ProfileKey) ?? "{}";
-        return JSON.parse(profileJson) as Profile;
+    getMyProfile(): Account {
+        const profileJson = localStorage.getItem(SessionService.AccountKey) ?? "{}";
+        return JSON.parse(profileJson) as Account;
     }
 
-    private static parseProfile(profile?: Profile) {
-        localStorage.setItem(SessionService.ProfileKey, JSON.stringify(profile));
+    private static parseAccount(profile?: Account) {
+        localStorage.setItem(SessionService.AccountKey, JSON.stringify(profile));
     }
 
-    async fetchProfile(): Promise<Profile> {
+    async fetchAccount(): Promise<Account> {
         if (this._sessionId === undefined) {
-            return this.getProfile();
+            return this.getMyProfile();
         }
 
         try {
-            const response = await larpClient.GetProfile({session: {sessionId: this._sessionId}});
-            SessionService.parseProfile(response.profile);
+            const response = await larpAccountClient.GetAccount({session: {sessionId: this._sessionId}});
+            SessionService.parseAccount(response.profile);
 
             this.notifySubscribers();
 
-            return this.getProfile();
+            return this.getMyProfile();
         } catch {
-            return this.getProfile();
+            return this.getMyProfile();
         }
     }
 
     async setName(newValue: string) {
-        const response = await larpClient.SetProfileName({session: {sessionId: this._sessionId}, value: newValue});
-        SessionService.parseProfile(response.profile);
+        const response = await larpAccountClient.SetAccountName({session: {sessionId: this._sessionId}, value: newValue});
+        SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
     async setLocation(newValue: string) {
-        const response = await larpClient.SetProfileLocation({session: {sessionId: this._sessionId}, value: newValue});
-        SessionService.parseProfile(response.profile);
+        const response = await larpAccountClient.SetAccountLocation({session: {sessionId: this._sessionId}, value: newValue});
+        SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
     async setPhone(newValue: string) {
-        const response = await larpClient.SetProfilePhone({session: {sessionId: this._sessionId}, value: newValue});
-        SessionService.parseProfile(response.profile);
+        const response = await larpAccountClient.SetAccountPhone({session: {sessionId: this._sessionId}, value: newValue});
+        SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
     async addEmail(newEmail: string) {
-        const response = await larpClient.AddProfileEmail({session: {sessionId: this._sessionId}, value: newEmail});
-        SessionService.parseProfile(response.profile);
+        const response = await larpAccountClient.AddAccountEmail({session: {sessionId: this._sessionId}, value: newEmail});
+        SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
     async removeEmail(exisingEmail: string) {
-        const response = await larpClient.RemoveProfileEmail({
+        const response = await larpAccountClient.RemoveAccountEmail({
             session: {sessionId: this._sessionId},
             value: exisingEmail
         });
-        SessionService.parseProfile(response.profile);
+        SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
@@ -188,7 +193,7 @@ export class SessionService {
 
     async login(email: string): Promise<LoginStatus> {
         this._email = email;
-        const result = await larpClient.InitiateLogin({email: email});
+        const result = await larpAuthClient.InitiateLogin({email: email});
         switch (result.statusCode) {
             case ValidationResponseCode.SUCCESS:
                 return LoginStatus.Success;
@@ -198,10 +203,10 @@ export class SessionService {
     }
 
     async confirm(email: string, code: string): Promise<ConfirmStatus> {
-        const result = await larpClient.ConfirmLogin({email: email, code: code});
+        const result = await larpAuthClient.ConfirmLogin({email: email, code: code});
         switch (result.statusCode) {
             case ValidationResponseCode.SUCCESS:
-                SessionService.parseProfile(result.profile);
+                SessionService.parseAccount(result.profile);
                 this.updateState(result.session?.sessionId);
                 return ConfirmStatus.Success;
             case ValidationResponseCode.EXPIRED:
@@ -216,7 +221,7 @@ export class SessionService {
     }
 
     async createCharacter(characterName: string, homeChapter: string): Promise<Character> {
-        const result = await larpClient.CreateCharacterDraft({
+        const result = await larpAccountClient.CreateCharacterDraft({
             session: {sessionId: this._sessionId},
             characterName: characterName,
             homeChapter: homeChapter
@@ -225,7 +230,7 @@ export class SessionService {
     }
 
     async getCharacter(id: string): Promise<Character> {
-        const result = await larpClient.GetCharacter({session: {sessionId: this._sessionId}, characterId: id});
+        const result = await larpAccountClient.GetCharacter({session: {sessionId: this._sessionId}, characterId: id});
         return SessionService.toCharacter(result);
     }
 
@@ -233,7 +238,7 @@ export class SessionService {
         const sheet = {...draft};
         CharacterSheet.unpopulate(sheet);
 
-        const result = await larpClient.UpdateCharacterDraft({
+        const result = await larpAccountClient.UpdateCharacterDraft({
             session: {sessionId: this._sessionId},
             characterId: id,
             draftJson: JSON.stringify(sheet)
@@ -243,7 +248,7 @@ export class SessionService {
     }
 
     async updateInReview(id: string, isReview: boolean): Promise<Character> {
-        const result = await larpClient.UpdateCharacterInReview({
+        const result = await larpAccountClient.UpdateCharacterInReview({
             session: {sessionId: this._sessionId},
             characterId: id,
             isReview: isReview
@@ -266,13 +271,13 @@ export class SessionService {
         return {
             id: result.character?.characterId,
             draft: {...emptySheet, ...JSON.parse(result.character?.draftJson ?? "{}")},
-            live:  {...emptySheet, ...JSON.parse(result.character?.liveJson ?? "{}")},
+            live: {...emptySheet, ...JSON.parse(result.character?.liveJson ?? "{}")},
             status: state
         } as Character;
     }
 
     async getCharacters(): Promise<CharacterSummary[]> {
-        const result = await larpClient.GetCharacters({session: {sessionId: this._sessionId}});
+        const result = await larpAccountClient.GetCharacters({session: {sessionId: this._sessionId}});
         return result.characters.map(x => SessionService.buildCharacter(x));
     }
 
@@ -296,22 +301,27 @@ export class SessionService {
     }
 
     isAdmin(): boolean {
-        return this.getProfile().isAdmin;
+        return this.getMyProfile().isAdmin;
     }
 
     async searchCharacters(query: string): Promise<CharacterSummary[]> {
-        const result = await larpClient.SearchCharacters({session: {sessionId: this._sessionId}, query: query});
+        const result = await larpManageClient.SearchCharacters({session: {sessionId: this._sessionId}, query: query});
         return result.characters.map(x => SessionService.buildCharacter(x));
     }
 
-    async searchAccounts(query: string): Promise<Profile[]> {
-        const result = await larpClient.SearchAccounts({session: {sessionId: this._sessionId}, query: query});
+    async searchAccounts(query: string): Promise<Account[]> {
+        const result = await larpManageClient.SearchAccounts({session: {sessionId: this._sessionId}, query: query});
         return result.profiles;
     }
 
-    async getAccount(accountId: number): Promise<Profile> {
-        const result = await larpClient.GetAccount({session: {sessionId: this._sessionId}, accountId: accountId});
+    async getAccount(accountId: number): Promise<Account> {
+        const result = await larpManageClient.GetAccount({session: {sessionId: this._sessionId}, accountId: accountId});
         return result.profile!;
+    }
+
+    async getEvents(): Promise<Event[]> {
+        const result = await larpAccountClient.GetEvents({session: {sessionId: this._sessionId}});
+        return result.events;
     }
 }
 
