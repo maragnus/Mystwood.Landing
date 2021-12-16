@@ -1,18 +1,16 @@
 ﻿syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
-
 option csharp_namespace = "Mystwood.Landing.GrpcLarp";
 
 package larp;
 
 enum EventRsvp {
-    NoAnswer = 0;
-    No = 1;
-    Maybe = 2; 
-    Yes = 3;
-    Confirmed = 4;
-    Approved = 5;
+    UNANSWERED = 0;
+    NO = 1;
+    MAYBE = 2; 
+    YES = 3;
+    CONFIRMED = 4;
+    APPROVED = 5;
 }
 
 message Event {
@@ -21,7 +19,8 @@ message Event {
     string location = 3;
     string date = 4;
     string event_type = 5;
-    repeated AccountAttendance attendees = 6;
+    bool rsvp = 6;
+    repeated AccountAttendance attendees = 7;
 }
 
 message AccountAttendance {
@@ -69,6 +68,11 @@ message CharacterSummary {
     bool is_review = 9;
 }
 
+message CharacterUpdate {
+    string character_id = 1;
+    map<string, string> fields = 2;
+}
+
 enum ValidationResponseCode {
     SUCCESS = 0;
     EXPIRED = 1;
@@ -76,35 +80,38 @@ enum ValidationResponseCode {
 }
 
 service LarpAuthentication {
-    rpc InitiateLogin(InitiateLoginRequest) returns (InitiateLoginResponse) {}
-    rpc ConfirmLogin(ConfirmLoginRequest) returns (ConfirmLoginResponse) {}
+    rpc InitiateLogin(InitiateLoginRequest) returns (InitiateLoginResponse);
+    rpc ConfirmLogin(ConfirmLoginRequest) returns (ConfirmLoginResponse);
 }
 
 service LarpAccount {
-    rpc GetAccount(BasicRequest) returns (AccountResponse) {}
+    rpc GetAccount(BasicRequest) returns (AccountResponse);
     
-    rpc SetAccountName(UpdateAccountRequest) returns (AccountResponse) {}
-    rpc SetAccountLocation(UpdateAccountRequest) returns (AccountResponse) {}
-    rpc SetAccountPhone(UpdateAccountRequest) returns (AccountResponse) {}
-    rpc AddAccountEmail(UpdateAccountRequest) returns (AccountResponse) {}
-    rpc RemoveAccountEmail(UpdateAccountRequest) returns (AccountResponse) {}
+    rpc SetAccountName(UpdateAccountRequest) returns (AccountResponse);
+    rpc SetAccountLocation(UpdateAccountRequest) returns (AccountResponse);
+    rpc SetAccountPhone(UpdateAccountRequest) returns (AccountResponse);
+    rpc AddAccountEmail(UpdateAccountRequest) returns (AccountResponse);
+    rpc RemoveAccountEmail(UpdateAccountRequest) returns (AccountResponse);
 
-    rpc GetCharacters(BasicRequest) returns (CharactersResponse) {}
-    rpc GetCharacter(GetCharacterRequest) returns (CharacterResponse) {}
-    rpc CreateCharacterDraft(CreateCharacterRequest) returns (CharacterResponse) {}
-    rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (CharacterResponse) {}
-    rpc UpdateCharacterInReview(UpdateCharacterInReviewRequest) returns (CharacterResponse) {}
+    rpc GetCharacters(BasicRequest) returns (CharactersResponse);
+    rpc GetCharacter(GetCharacterRequest) returns (CharacterResponse);
+    rpc CreateCharacterDraft(CreateCharacterRequest) returns (CharacterResponse);
+    rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (CharacterResponse);
+    rpc UpdateCharacterInReview(UpdateCharacterInReviewRequest) returns (CharacterResponse);
 
-    rpc GetEvents(BasicRequest) returns (EventsResponse) {}
+    rpc GetEvents(BasicRequest) returns (EventsResponse);
+    rpc SetRsvp(RsvpRequest) returns (NoResponse);
 }
 
 service LarpManage {
-    rpc GetAccount(GetAccountRequest) returns (AccountResponse) {}
-    rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse) {}
-    rpc SetAdmin(SetAdminRequest) returns (AccountResponse) {}
-    rpc SearchCharacters(SearchCharactersRequest) returns (SearchCharactersResponse) {} 
-    rpc AddEvent(AddEventRequest) returns (EventResponse) {}
-    rpc UpdateEvent(UpdateEventRequest) returns (EventResponse) {}
+    rpc GetAccount(GetAccountRequest) returns (AccountResponse);
+    rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse);
+    rpc SetAdmin(SetAdminRequest) returns (AccountResponse);
+    rpc SearchCharacters(SearchCharactersRequest) returns (SearchCharactersResponse); 
+    rpc AddEvent(EventRequest) returns (EventResponse);
+    rpc UpdateEvent(EventRequest) returns (EventResponse);
+    rpc SetRsvp(RsvpRequest) returns (NoResponse);
+
 }
 
 // Include this in any message that requires an authenticated session
@@ -112,6 +119,8 @@ service LarpManage {
 message SessionIdentifier {
     string session_id = 1;
 }
+
+message NoResponse { }
 
 message BasicRequest {
     SessionIdentifier session = 1;
@@ -213,15 +222,9 @@ message SearchCharactersResponse {
 
 // Events
 
-message AddEventRequest {
+message EventRequest {
     SessionIdentifier session = 1;
     Event event = 2;
-}
-
-message UpdateEventRequest {
-    SessionIdentifier session = 1;
-    int32 event_id = 2;
-    Event event = 3;
 }
 
 message EventResponse {
@@ -230,4 +233,11 @@ message EventResponse {
 
 message EventsResponse {
     repeated Event events = 1;
+}
+
+message RsvpRequest {
+    SessionIdentifier session = 1;
+    int32 event_id = 2;
+    optional int32 account_id = 3;
+    EventRsvp rsvp = 4;
 }

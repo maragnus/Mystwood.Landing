@@ -12,8 +12,9 @@ public class LarpManageService : LarpManage.LarpManageBase
     private readonly IEmailManager _emailManager;
     private readonly IUserManager _userManager;
     private readonly ICharacterManager _characterManager;
+    private readonly IEventManager _eventManager;
 
-    public LarpManageService(ILogger<LarpAuthenticationService> logger, IEmailManager emailManager, ITokenManager tokenManager, IOptions<AccountOptions> options, IUserManager userManager, ICharacterManager characterManager)
+    public LarpManageService(ILogger<LarpAuthenticationService> logger, IEmailManager emailManager, ITokenManager tokenManager, IOptions<AccountOptions> options, IUserManager userManager, ICharacterManager characterManager, IEventManager eventManager)
     {
         _logger = logger;
         _emailManager = emailManager;
@@ -21,6 +22,7 @@ public class LarpManageService : LarpManage.LarpManageBase
         _options = options.Value;
         _userManager = userManager;
         _characterManager = characterManager;
+        _eventManager = eventManager;
     }
 
     public override async Task<AccountResponse> GetAccount(GetAccountRequest request, ServerCallContext context)
@@ -71,7 +73,31 @@ public class LarpManageService : LarpManage.LarpManageBase
         return await LarpUtilities.CreateAccountResponse(_userManager, request.AccountId);
     }
 
-    public override Task<EventResponse> AddEvent(AddEventRequest request, ServerCallContext context) => base.AddEvent(request, context);
+    public override async Task<EventResponse> AddEvent(EventRequest request, ServerCallContext context)
+    {
+        // TODO -- do this
 
-    public override Task<EventResponse> UpdateEvent(UpdateEventRequest request, ServerCallContext context) => base.UpdateEvent(request, context);
+        return new EventResponse { Event = await _eventManager.GetEvent(request.Event.EventId) };
+    }
+
+    public override async Task<EventResponse> UpdateEvent(EventRequest request, ServerCallContext context)
+    {
+        // TODO -- do this
+
+        return new EventResponse { Event = await _eventManager.GetEvent(request.Event.EventId) };
+    }
+
+    public override async Task<NoResponse> SetRsvp(RsvpRequest request, ServerCallContext context)
+    {
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
+          throw new Exception("Unauthorized");
+
+        var rsvp = await _eventManager.GetRsvp(request.EventId, accountId);
+        if (rsvp == null)
+            throw new Exception("Event not found");
+
+        await _eventManager.SetRsvp(request.EventId, request.AccountId, request.Rsvp, accountId);
+
+        return new NoResponse();
+    }
 }

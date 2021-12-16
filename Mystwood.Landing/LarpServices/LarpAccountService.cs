@@ -90,4 +90,21 @@ public partial class LarpAccountService : LarpAccount.LarpAccountBase
 
         return response;
     }
+
+    public override async Task<NoResponse> SetRsvp(RsvpRequest request, ServerCallContext context)
+    {
+        var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??
+            throw new Exception("Unauthorized");
+
+        var rsvp = await _eventManager.GetRsvp(request.EventId, accountId);
+        if (rsvp == null)
+            throw new Exception("Event not found");
+
+        if (request.Rsvp == EventRsvp.Approved)
+            throw new Exception("Cannot change RSVP once Approved");
+
+        await _eventManager.SetRsvp(request.EventId, accountId, request.Rsvp, accountId);
+
+        return new NoResponse();
+    }
 }

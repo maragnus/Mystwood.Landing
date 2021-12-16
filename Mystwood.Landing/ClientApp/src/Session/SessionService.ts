@@ -153,25 +153,37 @@ export class SessionService {
     }
 
     async setName(newValue: string) {
-        const response = await larpAccountClient.SetAccountName({session: {sessionId: this._sessionId}, value: newValue});
+        const response = await larpAccountClient.SetAccountName({
+            session: {sessionId: this._sessionId},
+            value: newValue
+        });
         SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
     async setLocation(newValue: string) {
-        const response = await larpAccountClient.SetAccountLocation({session: {sessionId: this._sessionId}, value: newValue});
+        const response = await larpAccountClient.SetAccountLocation({
+            session: {sessionId: this._sessionId},
+            value: newValue
+        });
         SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
     async setPhone(newValue: string) {
-        const response = await larpAccountClient.SetAccountPhone({session: {sessionId: this._sessionId}, value: newValue});
+        const response = await larpAccountClient.SetAccountPhone({
+            session: {sessionId: this._sessionId},
+            value: newValue
+        });
         SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
 
     async addEmail(newEmail: string) {
-        const response = await larpAccountClient.AddAccountEmail({session: {sessionId: this._sessionId}, value: newEmail});
+        const response = await larpAccountClient.AddAccountEmail({
+            session: {sessionId: this._sessionId},
+            value: newEmail
+        });
         SessionService.parseAccount(response.profile);
         this.notifySubscribers();
     }
@@ -322,6 +334,11 @@ export class SessionService {
     async getEvents(): Promise<Event[]> {
         const result = await larpAccountClient.GetEvents({session: {sessionId: this._sessionId}});
         return result.events;
+    }
+
+    async updateEvent(event: Event): Promise<Event> {
+        const result = await larpManageClient.UpdateEvent({session: {sessionId: this._sessionId}, event: event});
+        return result.event!;
     }
 }
 

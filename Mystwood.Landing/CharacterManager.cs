@@ -15,7 +15,7 @@ public interface ICharacterManager
     Task<Character> CreateCharacter(int accountId, string characterName, string homeChapter);
     Task<Character> UpdateCharacterDraft(int accountId, string characterId, string draftJson);
     Task<Character> UpdateCharacterInReview(int accountId, string characterId, bool inReview);
-    Task<Character> ApproveCharacter(string characterId);
+    Task<Character> ApproveCharacter(string characterId, int accountId);
     Task<IEnumerable<CharacterSummary>> QueryCharacters(string query);
 }
 
@@ -116,7 +116,8 @@ public class CharacterManager : ICharacterManager
                     CharacterRevisionEvents = {
                         new CharacterRevisionEvent {
                             ChangedOn = now,
-                            State = RevisionState.Draft
+                            State = RevisionState.Draft,
+                            ChangedByAccountId = accountId,
                         }
                     },
                     State = RevisionState.Draft,
@@ -167,7 +168,8 @@ public class CharacterManager : ICharacterManager
                     new CharacterRevisionEvent
                     {
                         ChangedOn = now,
-                        State = RevisionState.Draft
+                        State = RevisionState.Draft,
+                        ChangedByAccountId = accountId,
                     }
                 },
                 Json = draftJson
@@ -208,14 +210,15 @@ public class CharacterManager : ICharacterManager
         draft.CharacterRevisionEvents.Add(new CharacterRevisionEvent
         {
             ChangedOn = now,
-            State = targetState
+            State = targetState,
+            ChangedByAccountId = accountId,
         });
 
         await _db.SaveChangesAsync();
         return await GetCharacter(characterId);
     }
 
-    public async Task<Character> ApproveCharacter(string characterId)
+    public async Task<Character> ApproveCharacter(string characterId, int accountId)
     {
         var id = Guid.Parse(characterId);
         var now = _clock.UtcNow;
@@ -234,7 +237,8 @@ public class CharacterManager : ICharacterManager
             live.CharacterRevisionEvents.Add(new CharacterRevisionEvent
             {
                 ChangedOn = now,
-                State = RevisionState.Archived
+                State = RevisionState.Archived,
+                ChangedByAccountId = accountId
             });
         }
 
@@ -244,7 +248,8 @@ public class CharacterManager : ICharacterManager
         draft.CharacterRevisionEvents.Add(new CharacterRevisionEvent
         {
             ChangedOn = now,
-            State = RevisionState.Live
+            State = RevisionState.Live,
+            ChangedByAccountId = accountId
         });
 
         await _db.SaveChangesAsync();

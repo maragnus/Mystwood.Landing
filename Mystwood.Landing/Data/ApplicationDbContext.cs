@@ -25,4 +25,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<Event> Events { get; set; } = null!;
     public DbSet<AccountAttendance> AccountAttendances { get; set; } = null!;
     public DbSet<CharacterAttendance> CharacterAttendances { get; set; } = null!;
+    public DbSet<AccountAttendanceUpdate> AccountAttendanceUpdate { get; set; } = null!;
 }

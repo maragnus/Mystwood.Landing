@@ -53,8 +53,8 @@ function EventItems(props: { events: Event[] }): any {
         .toArray();
 
     const items = groupedItems.map((group, index) => (
-        <li key={index}>
-            <ul>
+        <li key={index} style={{padding: "0", margin: "0"}}>
+            <ul style={{padding: "0", margin: "0"}}>
                 <ListSubheader><Typography variant="h4">{group.key()}</Typography></ListSubheader>
                 {group.toArray().map((event, index) =>
                     (<ListItem key={index}>
@@ -87,9 +87,9 @@ function EventItems(props: { events: Event[] }): any {
                 color="secondary"
                 sx={{mb: 2}}
                 component={NavLink}
-                to="/events/new"
+                to="/events/manage"
             >
-                Add Event
+                Manage Events
             </Button>
         </ListItem>}
     </List>;

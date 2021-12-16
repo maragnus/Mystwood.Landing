@@ -65,7 +65,7 @@ function Redirect(params: { to: string }) {
 
 function App() {
     return (
-        <Container sx={{pb: 7}} maxWidth="lg" className="App">
+        <Container sx={{pb: 7}} maxWidth="xl" className="App">
             <Routes>
                 <Route path="/" element={<Landing/>}/>
                 <Route path="/demo" element={<StartDemoMode/>}/>

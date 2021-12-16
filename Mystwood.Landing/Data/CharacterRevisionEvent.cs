@@ -9,10 +9,16 @@ public class CharacterRevisionEvent
 
     [Required]
     public Guid? CharacterRevisionId { get; set; }
+
     public RevisionState State { get; set; }
+
+    public int? ChangedByAccountId { get; set; }
+
     public DateTimeOffset? ChangedOn { get; set; }
 
-    public virtual CharacterRevision? CharacterRevision { get; set; }
+    public virtual Account? ChangedByAcount { get; set; }
+
+    public virtual CharacterRevision? CharacterRevision { get; set; } = null!;
 }
 
 
