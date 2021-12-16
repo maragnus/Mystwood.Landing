@@ -32,7 +32,7 @@ namespace Mystwood.Landing
             {
                 EventId = e.Id!.Value,
                 Title = e.Title ?? "",
-                Date = e.EventDate.HasValue ? e.EventDate.Value.ToString("u") : "",
+                Date = e.EventDate.HasValue ? e.EventDate.Value.ToString("o") : "",
                 Location = e.Location,
                 EventType = e.EventType.ToString(),
             });

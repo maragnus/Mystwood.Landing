@@ -36,33 +36,4 @@ public class Character
     public virtual ICollection<CharacterAttendance> CharacterAttendances { get; set; } = new HashSet<CharacterAttendance>();
 }
 
-public class CharacterRevision
-{
-    [Required, Key]
-    public Guid? Id { get; set; }
-
-    [Required]
-    public Guid? CharacterId { get; set; }
-
-    public DateTimeOffset? CreatedOn { get; set; }
-    public RevisionState State { get; set; }
-    public string? Json { get; set; }
-
-    public virtual Character? Character { get; set; }
-    public virtual ICollection<CharacterRevisionEvent> CharacterRevisionEvents { get; set; } = new List<CharacterRevisionEvent>();
-}
-
-public class CharacterRevisionEvent
-{
-    [Required, Key]
-    public Guid? Id { get; set; }
-
-    [Required]
-    public Guid? CharacterRevisionId { get; set; }
-    public RevisionState State { get; set; }
-    public DateTimeOffset? ChangedOn { get; set; }
-
-    public virtual CharacterRevision? CharacterRevision { get; set; }
-}
-
 

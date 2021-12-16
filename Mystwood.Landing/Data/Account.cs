@@ -37,31 +37,3 @@ public class Account
 
     public virtual ICollection<AccountAttendance> PlayerAttendances { get; set; } = new HashSet<AccountAttendance>();
 }
-
-public enum EventType
-{
-    Game,
-    Maintenance,
-    Other
-}
-
-public class Event
-{
-    [Key]
-    public int? Id { get; set; }
-
-    [Required]
-    public string? Title { get; set; }
-
-    public string? Location { get; set; }
-
-    public DateTime? EventDate { get; set; }
-
-    [Required]
-    public EventType? EventType { get; set; }
-
-    [Required]
-    public bool? Rsvp { get; set; }
-
-    public ICollection<CharacterAttendance> CharacterAttendances { get; set; } = new HashSet<CharacterAttendance>();
-}
