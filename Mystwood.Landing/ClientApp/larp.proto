@@ -20,7 +20,8 @@ message Event {
     string date = 4;
     string event_type = 5;
     bool rsvp = 6;
-    repeated AccountAttendance attendees = 7;
+    bool hidden = 7;
+    repeated AccountAttendance attendees = 8;
 }
 
 message AccountAttendance {
@@ -99,6 +100,7 @@ service LarpAccount {
     rpc UpdateCharacterDraft(UpdateCharacterRequest) returns (CharacterResponse);
     rpc UpdateCharacterInReview(UpdateCharacterInReviewRequest) returns (CharacterResponse);
 
+    rpc GetEvent(EventIdRequest) returns (EventResponse);
     rpc GetEvents(BasicRequest) returns (EventsResponse);
     rpc SetRsvp(RsvpRequest) returns (NoResponse);
 }
@@ -108,6 +110,7 @@ service LarpManage {
     rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse);
     rpc SetAdmin(SetAdminRequest) returns (AccountResponse);
     rpc SearchCharacters(SearchCharactersRequest) returns (SearchCharactersResponse); 
+    rpc GetEvents(BasicRequest) returns (EventsResponse);
     rpc AddEvent(EventRequest) returns (EventResponse);
     rpc UpdateEvent(EventRequest) returns (EventResponse);
     rpc SetRsvp(RsvpRequest) returns (NoResponse);
@@ -226,7 +229,10 @@ message EventRequest {
     SessionIdentifier session = 1;
     Event event = 2;
 }
-
+message EventIdRequest {
+    SessionIdentifier session = 1;
+    int32 event_id = 2;
+}
 message EventResponse {
     Event event = 1;
 }

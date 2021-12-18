@@ -111,6 +111,7 @@ export interface Event {
   date: string;
   eventType: string;
   rsvp: boolean;
+  hidden: boolean;
   attendees: AccountAttendance[];
 }
 
@@ -274,6 +275,11 @@ export interface EventRequest {
   event?: Event;
 }
 
+export interface EventIdRequest {
+  session?: SessionIdentifier;
+  eventId: number;
+}
+
 export interface EventResponse {
   event?: Event;
 }
@@ -296,6 +302,7 @@ const baseEvent: object = {
   date: "",
   eventType: "",
   rsvp: false,
+  hidden: false,
 };
 
 export const Event = {
@@ -318,8 +325,11 @@ export const Event = {
     if (message.rsvp === true) {
       writer.uint32(48).bool(message.rsvp);
     }
+    if (message.hidden === true) {
+      writer.uint32(56).bool(message.hidden);
+    }
     for (const v of message.attendees) {
-      AccountAttendance.encode(v!, writer.uint32(58).fork()).ldelim();
+      AccountAttendance.encode(v!, writer.uint32(66).fork()).ldelim();
     }
     return writer;
   },
@@ -351,6 +361,9 @@ export const Event = {
           message.rsvp = reader.bool();
           break;
         case 7:
+          message.hidden = reader.bool();
+          break;
+        case 8:
           message.attendees.push(
             AccountAttendance.decode(reader, reader.uint32())
           );
@@ -389,6 +402,10 @@ export const Event = {
       object.rsvp !== undefined && object.rsvp !== null
         ? Boolean(object.rsvp)
         : false;
+    message.hidden =
+      object.hidden !== undefined && object.hidden !== null
+        ? Boolean(object.hidden)
+        : false;
     message.attendees = (object.attendees ?? []).map((e: any) =>
       AccountAttendance.fromJSON(e)
     );
@@ -403,6 +420,7 @@ export const Event = {
     message.date !== undefined && (obj.date = message.date);
     message.eventType !== undefined && (obj.eventType = message.eventType);
     message.rsvp !== undefined && (obj.rsvp = message.rsvp);
+    message.hidden !== undefined && (obj.hidden = message.hidden);
     if (message.attendees) {
       obj.attendees = message.attendees.map((e) =>
         e ? AccountAttendance.toJSON(e) : undefined
@@ -421,6 +439,7 @@ export const Event = {
     message.date = object.date ?? "";
     message.eventType = object.eventType ?? "";
     message.rsvp = object.rsvp ?? false;
+    message.hidden = object.hidden ?? false;
     message.attendees =
       object.attendees?.map((e) => AccountAttendance.fromPartial(e)) || [];
     return message;
@@ -2865,6 +2884,82 @@ export const EventRequest = {
   },
 };
 
+const baseEventIdRequest: object = { eventId: 0 };
+
+export const EventIdRequest = {
+  encode(
+    message: EventIdRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.eventId !== 0) {
+      writer.uint32(16).int32(message.eventId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): EventIdRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseEventIdRequest } as EventIdRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.eventId = reader.int32();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): EventIdRequest {
+    const message = { ...baseEventIdRequest } as EventIdRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.eventId =
+      object.eventId !== undefined && object.eventId !== null
+        ? Number(object.eventId)
+        : 0;
+    return message;
+  },
+
+  toJSON(message: EventIdRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.eventId !== undefined && (obj.eventId = message.eventId);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<EventIdRequest>, I>>(
+    object: I
+  ): EventIdRequest {
+    const message = { ...baseEventIdRequest } as EventIdRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.eventId = object.eventId ?? 0;
+    return message;
+  },
+};
+
 const baseEventResponse: object = {};
 
 export const EventResponse = {
@@ -3217,6 +3312,10 @@ export interface LarpAccount {
     request: DeepPartial<UpdateCharacterInReviewRequest>,
     metadata?: grpc.Metadata
   ): Promise<CharacterResponse>;
+  GetEvent(
+    request: DeepPartial<EventIdRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventResponse>;
   GetEvents(
     request: DeepPartial<BasicRequest>,
     metadata?: grpc.Metadata
@@ -3243,6 +3342,7 @@ export class LarpAccountClientImpl implements LarpAccount {
     this.CreateCharacterDraft = this.CreateCharacterDraft.bind(this);
     this.UpdateCharacterDraft = this.UpdateCharacterDraft.bind(this);
     this.UpdateCharacterInReview = this.UpdateCharacterInReview.bind(this);
+    this.GetEvent = this.GetEvent.bind(this);
     this.GetEvents = this.GetEvents.bind(this);
     this.SetRsvp = this.SetRsvp.bind(this);
   }
@@ -3364,6 +3464,17 @@ export class LarpAccountClientImpl implements LarpAccount {
     return this.rpc.unary(
       LarpAccountUpdateCharacterInReviewDesc,
       UpdateCharacterInReviewRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetEvent(
+    request: DeepPartial<EventIdRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventResponse> {
+    return this.rpc.unary(
+      LarpAccountGetEventDesc,
+      EventIdRequest.fromPartial(request),
       metadata
     );
   }
@@ -3638,6 +3749,28 @@ export const LarpAccountUpdateCharacterInReviewDesc: UnaryMethodDefinitionish =
     } as any,
   };
 
+export const LarpAccountGetEventDesc: UnaryMethodDefinitionish = {
+  methodName: "GetEvent",
+  service: LarpAccountDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return EventIdRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...EventResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
 export const LarpAccountGetEventsDesc: UnaryMethodDefinitionish = {
   methodName: "GetEvents",
   service: LarpAccountDesc,
@@ -3699,6 +3832,10 @@ export interface LarpManage {
     request: DeepPartial<SearchCharactersRequest>,
     metadata?: grpc.Metadata
   ): Promise<SearchCharactersResponse>;
+  GetEvents(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventsResponse>;
   AddEvent(
     request: DeepPartial<EventRequest>,
     metadata?: grpc.Metadata
@@ -3722,6 +3859,7 @@ export class LarpManageClientImpl implements LarpManage {
     this.SearchAccounts = this.SearchAccounts.bind(this);
     this.SetAdmin = this.SetAdmin.bind(this);
     this.SearchCharacters = this.SearchCharacters.bind(this);
+    this.GetEvents = this.GetEvents.bind(this);
     this.AddEvent = this.AddEvent.bind(this);
     this.UpdateEvent = this.UpdateEvent.bind(this);
     this.SetRsvp = this.SetRsvp.bind(this);
@@ -3767,6 +3905,17 @@ export class LarpManageClientImpl implements LarpManage {
     return this.rpc.unary(
       LarpManageSearchCharactersDesc,
       SearchCharactersRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  GetEvents(
+    request: DeepPartial<BasicRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<EventsResponse> {
+    return this.rpc.unary(
+      LarpManageGetEventsDesc,
+      BasicRequest.fromPartial(request),
       metadata
     );
   }
@@ -3889,6 +4038,28 @@ export const LarpManageSearchCharactersDesc: UnaryMethodDefinitionish = {
     deserializeBinary(data: Uint8Array) {
       return {
         ...SearchCharactersResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpManageGetEventsDesc: UnaryMethodDefinitionish = {
+  methodName: "GetEvents",
+  service: LarpManageDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return BasicRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...EventsResponse.decode(data),
         toObject() {
           return this;
         },

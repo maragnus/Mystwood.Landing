@@ -27,7 +27,7 @@ public class LarpManageService : LarpManage.LarpManageBase
 
     public override async Task<AccountResponse> GetAccount(GetAccountRequest request, ServerCallContext context)
     {
-        var accountId = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
+        var _ = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
            throw new Exception("Unauthorized");
 
         var account = await _userManager.GetAccount(request.AccountId);
@@ -39,7 +39,7 @@ public class LarpManageService : LarpManage.LarpManageBase
 
     public override async Task<SearchAccountsResponse> SearchAccounts(SearchAccountsRequest request, ServerCallContext context)
     {
-        var accountId = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
+        var _ = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         var accounts = await _userManager.QueryAccounts(request.Query);
@@ -52,7 +52,7 @@ public class LarpManageService : LarpManage.LarpManageBase
 
     public override async Task<SearchCharactersResponse> SearchCharacters(SearchCharactersRequest request, ServerCallContext context)
     {
-        var accountId = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
+        var _ = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
             throw new Exception("Unauthorized");
 
         var characters = await _characterManager.QueryCharacters(request.Query);
@@ -65,7 +65,7 @@ public class LarpManageService : LarpManage.LarpManageBase
 
     public override async Task<AccountResponse> SetAdmin(SetAdminRequest request, ServerCallContext context)
     {
-        var accountId = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
+        var _ = await _userManager.VerifyAdminSessionId(request.Session.SessionId) ??
           throw new Exception("Unauthorized");
 
         await _userManager.SetAdmin(request.AccountId, request.IsAdmin);
@@ -73,18 +73,30 @@ public class LarpManageService : LarpManage.LarpManageBase
         return await LarpUtilities.CreateAccountResponse(_userManager, request.AccountId);
     }
 
+    public override async Task<EventsResponse> GetEvents(BasicRequest request, ServerCallContext context)
+    {
+        var _ = await _userManager.VerifyAdminSessionId(request.Session.SessionId);
+
+        var events = await _eventManager.GetEventsAdmin();
+
+        var response = new EventsResponse();
+        response.Events.AddRange(events);
+
+        return response;
+    }
+
     public override async Task<EventResponse> AddEvent(EventRequest request, ServerCallContext context)
     {
-        // TODO -- do this
+        var e = await _eventManager.AddOrUpdateEvent(request.Event);
 
-        return new EventResponse { Event = await _eventManager.GetEvent(request.Event.EventId) };
+        return new EventResponse { Event = e };
     }
 
     public override async Task<EventResponse> UpdateEvent(EventRequest request, ServerCallContext context)
     {
-        // TODO -- do this
+        var e = await _eventManager.AddOrUpdateEvent(request.Event);
 
-        return new EventResponse { Event = await _eventManager.GetEvent(request.Event.EventId) };
+        return new EventResponse { Event = e };
     }
 
     public override async Task<NoResponse> SetRsvp(RsvpRequest request, ServerCallContext context)

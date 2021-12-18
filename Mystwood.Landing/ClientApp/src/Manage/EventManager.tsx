@@ -5,11 +5,7 @@ import {Button, Container, Typography} from "@mui/material";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import {Event} from "../Protos/Larp";
 import {
-    DataGrid,
-    GridApiRef,
-    GridEventListener,
-    GridEvents, GridRowParams,
-    GridToolbarContainer, MuiEvent,
+    DataGrid, GridEventListener, GridEvents
 } from "@mui/x-data-grid";
 import {useNavigate} from "react-router-dom";
 import Enumerable from "linq";
@@ -19,51 +15,57 @@ interface EventItem {
     id: number;
     title: string;
     location: string;
-    date: Date;
+    date?: Date;
     eventType: string;
     rsvp: boolean;
+    hidden: boolean;
+    isNew: boolean;
 }
 
-function CreateEventItem(e: Event): EventItem {
+function CreateEventItem(e: Event, isNew: boolean): EventItem {
+    let date = Date.parse(e.date);
+
     return {
         id: e.eventId,
         title: e.title,
         location: e.location,
-        date: new Date(e.date),
+        date: isNaN(date) ? undefined : new Date(date),
         eventType: e.eventType,
-        rsvp: e.eventType !== "Other"
+        rsvp: e.rsvp,
+        hidden: e.hidden,
+        isNew: isNew
     };
 }
 
 function randomId(): number {
-    return Math.floor(Math.random() * -1000);
+    return 100000 + Math.floor(Math.random() * 100000);
 }
 
 function EventManagerGrid(props: { events: EventItem[] }): any {
+    const [events, setEvents] = React.useState<EventItem[]>(props.events);
 
-    const handleRowEditStart = (params: GridRowParams, event: MuiEvent<React.SyntheticEvent>) => {
-        //event.defaultMuiPrevented = true;
-    };
-
-    const handleRowEditStop: GridEventListener<GridEvents.rowEditStop> = async (params, event) => {
-        const e = params.row as EventItem;
-        await sessionService.updateEvent({
+    const handleRowEditStop: GridEventListener<GridEvents.rowEditStop> = async (params, _) => {
+        let e = params.row as EventItem;
+        console.log(e.date);
+        const updatedEvent = await sessionService.updateEvent({
             eventId: e.id,
-            title: e.title,
-            location: e.location,
-            date: e.date.toISOString(),
-            eventType: e.eventType,
-            rsvp: e.rsvp,
+            title: e.title ?? "",
+            location: e.location ?? "",
+            date: e.date === undefined || e.date === null || isNaN(Number(e.date)) ? "" : e.date.toISOString(),
+            eventType: e.eventType ?? "Other",
+            rsvp: e.rsvp ?? false,
+            hidden: e.hidden ?? false,
             attendees: []
         });
+        console.log(updatedEvent);
+
+        const newEvents = [...events];
+        const index = newEvents.findIndex(x => x.id === params.id);
+        newEvents[index] = CreateEventItem(updatedEvent, false);
+        setEvents([...newEvents.filter(x => x.isNew), ...newEvents.filter(x => !x.isNew)]);
     };
 
     const columns = [
-        {
-            field: 'eventId',
-            headerName: 'ID',
-            width: 45
-        },
         {
             field: 'title',
             headerName: 'Title',
@@ -95,19 +97,44 @@ function EventManagerGrid(props: { events: EventItem[] }): any {
             field: 'rsvp',
             headerName: 'Allow RSVP',
             type: "boolean",
-            width: 150,
+            width: 50,
+            editable: true,
+        },
+        {
+            field: 'hidden',
+            headerName: 'Hidden',
+            type: "boolean",
+            width: 50,
             editable: true,
         }
     ];
-    return (<div style={{minHeight: "400px", width: '100%'}}>
-        <DataGrid
-            autoHeight
-            rows={props.events}
-            columns={columns}
-            editMode="row"
-            onRowEditStart={handleRowEditStart}
-            onRowEditStop={handleRowEditStop}
-        />
+
+    const handleAddRow = function () {
+        const newList = [
+            {
+                id: randomId(),
+                title: "New Event",
+                date: new Date(Enumerable.from(events)
+                    .where(x => x.date !== undefined)
+                    .max(x => x.date!.getTime())),
+                hidden: true
+            } as EventItem,
+            ...events];
+        setEvents(newList);
+    }
+
+    return (<div>
+        <Button onClick={handleAddRow} variant="contained" sx={{my: 2}}><AddIcon/> Add Event</Button>
+
+        <div style={{minHeight: "400px", width: '100%'}}>
+            <DataGrid
+                autoHeight
+                rows={events}
+                columns={columns}
+                editMode="row"
+                onRowEditStop={handleRowEditStop}
+            />
+        </div>
     </div>);
 }
 
@@ -118,8 +145,8 @@ export default function EventManager() {
 
     useMountEffect(async () => {
         try {
-            const events = Enumerable.from(await sessionService.getEvents())
-                .select(x => CreateEventItem(x))
+            const events = Enumerable.from(await sessionService.getEventsAdmin())
+                .select(x => CreateEventItem(x, false))
                 .orderByDescending(x => x.date);
             setEvents(events.toArray());
         } catch (e) {

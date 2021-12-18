@@ -9,6 +9,13 @@ namespace Mystwood.Landing.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<bool>(
+                name: "Hidden",
+                table: "Events",
+                type: "bit",
+                nullable: false,
+                defaultValue: false);
+
             migrationBuilder.AddColumn<int>(
                 name: "ChangedByAccountId",
                 table: "CharacterRevisionEvents",
@@ -29,7 +36,7 @@ namespace Mystwood.Landing.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountAttendanceId = table.Column<int>(type: "int", nullable: false),
                     Rsvp = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UpdatedByAccountId = table.Column<int>(type: "int", nullable: false),
+                    UpdatedByAccountId = table.Column<int>(type: "int", nullable: true),
                     UpdatedOn = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
@@ -39,12 +46,6 @@ namespace Mystwood.Landing.Migrations
                         name: "FK_AccountAttendanceUpdate_AccountAttendances_AccountAttendanceId",
                         column: x => x.AccountAttendanceId,
                         principalTable: "AccountAttendances",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AccountAttendanceUpdate_Accounts_UpdatedByAccountId",
-                        column: x => x.UpdatedByAccountId,
-                        principalTable: "Accounts",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -58,11 +59,6 @@ namespace Mystwood.Landing.Migrations
                 name: "IX_AccountAttendanceUpdate_AccountAttendanceId",
                 table: "AccountAttendanceUpdate",
                 column: "AccountAttendanceId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AccountAttendanceUpdate_UpdatedByAccountId",
-                table: "AccountAttendanceUpdate",
-                column: "UpdatedByAccountId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_CharacterRevisionEvents_Accounts_ChangedByAcountId",
@@ -84,6 +80,10 @@ namespace Mystwood.Landing.Migrations
             migrationBuilder.DropIndex(
                 name: "IX_CharacterRevisionEvents_ChangedByAcountId",
                 table: "CharacterRevisionEvents");
+
+            migrationBuilder.DropColumn(
+                name: "Hidden",
+                table: "Events");
 
             migrationBuilder.DropColumn(
                 name: "ChangedByAccountId",

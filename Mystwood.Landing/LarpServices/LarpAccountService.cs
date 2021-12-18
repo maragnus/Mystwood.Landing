@@ -91,6 +91,17 @@ public partial class LarpAccountService : LarpAccount.LarpAccountBase
         return response;
     }
 
+    public override async Task<EventResponse> GetEvent(EventIdRequest request, ServerCallContext context)
+    {
+        var (accountId, isAdmin) = await _userManager.VerifyOptionalAdminSessionId(request.Session.SessionId);
+
+        var e = isAdmin
+            ? await _eventManager.GetEventAdmin(request.EventId)
+            : await _eventManager.GetEvent(request.EventId, accountId);
+
+        return new EventResponse() { Event = e };
+    }
+
     public override async Task<NoResponse> SetRsvp(RsvpRequest request, ServerCallContext context)
     {
         var accountId = await _userManager.VerifySessionId(request.Session.SessionId) ??

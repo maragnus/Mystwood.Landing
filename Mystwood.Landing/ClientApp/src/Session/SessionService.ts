@@ -336,8 +336,18 @@ export class SessionService {
         return result.events;
     }
 
+    async getEventsAdmin(): Promise<Event[]> {
+        const result = await larpManageClient.GetEvents({session: {sessionId: this._sessionId}});
+        return result.events;
+    }
+
     async updateEvent(event: Event): Promise<Event> {
         const result = await larpManageClient.UpdateEvent({session: {sessionId: this._sessionId}, event: event});
+        return result.event!;
+    }
+
+    async getEvent(eventId: number): Promise<Event> {
+        const result = await larpAccountClient.GetEvent({session: {sessionId: this._sessionId}, eventId: eventId});
         return result.event!;
     }
 }

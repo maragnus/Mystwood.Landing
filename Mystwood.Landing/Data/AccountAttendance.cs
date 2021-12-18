@@ -39,13 +39,10 @@ public class AccountAttendanceUpdate
     [Required]
     public string? Rsvp { get; set; }
 
-    [Required]
     public int? UpdatedByAccountId { get; set; }
 
     [Required]
     public DateTimeOffset? UpdatedOn { get; set; }
 
     public virtual AccountAttendance AccountAttendance { get; set; } = null!;
-
-    public virtual Account UpdatedByAccount { get; set; } = null!;
 }

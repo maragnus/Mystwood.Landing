@@ -21,10 +21,16 @@ import {PlayerManager} from "./Manage/PlayerManager";
 import {CharacterManager} from "./Manage/CharacterManager";
 import EventList from "./Pages/EventList";
 import EventManager from "./Manage/EventManager";
+import EventView from "./Pages/EventView";
 
 function ViewCharacter() {
     const {characterId} = useParams();
     return (<CharacterView id={characterId}/>);
+}
+
+function ViewEvent() {
+    const {eventId} = useParams();
+    return (<EventView id={parseInt(eventId!)}/>);
 }
 
 function EditCharacter() {
@@ -73,7 +79,7 @@ function App() {
                 <Route path="/events" element={<EventList/>}/>
                 <Route path="/events/new" element={<NotImplemented title="Event New"/>}/>
                 <Route path="/events/manage" element={<EventManager />}/>
-                <Route path="/events/:eventId" element={<NotImplemented title="Event View"/>}/>
+                <Route path="/events/:eventId" element={<ViewEvent/>}/>
                 <Route path="/events/:eventId/manage" element={<NotImplemented title="Event Editor"/>}/>
                 <Route path="/login" element={<LoginPage/>}/>
                 <Route path="/confirm" element={<ConfirmPage/>}/>
@@ -89,7 +95,7 @@ function App() {
                 <Route path="/characters/:characterId/delete" element={<NotImplemented title="Character Deletion"/>}/>
                 <Route path="/characters/:characterId/draft" element={<EditCharacter/>}/>
             </Routes>
-            <Paper sx={{position: 'fixed', bottom: 0, left: 0, right: 0}} elevation={3}>
+            <Paper sx={{position: 'fixed', bottom: 0, left: 0, right: 0, zIndex: 1000}} elevation={3}>
                 <LandingNavigation/>
             </Paper>
         </Container>

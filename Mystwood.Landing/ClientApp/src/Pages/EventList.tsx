@@ -1,7 +1,6 @@
 import * as React from "react";
 import {
     Avatar,
-    Box,
     Button,
     Chip,
     Container, Divider,
@@ -31,7 +30,7 @@ function EventItems(props: { events: Event[] }): any {
         const location = event.location.toUpperCase().trim();
 
         if (event.title.toUpperCase().includes("PATREON"))
-            return <Avatar><img src={PatreonLogo} width="80%" height="auto"/></Avatar>
+            return <Avatar><img src={PatreonLogo} alt="Patreon" width="80%" height="auto"/></Avatar>
 
         if (location === "" || location === undefined) return <Avatar><ReceiptIcon/></Avatar>;
         if (location.includes("BURGUNDAR")) return <Avatar sx={{bgcolor: "#49B661"}}>B</Avatar>;
@@ -78,7 +77,6 @@ function EventItems(props: { events: Event[] }): any {
 
 
     return <List sx={{position: 'relative'}}>
-        {items}
         {sessionService.isAdmin() && <ListItem key={1000}>
             <Button
                 type="button"
@@ -92,6 +90,7 @@ function EventItems(props: { events: Event[] }): any {
                 Manage Events
             </Button>
         </ListItem>}
+        {items}
     </List>;
 }
 

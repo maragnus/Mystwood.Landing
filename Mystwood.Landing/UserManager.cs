@@ -23,6 +23,7 @@ namespace Mystwood.Landing
         Task<Account> GetAccount(int accountId);
         Task<int?> VerifySessionId(string sessionId);
         Task<int?> VerifyAdminSessionId(string sessionId);
+        Task<(int? accountId, bool isAdmin)> VerifyOptionalAdminSessionId(string sessionId);
         Task<UserProfile> GetProfile(int accountId);
         Task<IEnumerable<Account>> QueryAccounts(string query);
         Task<bool> ValidateAccount(string email, string peer);
@@ -186,31 +187,47 @@ namespace Mystwood.Landing
             return account?.IsValid ?? true;
         }
 
-        public async Task<int?> VerifySessionId(string sessionId) =>
-            await VerifySessionId(sessionId, false);
+        public async Task<int?> VerifySessionId(string sessionId)
+        {
+            var (accountId, _) = await VerifyOptionalAdminSessionId(sessionId);
+            return accountId;
 
-        public async Task<int?> VerifyAdminSessionId(string sessionId) =>
-            await VerifySessionId(sessionId, true);
+        }
 
-        private async Task<int?> VerifySessionId(string sessionId, bool requireAdmin)
+        public async Task<int?> VerifyAdminSessionId(string sessionId)
+        {
+            var (accountId, isAdmin) = await VerifyOptionalAdminSessionId(sessionId);
+            return !isAdmin ? null : accountId;
 
+        }
+
+        public async Task<(int? accountId, bool isAdmin)> VerifyOptionalAdminSessionId(string sessionId)
         {
             var session = await _db.Sessions
-                .FirstOrDefaultAsync(x => x.Id == sessionId && x.Account.IsValid == true && (!requireAdmin || x.Account.IsAdmin == true));
+                .Where(x => x.Id == sessionId && x.Account.IsValid == true)
+                .Select(x => new
+                {
+                    SessionId = x.Id,
+                    Accessed = x.Accessed ?? DateTimeOffset.MinValue,
+                    AccountId = x.AccountId,
+                    IsAdmin = x.Account.IsAdmin!.Value
+                })
+                .SingleOrDefaultAsync();
 
             if (session == null)
-                return null;
+                return (null, false);
 
             // Update last accessed time once per day
             var now = _clock.UtcNow;
-            if (session.Accessed == null
-                || session.Accessed.Value.UtcDateTime.Date < now.UtcDateTime.Date)
+            if (session.Accessed.UtcDateTime.Date < now.UtcDateTime.Date)
             {
-                session.Accessed = now;
+                var s = new Session { Id = session.SessionId, Accessed = now };
+                _db.Sessions.Attach(s);
+                _db.Entry(s).Property(x => x.Accessed).IsModified = true;
                 await _db.SaveChangesAsync();
             }
 
-            return session.AccountId;
+            return (session.AccountId, session.IsAdmin);
         }
 
         public async Task SetAdmin(int accountId, bool isAdmin)

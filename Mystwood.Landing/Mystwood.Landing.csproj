@@ -76,4 +76,8 @@
 	  <ProjectReference Include="..\Mystwood.Landing.GrpcLarp\Mystwood.Landing.GrpcLarp.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Migrations\" />
+	</ItemGroup>
+
 </Project>

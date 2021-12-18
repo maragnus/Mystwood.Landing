@@ -12,7 +12,7 @@ using Mystwood.Landing.Data;
 namespace Mystwood.Landing.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20211216195035_RsvpMigration")]
+    [Migration("20211218031837_RsvpMigration")]
     partial class RsvpMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -122,7 +122,6 @@ namespace Mystwood.Landing.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UpdatedByAccountId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<DateTimeOffset?>("UpdatedOn")
@@ -132,8 +131,6 @@ namespace Mystwood.Landing.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountAttendanceId");
-
-                    b.HasIndex("UpdatedByAccountId");
 
                     b.ToTable("AccountAttendanceUpdate");
                 });
@@ -288,6 +285,10 @@ namespace Mystwood.Landing.Migrations
                     b.Property<int>("EventType")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("Hidden")
+                        .IsRequired()
+                        .HasColumnType("bit");
+
                     b.Property<string>("Location")
                         .HasColumnType("nvarchar(max)");
 
@@ -367,13 +368,13 @@ namespace Mystwood.Landing.Migrations
             modelBuilder.Entity("Mystwood.Landing.Data.AccountAttendance", b =>
                 {
                     b.HasOne("Mystwood.Landing.Data.Account", "Account")
-                        .WithMany("PlayerAttendances")
+                        .WithMany("AccountAttendances")
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Mystwood.Landing.Data.Event", "Event")
-                        .WithMany()
+                        .WithMany("AccountAttendances")
                         .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -391,15 +392,7 @@ namespace Mystwood.Landing.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Mystwood.Landing.Data.Account", "UpdatedByAccount")
-                        .WithMany()
-                        .HasForeignKey("UpdatedByAccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("AccountAttendance");
-
-                    b.Navigation("UpdatedByAccount");
                 });
 
             modelBuilder.Entity("Mystwood.Landing.Data.Character", b =>
@@ -484,11 +477,11 @@ namespace Mystwood.Landing.Migrations
 
             modelBuilder.Entity("Mystwood.Landing.Data.Account", b =>
                 {
+                    b.Navigation("AccountAttendances");
+
                     b.Navigation("Characters");
 
                     b.Navigation("EmailAddresses");
-
-                    b.Navigation("PlayerAttendances");
 
                     b.Navigation("Sessions");
                 });
@@ -512,6 +505,8 @@ namespace Mystwood.Landing.Migrations
 
             modelBuilder.Entity("Mystwood.Landing.Data.Event", b =>
                 {
+                    b.Navigation("AccountAttendances");
+
                     b.Navigation("CharacterAttendances");
                 });
 #pragma warning restore 612, 618

@@ -35,5 +35,5 @@ public class Account
 
     public virtual ICollection<Character> Characters { get; set; } = new HashSet<Character>();
 
-    public virtual ICollection<AccountAttendance> PlayerAttendances { get; set; } = new HashSet<AccountAttendance>();
+    public virtual ICollection<AccountAttendance> AccountAttendances { get; set; } = new HashSet<AccountAttendance>();
 }
