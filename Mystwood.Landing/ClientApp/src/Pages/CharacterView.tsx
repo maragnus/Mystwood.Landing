@@ -5,7 +5,7 @@ import {HomeChaptersByName} from "../Reference/HomeChapter";
 import {ReligionByName} from "../Reference/Religion";
 import {Star} from "@mui/icons-material";
 import CharacterSheet from "../Reference/CharacterSheet";
-import {useMountEffect} from "../Pages/UseMountEffect";
+import {useMountEffect} from "./UseMountEffect";
 import sessionService from "../Session/SessionService";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import {useNavigate} from "react-router-dom";

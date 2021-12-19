@@ -13,7 +13,7 @@ import {
     Typography
 } from "@mui/material";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, NavLink, useNavigate} from "react-router-dom";
 import SearchIcon from "@mui/icons-material/Search";
 import {CharacterStatus} from "../Session/Session";
 
@@ -97,6 +97,7 @@ export default function CharacterSearch() {
                     <FormControlLabel control={<Checkbox/>} label="Draft" name="draft"/>
                     <FormControlLabel control={<Checkbox defaultChecked/>} label="Review" name="review"/>
                     <FormControlLabel control={<Checkbox/>} label="Live" name="live"/>
+                    <NavLink to="/characters/table">Table View</NavLink>
                 </Box>
             </Box>
             {busy && <AwesomeSpinner/>}

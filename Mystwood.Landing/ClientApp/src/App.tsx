@@ -6,7 +6,7 @@ import LandingNavigation from "./Common/LandingNavigation";
 import './App.css';
 import ProfileView from "./Pages/ProfileView";
 import CharacterList from "./Pages/CharacterList";
-import CharacterView from "./CharacterView/CharacterView";
+import CharacterView from "./Pages/CharacterView";
 import Landing from "./Pages/Landing";
 import NotImplemented from "./Pages/NotImplemented";
 import LoginPage from "./Session/LoginPage";
@@ -22,6 +22,7 @@ import {CharacterManager} from "./Manage/CharacterManager";
 import EventList from "./Pages/EventList";
 import EventManager from "./Manage/EventManager";
 import EventView from "./Pages/EventView";
+import CharacterTable from './Manage/CharacterTable';
 
 function ViewCharacter() {
     const {characterId} = useParams();
@@ -90,6 +91,7 @@ function App() {
                 <Route path="/characters" element={<CharacterList/>}/>
                 <Route path="/characters/search" element={<CharacterSearch/>}/>
                 <Route path="/characters/new" element={<CharacterNew/>}/>
+                <Route path="/characters/table" element={<CharacterTable/>}/>
                 <Route path="/characters/:characterId" element={<ViewCharacter/>}/>
                 <Route path="/characters/:characterId/manage" element={<ManageCharacter/>}/>
                 <Route path="/characters/:characterId/delete" element={<NotImplemented title="Character Deletion"/>}/>

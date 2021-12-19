@@ -14,7 +14,7 @@ public class CharacterRevision
     public RevisionState State { get; set; }
     public string? Json { get; set; }
 
-    public virtual Character? Character { get; set; }
+    public virtual Character Character { get; set; } = null!;
     public virtual ICollection<CharacterRevisionEvent> CharacterRevisionEvents { get; set; } = new List<CharacterRevisionEvent>();
 }
 

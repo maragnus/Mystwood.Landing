@@ -29,7 +29,7 @@ public class Character
 
     public DateTimeOffset? CreatedOn { get; set; }
 
-    public virtual Account? Account { get; set; }
+    public virtual Account Account { get; set; } = null!;
 
     public virtual ICollection<CharacterRevision> CharacterRevisions { get; set; } = new List<CharacterRevision>();
 

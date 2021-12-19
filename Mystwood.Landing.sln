@@ -7,7 +7,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystwood.Landing", "Mystwoo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests.Mystwood.Landing", "Tests\Tests.Mystwood.Landing\Tests.Mystwood.Landing.csproj", "{4BB05CB6-31D4-4D6A-85AE-DDA2EBD3E2F7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mystwood.Landing.GrpcLarp", "Mystwood.Landing.GrpcLarp\Mystwood.Landing.GrpcLarp.csproj", "{B2192B24-8EDD-47EE-91CE-B3BE424C43BD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mystwood.Landing.GrpcLarp", "Mystwood.Landing.GrpcLarp\Mystwood.Landing.GrpcLarp.csproj", "{B2192B24-8EDD-47EE-91CE-B3BE424C43BD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImportData", "ImportData\ImportData.csproj", "{D78CAAA8-786C-4033-B88B-52D4FBC770F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{B2192B24-8EDD-47EE-91CE-B3BE424C43BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2192B24-8EDD-47EE-91CE-B3BE424C43BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2192B24-8EDD-47EE-91CE-B3BE424C43BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D78CAAA8-786C-4033-B88B-52D4FBC770F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D78CAAA8-786C-4033-B88B-52D4FBC770F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D78CAAA8-786C-4033-B88B-52D4FBC770F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D78CAAA8-786C-4033-B88B-52D4FBC770F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
