@@ -46,6 +46,8 @@
 
     <ItemGroup>
         <TypeScriptCompile Remove="ClientApp\node_modules\**" />
+        <TypeScriptCompile Remove="ClientApp\**\*.d.ts" />
+        <TypeScriptCompile Remove="ClientApp\**\*.js" />
     </ItemGroup>
     
 	<Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">

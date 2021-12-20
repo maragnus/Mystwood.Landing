@@ -135,6 +135,8 @@ export interface Account {
   emails: AccountEmail[];
   phone: string;
   isAdmin: boolean;
+  notes: string;
+  created: string;
   characters: CharacterSummary[];
 }
 
@@ -210,6 +212,11 @@ export interface UpdateAccountRequest {
   value: string;
 }
 
+export interface ManageAccountRequest {
+  session?: SessionIdentifier;
+  profile?: Account;
+}
+
 export interface CharactersResponse {
   characters: CharacterSummary[];
 }
@@ -239,6 +246,16 @@ export interface GetCharacterRequest {
 
 export interface CharacterResponse {
   character?: Character;
+}
+
+export interface AdminCommandRequest {
+  session?: SessionIdentifier;
+  command: string;
+  arguments: string[];
+}
+
+export interface AdminCommandResponse {
+  outputs: string[];
 }
 
 export interface GetAccountRequest {
@@ -636,6 +653,8 @@ const baseAccount: object = {
   location: "",
   phone: "",
   isAdmin: false,
+  notes: "",
+  created: "",
 };
 
 export const Account = {
@@ -661,8 +680,14 @@ export const Account = {
     if (message.isAdmin === true) {
       writer.uint32(48).bool(message.isAdmin);
     }
+    if (message.notes !== "") {
+      writer.uint32(58).string(message.notes);
+    }
+    if (message.created !== "") {
+      writer.uint32(66).string(message.created);
+    }
     for (const v of message.characters) {
-      CharacterSummary.encode(v!, writer.uint32(58).fork()).ldelim();
+      CharacterSummary.encode(v!, writer.uint32(74).fork()).ldelim();
     }
     return writer;
   },
@@ -695,6 +720,12 @@ export const Account = {
           message.isAdmin = reader.bool();
           break;
         case 7:
+          message.notes = reader.string();
+          break;
+        case 8:
+          message.created = reader.string();
+          break;
+        case 9:
           message.characters.push(
             CharacterSummary.decode(reader, reader.uint32())
           );
@@ -732,6 +763,14 @@ export const Account = {
       object.isAdmin !== undefined && object.isAdmin !== null
         ? Boolean(object.isAdmin)
         : false;
+    message.notes =
+      object.notes !== undefined && object.notes !== null
+        ? String(object.notes)
+        : "";
+    message.created =
+      object.created !== undefined && object.created !== null
+        ? String(object.created)
+        : "";
     message.characters = (object.characters ?? []).map((e: any) =>
       CharacterSummary.fromJSON(e)
     );
@@ -752,6 +791,8 @@ export const Account = {
     }
     message.phone !== undefined && (obj.phone = message.phone);
     message.isAdmin !== undefined && (obj.isAdmin = message.isAdmin);
+    message.notes !== undefined && (obj.notes = message.notes);
+    message.created !== undefined && (obj.created = message.created);
     if (message.characters) {
       obj.characters = message.characters.map((e) =>
         e ? CharacterSummary.toJSON(e) : undefined
@@ -771,6 +812,8 @@ export const Account = {
       object.emails?.map((e) => AccountEmail.fromPartial(e)) || [];
     message.phone = object.phone ?? "";
     message.isAdmin = object.isAdmin ?? false;
+    message.notes = object.notes ?? "";
+    message.created = object.created ?? "";
     message.characters =
       object.characters?.map((e) => CharacterSummary.fromPartial(e)) || [];
     return message;
@@ -1847,6 +1890,91 @@ export const UpdateAccountRequest = {
   },
 };
 
+const baseManageAccountRequest: object = {};
+
+export const ManageAccountRequest = {
+  encode(
+    message: ManageAccountRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.profile !== undefined) {
+      Account.encode(message.profile, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): ManageAccountRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseManageAccountRequest } as ManageAccountRequest;
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.profile = Account.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ManageAccountRequest {
+    const message = { ...baseManageAccountRequest } as ManageAccountRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Account.fromJSON(object.profile)
+        : undefined;
+    return message;
+  },
+
+  toJSON(message: ManageAccountRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.profile !== undefined &&
+      (obj.profile = message.profile
+        ? Account.toJSON(message.profile)
+        : undefined);
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<ManageAccountRequest>, I>>(
+    object: I
+  ): ManageAccountRequest {
+    const message = { ...baseManageAccountRequest } as ManageAccountRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.profile =
+      object.profile !== undefined && object.profile !== null
+        ? Account.fromPartial(object.profile)
+        : undefined;
+    return message;
+  },
+};
+
 const baseCharactersResponse: object = {};
 
 export const CharactersResponse = {
@@ -2334,6 +2462,156 @@ export const CharacterResponse = {
       object.character !== undefined && object.character !== null
         ? Character.fromPartial(object.character)
         : undefined;
+    return message;
+  },
+};
+
+const baseAdminCommandRequest: object = { command: "", arguments: "" };
+
+export const AdminCommandRequest = {
+  encode(
+    message: AdminCommandRequest,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    if (message.session !== undefined) {
+      SessionIdentifier.encode(
+        message.session,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    if (message.command !== "") {
+      writer.uint32(18).string(message.command);
+    }
+    for (const v of message.arguments) {
+      writer.uint32(26).string(v!);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AdminCommandRequest {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAdminCommandRequest } as AdminCommandRequest;
+    message.arguments = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.session = SessionIdentifier.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.command = reader.string();
+          break;
+        case 3:
+          message.arguments.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminCommandRequest {
+    const message = { ...baseAdminCommandRequest } as AdminCommandRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromJSON(object.session)
+        : undefined;
+    message.command =
+      object.command !== undefined && object.command !== null
+        ? String(object.command)
+        : "";
+    message.arguments = (object.arguments ?? []).map((e: any) => String(e));
+    return message;
+  },
+
+  toJSON(message: AdminCommandRequest): unknown {
+    const obj: any = {};
+    message.session !== undefined &&
+      (obj.session = message.session
+        ? SessionIdentifier.toJSON(message.session)
+        : undefined);
+    message.command !== undefined && (obj.command = message.command);
+    if (message.arguments) {
+      obj.arguments = message.arguments.map((e) => e);
+    } else {
+      obj.arguments = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AdminCommandRequest>, I>>(
+    object: I
+  ): AdminCommandRequest {
+    const message = { ...baseAdminCommandRequest } as AdminCommandRequest;
+    message.session =
+      object.session !== undefined && object.session !== null
+        ? SessionIdentifier.fromPartial(object.session)
+        : undefined;
+    message.command = object.command ?? "";
+    message.arguments = object.arguments?.map((e) => e) || [];
+    return message;
+  },
+};
+
+const baseAdminCommandResponse: object = { outputs: "" };
+
+export const AdminCommandResponse = {
+  encode(
+    message: AdminCommandResponse,
+    writer: _m0.Writer = _m0.Writer.create()
+  ): _m0.Writer {
+    for (const v of message.outputs) {
+      writer.uint32(10).string(v!);
+    }
+    return writer;
+  },
+
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number
+  ): AdminCommandResponse {
+    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = { ...baseAdminCommandResponse } as AdminCommandResponse;
+    message.outputs = [];
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.outputs.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AdminCommandResponse {
+    const message = { ...baseAdminCommandResponse } as AdminCommandResponse;
+    message.outputs = (object.outputs ?? []).map((e: any) => String(e));
+    return message;
+  },
+
+  toJSON(message: AdminCommandResponse): unknown {
+    const obj: any = {};
+    if (message.outputs) {
+      obj.outputs = message.outputs.map((e) => e);
+    } else {
+      obj.outputs = [];
+    }
+    return obj;
+  },
+
+  fromPartial<I extends Exact<DeepPartial<AdminCommandResponse>, I>>(
+    object: I
+  ): AdminCommandResponse {
+    const message = { ...baseAdminCommandResponse } as AdminCommandResponse;
+    message.outputs = object.outputs?.map((e) => e) || [];
     return message;
   },
 };
@@ -3816,8 +4094,16 @@ export const LarpAccountSetRsvpDesc: UnaryMethodDefinitionish = {
 };
 
 export interface LarpManage {
+  AdminCommand(
+    request: DeepPartial<AdminCommandRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AdminCommandResponse>;
   GetAccount(
     request: DeepPartial<GetAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse>;
+  UpdateAccount(
+    request: DeepPartial<ManageAccountRequest>,
     metadata?: grpc.Metadata
   ): Promise<AccountResponse>;
   SearchAccounts(
@@ -3855,7 +4141,9 @@ export class LarpManageClientImpl implements LarpManage {
 
   constructor(rpc: Rpc) {
     this.rpc = rpc;
+    this.AdminCommand = this.AdminCommand.bind(this);
     this.GetAccount = this.GetAccount.bind(this);
+    this.UpdateAccount = this.UpdateAccount.bind(this);
     this.SearchAccounts = this.SearchAccounts.bind(this);
     this.SetAdmin = this.SetAdmin.bind(this);
     this.SearchCharacters = this.SearchCharacters.bind(this);
@@ -3865,6 +4153,17 @@ export class LarpManageClientImpl implements LarpManage {
     this.SetRsvp = this.SetRsvp.bind(this);
   }
 
+  AdminCommand(
+    request: DeepPartial<AdminCommandRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AdminCommandResponse> {
+    return this.rpc.unary(
+      LarpManageAdminCommandDesc,
+      AdminCommandRequest.fromPartial(request),
+      metadata
+    );
+  }
+
   GetAccount(
     request: DeepPartial<GetAccountRequest>,
     metadata?: grpc.Metadata
@@ -3872,6 +4171,17 @@ export class LarpManageClientImpl implements LarpManage {
     return this.rpc.unary(
       LarpManageGetAccountDesc,
       GetAccountRequest.fromPartial(request),
+      metadata
+    );
+  }
+
+  UpdateAccount(
+    request: DeepPartial<ManageAccountRequest>,
+    metadata?: grpc.Metadata
+  ): Promise<AccountResponse> {
+    return this.rpc.unary(
+      LarpManageUpdateAccountDesc,
+      ManageAccountRequest.fromPartial(request),
       metadata
     );
   }
@@ -3958,6 +4268,28 @@ export const LarpManageDesc = {
   serviceName: "larp.LarpManage",
 };
 
+export const LarpManageAdminCommandDesc: UnaryMethodDefinitionish = {
+  methodName: "AdminCommand",
+  service: LarpManageDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return AdminCommandRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...AdminCommandResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
 export const LarpManageGetAccountDesc: UnaryMethodDefinitionish = {
   methodName: "GetAccount",
   service: LarpManageDesc,
@@ -3966,6 +4298,28 @@ export const LarpManageGetAccountDesc: UnaryMethodDefinitionish = {
   requestType: {
     serializeBinary() {
       return GetAccountRequest.encode(this).finish();
+    },
+  } as any,
+  responseType: {
+    deserializeBinary(data: Uint8Array) {
+      return {
+        ...AccountResponse.decode(data),
+        toObject() {
+          return this;
+        },
+      };
+    },
+  } as any,
+};
+
+export const LarpManageUpdateAccountDesc: UnaryMethodDefinitionish = {
+  methodName: "UpdateAccount",
+  service: LarpManageDesc,
+  requestStream: false,
+  responseStream: false,
+  requestType: {
+    serializeBinary() {
+      return ManageAccountRequest.encode(this).finish();
     },
   } as any,
   responseType: {

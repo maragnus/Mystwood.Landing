@@ -44,7 +44,9 @@ message Account {
     repeated AccountEmail emails = 4;
     string phone = 5;
     bool is_admin = 6;
-    repeated CharacterSummary characters = 7;
+    string notes = 7;
+    string created = 8;
+    repeated CharacterSummary characters = 9;
 }
 
 message Character {
@@ -106,7 +108,9 @@ service LarpAccount {
 }
 
 service LarpManage {
+    rpc AdminCommand (AdminCommandRequest) returns (AdminCommandResponse);
     rpc GetAccount(GetAccountRequest) returns (AccountResponse);
+    rpc UpdateAccount(ManageAccountRequest) returns  (AccountResponse);
     rpc SearchAccounts(SearchAccountsRequest) returns (SearchAccountsResponse);
     rpc SetAdmin(SetAdminRequest) returns (AccountResponse);
     rpc SearchCharacters(SearchCharactersRequest) returns (SearchCharactersResponse); 
@@ -161,6 +165,11 @@ message UpdateAccountRequest {
     string value = 2;
 }
 
+message ManageAccountRequest {
+    SessionIdentifier session = 1;
+    Account profile = 2;
+}
+
 message CharactersResponse {
     repeated CharacterSummary characters = 1;
 }
@@ -193,6 +202,16 @@ message CharacterResponse {
 }
 
 // Admin functions
+
+message AdminCommandRequest {
+    SessionIdentifier session = 1;
+    string command = 2;
+    repeated string arguments = 3;
+}
+
+message AdminCommandResponse {
+    repeated string outputs = 1;
+}
 
 message GetAccountRequest {
     SessionIdentifier session = 1;

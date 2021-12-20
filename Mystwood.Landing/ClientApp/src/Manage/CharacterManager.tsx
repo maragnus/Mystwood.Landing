@@ -1,8 +1,8 @@
 import {useMountEffect} from "../Pages/UseMountEffect";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import * as React from "react";
-import {Character, CharacterSummary} from "../Protos/Larp";
 import sessionService from "../Session/SessionService";
+import { Character } from "../Session/Session";
 
 export function CharacterManager(props: { characterId: string }) {
     const [busy, setBusy] = React.useState(true);
@@ -10,7 +10,7 @@ export function CharacterManager(props: { characterId: string }) {
 
     useMountEffect(async () => {
         const ch = await sessionService.getCharacter(props.characterId);
-        //setCharacter(ch);
+        setCharacter(ch);
         setBusy(false);
     });
 

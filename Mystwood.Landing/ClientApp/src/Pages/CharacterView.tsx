@@ -9,6 +9,7 @@ import {useMountEffect} from "./UseMountEffect";
 import sessionService from "../Session/SessionService";
 import AwesomeSpinner from "../Common/AwesomeSpinner";
 import {useNavigate} from "react-router-dom";
+import Enumerable from "linq";
 
 function Gift(params: { title: string, value: number }) {
     let i: number;
@@ -119,15 +120,13 @@ export default function CharacterView(params: { id?: string }) {
     const [sheet, setSheet] = React.useState<CharacterSheet>({} as CharacterSheet);
 
     useMountEffect(async () => {
-        try
-        {
-        const character = await sessionService.getCharacter(params.id!);
-        let sheet = (character.live.characterName !== undefined)
-            ? character.live  as CharacterSheet : character.draft as CharacterSheet;
-        CharacterSheet.populate(sheet);
-        setSheet(sheet);
-        }
-        catch (e) {
+        try {
+            const character = await sessionService.getCharacter(params.id!);
+            let sheet = (character.live.characterName !== undefined)
+                ? character.live as CharacterSheet : character.draft as CharacterSheet;
+            CharacterSheet.populate(sheet);
+            setSheet(sheet);
+        } catch (e) {
             alert(e);
             navigate("/login");
         }
@@ -155,6 +154,10 @@ export default function CharacterView(params: { id?: string }) {
         else
             item.title = item.name;
     });
+
+    const abilities = Enumerable.from(sheet.abilities)
+        .select(x => ({title: x.title}))
+        .distinct(x => x.title).toArray();
 
     return (
         <Container maxWidth="lg" style={{backgroundColor: "#f4f5f7"}}>
@@ -187,17 +190,17 @@ export default function CharacterView(params: { id?: string }) {
             </Grid>
             <Grid container spacing={3} pt={4}>
                 <Grid item lg={4} md={6} sm={12} xs={12} spacing={3}>
-                    <List title="Abilities" values={sheet.abilities.map(x => ({title: x.title}))}/>
+                    <List title="Abilities" values={abilities}/>
                 </Grid>
                 <Grid item lg={4} md={6} sm={12} xs={12} spacing={3}>
                     <List title="Skills" values={skills}/>
                 </Grid>
                 <Grid container item lg={4} md={12} xs={12} spacing={3}>
                     <Grid item lg={12} md={4} sm={12} xs={12}>
-                        <List title="Advantages" values={sheet.advantages.map(x => ({title: x.name}))}/>
+                        <List title="Advantages" values={sheet.advantages.map(x => ({title: `${x.rank} ${x.name}`}))}/>
                     </Grid>
                     <Grid item lg={12} md={4} sm={12} xs={12}>
-                        <List title="Disadvantages" values={sheet.disadvantages.map(x => ({title: x.name}))}/>
+                        <List title="Disadvantages" values={sheet.disadvantages.map(x => ({title: `${x.rank} ${x.name}`}))}/>
                     </Grid>
                     <Grid item lg={12} md={4} sm={12} xs={12}>
                         <Block title="Unusual Features" text={sheet.unusualFeatures}/>

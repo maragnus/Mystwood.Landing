@@ -14,6 +14,7 @@ export default class CharacterSheet {
     homeChapter?: string;
     publicStory?: string;
     privateStory?: string;
+    homeland?: string;
 
     // Editor - Gifts
     courage: number = 0;

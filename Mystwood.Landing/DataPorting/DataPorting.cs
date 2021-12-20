@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Mystwood.Landing.Data;
 
@@ -128,18 +129,130 @@ public class DataPorting
             });
     }
 
+    record Vantage(string Name, int rank);
+
+    object? VantageToJson(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var list = new List<Vantage>();
+
+        foreach (var item in value.Split(','))
+        {
+            var match = Regex.Match(item, @"(\d+) (.*)");
+            if (match.Success)
+                list.Add(new Vantage(match.Groups[2].Value, int.Parse(match.Groups[1].Value)));
+        }
+
+        return list;
+    }
+
+    int ToInt(object? value)
+    {
+        switch (value)
+        {
+            case string svalue: return int.TryParse(svalue, out int ivalue) ? ivalue : 0;
+            case int intValue: return intValue;
+            case double dblValue: return (int)dblValue;
+            default: return 0;
+        }
+    }
+
     public async Task Import()
     {
+        var now = DateTimeOffset.Now;
+
+        var options = new JsonSerializerOptions();
+        options.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+        options.DictionaryKeyPolicy = JsonNamingPolicy.CamelCase;
+
         await _dataConnector.Connect();
 
         var tables = await _dataConnector.Import("Characters");
 
+        var account = await _db.Accounts.FirstAsync();
 
         await ImportCharacters(tables.Single(x => x.Name == "Characters"));
 
         async Task ImportCharacters(DtTable characters)
         {
-            var dbCharacters = await _db.Characters.ToDictionaryAsync(x => x.Id);
+            var dbCharacters = await _db.Characters.ToDictionaryAsync(x => x.Id!.Value);
+
+            foreach (var character in characters.GetRows())
+            {
+                var characterName = character["Character Name"]?.ToString() ?? "Unnamed";
+
+                var json = new
+                {
+                    CharacterName = characterName,
+                    HomeChapter = character["Home Chapter"]?.ToString(),
+                    Occupation = character["Occupation"]?.ToString(),
+                    Enhancement = character["Occupational Enhancement"]?.ToString(),
+                    Homeland = character["Homeland"]?.ToString(),
+                    Religions = character["Religion"]?.ToString(),
+                    Courage = ToInt(character["Courage"]),
+                    Dexterity = ToInt(character["Dexterity"]),
+                    Empathy = ToInt(character["Empathy"]),
+                    Passion = ToInt(character["Passion"]),
+                    Prowess = ToInt(character["Prowess"]),
+                    Wisdom = ToInt(character["Wisdom"]),
+                    Cures = character["Cures"]?.ToString(),
+                    Documents = character["Documents"]?.ToString(),
+                    PublicStory = character["Public History"]?.ToString(),
+                    PrivateStory = character["Private History"]?.ToString(),
+                    UnusualFeatures = character["Unusual Features"]?.ToString(),
+                    Advantages = VantageToJson(character["Advantages"]?.ToString()),
+                    Disadvantages = VantageToJson(character["Disadvantages"]?.ToString()),
+                    Spells = (character["Spells"]?.ToString() ?? "").Split(',').Select(x => x.Trim()).Where(x => x.Length > 0).ToArray(),
+                };
+
+                Character? dbCharacter = await _db.Characters
+                    .Include(x => x.CharacterRevisions)
+                    .SingleOrDefaultAsync(x => x.Name == characterName);
+
+                if (dbCharacter == null)
+                {
+                    dbCharacter = new Character
+                    {
+                        Name = characterName,
+                        CreatedOn = now,
+                        AccountId = account.Id,
+                        Metadata = ""
+                    }; // new Character
+                    _db.Characters.Add(dbCharacter);
+                }
+
+                // Archive previos revision
+                foreach (var revision in dbCharacter.CharacterRevisions.Where(x => x.State == RevisionState.Live))
+                {
+                    revision.State = RevisionState.Archived;
+                    revision.CharacterRevisionEvents.Add(new CharacterRevisionEvent
+                    {
+                        ChangedOn = now,
+                        State = RevisionState.Archived
+                    });
+                }
+
+                dbCharacter.CharacterRevisions.Add(
+                    new CharacterRevision()
+                    {
+                        CreatedOn = now,
+                        State = RevisionState.Live,
+                        Json = JsonSerializer.Serialize(json, options),
+                        CharacterRevisionEvents = {
+                                new CharacterRevisionEvent
+                                {
+                                    ChangedOn = now,
+                                    State = RevisionState.Live
+                                }
+                            }
+                    });
+
+
+            }
         }
+
+        await _db.SaveChangesAsync();
     }
 }

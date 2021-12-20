@@ -221,7 +221,7 @@ export const Gifts: Gift[] = [
                 rank: 5,
                 properties: ["4"],
                 abilities: [
-                    {name: "With Malice Toward None (Heal 3)", rank: 0, title: "With Malice Toward None (Heal 3)"},
+                    {name: "With Malice Toward None", rank: 3, title: "With Malice Toward None (Heal 3)"},
                 ],
             },
             {
@@ -242,7 +242,7 @@ export const Gifts: Gift[] = [
                 rank: 8,
                 properties: ["5"],
                 abilities: [
-                    {name: "With Malice Toward None (Heal 5)", rank: 0, title: "With Malice Toward None (Heal 5)"},
+                    {name: "With Malice Toward None", rank: 5, title: "With Malice Toward None (Heal 5)"},
                 ],
             },
             {

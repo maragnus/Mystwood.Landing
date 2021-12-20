@@ -22,11 +22,19 @@ export default class ProfileEditor extends CharacterEditorPage {
 
         return <Box component="form">
             <Grid container spacing={2}>
-                <Grid item xs={12} md={12}>
+                <Grid item xs={12} md={8}>
                     <TextField id="characterName"
                                fullWidth required aria-required={true}
                                label="Character Name"
                                defaultValue={sheet.characterName} variant="standard"
+                               onChange={(e) => this.handleInputChange(e)}
+                    />
+                </Grid>
+                <Grid item xs={12} md={4}>
+                    <TextField id="homeland"
+                               fullWidth required aria-required={true}
+                               label="Homeland"
+                               defaultValue={sheet.homeland} variant="standard"
                                onChange={(e) => this.handleInputChange(e)}
                     />
                 </Grid>

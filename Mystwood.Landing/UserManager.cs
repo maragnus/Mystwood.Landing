@@ -14,7 +14,10 @@ namespace Mystwood.Landing
         string[] Emails,
         string? Phone,
         string? Location,
-        bool? IsAdmin
+        bool? IsAdmin,
+        bool? IsValid,
+        string Notes,
+        DateTimeOffset Created
     );
 
     public interface IUserManager
@@ -34,6 +37,7 @@ namespace Mystwood.Landing
         Task AddEmail(int accountId, string email);
         Task RemoveEmail(int accountId, string email);
         Task SetAdmin(int accountId, bool isAdmin);
+        Task Set(Account profile);
     }
 
     public class UserManager : IUserManager
@@ -152,7 +156,10 @@ namespace Mystwood.Landing
                 account.EmailAddresses.Select(x => x.Email).ToArray(),
                 account.PhoneNumber ?? "",
                 account.Location ?? "",
-                account.IsAdmin ?? false
+                account.IsAdmin ?? false,
+                account.IsValid ?? true,
+                account.Notes ?? "",
+                account.Created!.Value
             );
         }
 
@@ -304,5 +311,7 @@ namespace Mystwood.Landing
 
             return (await BuildProfile(accounts)).Single();
         }
+
+        public Task Set(Account profile) => throw new NotImplementedException();
     }
 }

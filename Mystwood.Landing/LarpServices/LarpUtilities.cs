@@ -13,7 +13,9 @@ internal static class LarpUtilities
             IsAdmin = userProfile.IsAdmin ?? false,
             Name = userProfile.Name ?? "",
             Phone = userProfile.Phone ?? "",
-            Location = userProfile.Location ?? ""
+            Location = userProfile.Location ?? "",
+            Notes = userProfile.Notes,
+            Created = userProfile.Created.ToString("s")
         };
         profile.Emails.AddRange(userProfile.Emails.Select(x => new AccountEmail { Email = x }));
         return profile;
